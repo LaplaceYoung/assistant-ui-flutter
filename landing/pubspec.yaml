@@ -1,0 +1,29 @@
+name: assistant_ui_landing
+description: One-to-one Flutter replica of the assistant-ui landing page.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  assistant_ui:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    - family: Public Sans
+      fonts:
+        - asset: assets/fonts/PublicSans[wght].ttf
+    - family: JetBrains Mono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono[wght].ttf
