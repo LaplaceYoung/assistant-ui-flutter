@@ -1,0 +1,24 @@
+name: assistant_ui
+description: >-
+  Flutter port of assistant-ui: unstyled primitives, a local runtime with
+  streaming, branching and tool calls, plus styled chat components.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Only used by the data stream adapter (Vercel data stream / assistant-stream
+  # backends). `http` streams on web through fetch, unlike dart:io.
+  http: ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
