@@ -20,6 +20,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned to the version the port is verified against; `stable` moves.
+          flutter-version: 3.47.4
           cache: true
       - run: flutter pub get
       # Scope the analysis to this package: `landing/` is its own package and
@@ -41,6 +43,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned to the version the port is verified against; `stable` moves.
+          flutter-version: 3.47.4
           cache: true
       - run: flutter pub get
       - working-directory: landing
@@ -65,9 +69,24 @@ jobs:
           path: pages
           retention-days: 5
 
+  example:
+    name: example (analyze + build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.4
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze example
+      - run: flutter build web --release
+        working-directory: example
+
   deploy:
     name: deploy the landing to Pages
-    needs: [package, landing]
+    needs: [package, landing, example]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -83,4 +102,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: pages-tree
           publish_branch: gh-pages
-          commit_message: 'deploy: landing from ${{ github.sha }}'
+          # A fresh commit per deploy: a plain push can race a non-fast-forward
+          # when the branch was written outside this job.
+          force_orphan: true
+          commit_message: 'deploy: landing + gallery from ${{ github.sha }}'

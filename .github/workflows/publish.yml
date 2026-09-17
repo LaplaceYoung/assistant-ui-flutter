@@ -29,6 +29,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned to the version the port is verified against; `stable` moves.
+          flutter-version: 3.47.4
           cache: true
       - run: flutter pub get
       # A clean package: any validation issue, warning included, fails the job.
@@ -44,6 +46,8 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned to the version the port is verified against; `stable` moves.
+          flutter-version: 3.47.4
           cache: true
       - run: flutter pub get
       - name: Validate before uploading
