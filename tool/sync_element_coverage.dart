@@ -377,8 +377,16 @@ const Map<String, Entry> _entries = <String, Entry>{
       note: 'loading/ready/failed/blocked frame with hover controls and zoom; download/copy call host callbacks since Dart has no image clipboard'),
   'file': Entry('partial', dart: 'components/parts.dart',
       note: 'chip carries the mime icon set, a type label, the payload size when the part carries base64 bytes, and a download hook the host wires'),
-  'web-preview': Entry('n/a', note: 'sandboxed iframe; Flutter has no equivalent surface'),
-  'shiki-highlighter': Entry('n/a', note: 'Shiki is a JS tokenizer; Dart port would use a regex highlighter'),
+  'web-preview': Entry('partial',
+      dart: 'components/web_preview.dart, components/web_preview_frame.dart',
+      note: 'the chrome is ported (origin bar, reload, open-in-new, loading state, '
+          'and it enforces no isolation, matching the element); the frame itself is '
+          'a platform surface: an iframe registered as a platform view on web, '
+          'null elsewhere so the host passes its own'),
+  'shiki-highlighter': Entry('ported',
+      dart: 'components/syntax_highlighter.dart',
+      note: 'the Shiki-based variant of the highlighter element; this port '
+          'tokenizes with Dart regexes and paints the same coldark palettes'),
 
   'mermaid-diagram': Entry('ported',
       dart: 'components/mermaid_diagram.dart, components/mermaid_renderer.dart',

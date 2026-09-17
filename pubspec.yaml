@@ -18,6 +18,8 @@ dependencies:
   # Only used by the data stream adapter (Vercel data stream / assistant-stream
   # backends). `http` streams on web through fetch, unlike dart:io.
   http: ^1.2.0
+  # The web-preview frame: an iframe registered as a platform view on web only.
+  web: ^1.1.0
 
 dev_dependencies:
   flutter_test:

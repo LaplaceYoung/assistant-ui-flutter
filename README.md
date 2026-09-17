@@ -112,10 +112,18 @@ AuiRuntimeProvider(
   confirmation, an auth request or an interrupt arrives. `adkConfirmationReply`
   builds the message that resumes the run, and `projectAdkToolConfirmations`
   reads which gates a transcript has open or answered.
+- **Web preview** — the chrome (origin bar, reload, open-in-new, loading state)
+  plus a platform frame: on web an iframe is registered as a platform view with
+  its sandbox attribute, elsewhere the surface returns null and the host passes
+  its own frame — the same responsibility split upstream documents.
 - **Math** — a typesetter in Dart: `$…$` and `$$…$$` become widgets without a
   host renderer (fractions with a rule, radicals with an overline, superscripts
   and subscripts hung off the base axis, the Greek/operator symbol table, and
   verbatim `\text{}`). A host renderer still overrides it.
+- **Web preview** — the chrome (origin bar, reload, open-in-new, loading state)
+  plus a platform frame: on web an iframe is registered as a platform view with
+  its sandbox attribute, elsewhere the surface returns null and the host passes
+  its own frame — the same responsibility split upstream documents.
 - **Math** — a typesetter in Dart: inline and display math become widgets
   without a host renderer (fractions with a rule, radicals with an overline,
   superscripts and subscripts hung off the base axis, the Greek and operator
