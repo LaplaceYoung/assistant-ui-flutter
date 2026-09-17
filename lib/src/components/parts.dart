@@ -19,6 +19,7 @@ class AssistantMessageParts extends StatelessWidget {
     super.key,
     this.toolUIs = const <String, AuiToolUIBuilder>{},
     this.isUser = false,
+    this.showReasoning = true,
     this.spacing = 10,
     this.groupToolCalls = false,
     this.toolGroupBuilder,
@@ -29,6 +30,9 @@ class AssistantMessageParts extends StatelessWidget {
 
   /// User bubbles render plain text styling without reasoning or tool cards.
   final bool isUser;
+
+  /// Whether the reasoning parts render. Hidden they leave no gap behind.
+  final bool showReasoning;
 
   final double spacing;
 
@@ -111,7 +115,9 @@ class AssistantMessageParts extends StatelessWidget {
               status == PartStatus.running ? const AuiStreamingCursor() : null,
         );
       case ReasoningPart():
-        return AssistantReasoning(part: part, status: status);
+        return showReasoning
+            ? AssistantReasoning(part: part, status: status)
+            : null;
       case ToolCallPart():
         final AuiToolUIBuilder? custom = toolUIs[part.toolName];
         if (custom != null) return custom(context, part);

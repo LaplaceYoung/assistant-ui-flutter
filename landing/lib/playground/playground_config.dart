@@ -46,6 +46,7 @@ class PlaygroundConfig {
     this.avatar = false,
     this.composer = true,
     this.groupToolCalls = false,
+    this.reasoning = false,
   });
 
   final PlaygroundTheme theme;
@@ -60,6 +61,10 @@ class PlaygroundConfig {
   final bool avatar;
   final bool composer;
   final bool groupToolCalls;
+
+  /// Whether the reasoning parts render — upstream's `components.reasoning`,
+  /// off by default there too.
+  final bool reasoning;
 
   static const PlaygroundConfig defaults = PlaygroundConfig();
 
@@ -76,6 +81,7 @@ class PlaygroundConfig {
     bool? avatar,
     bool? composer,
     bool? groupToolCalls,
+    bool? reasoning,
   }) =>
       PlaygroundConfig(
         theme: theme ?? this.theme,
@@ -90,6 +96,7 @@ class PlaygroundConfig {
         avatar: avatar ?? this.avatar,
         composer: composer ?? this.composer,
         groupToolCalls: groupToolCalls ?? this.groupToolCalls,
+        reasoning: reasoning ?? this.reasoning,
       );
 
   /// The radius the bubbles, the composer and the cards take.
@@ -136,6 +143,9 @@ class PlaygroundConfig {
     if (groupToolCalls != defaults.groupToolCalls) {
       out['groupTools'] = groupToolCalls ? '1' : '0';
     }
+    if (reasoning != defaults.reasoning) {
+      out['reasoning'] = reasoning ? '1' : '0';
+    }
     return out;
   }
 
@@ -163,6 +173,7 @@ class PlaygroundConfig {
       composer: query.containsKey('composer') ? patch.composer : null,
       groupToolCalls:
           query.containsKey('groupTools') ? patch.groupToolCalls : null,
+      reasoning: query.containsKey('reasoning') ? patch.reasoning : null,
     );
   }
 
@@ -200,6 +211,7 @@ class PlaygroundConfig {
       avatar: flag('avatar'),
       composer: flag('composer'),
       groupToolCalls: flag('groupTools'),
+      reasoning: flag('reasoning'),
     );
   }
 }
@@ -250,6 +262,7 @@ const List<PlaygroundPreset> kPresets = <PlaygroundPreset>[
       fontSize: 15,
       spacing: PlaygroundSpacing.spacious,
       avatar: true,
+      reasoning: true,
     ),
   ),
   PlaygroundPreset(
@@ -304,6 +317,7 @@ const List<PlaygroundPreset> kPresets = <PlaygroundPreset>[
       spacing: PlaygroundSpacing.compact,
       groupToolCalls: true,
       suggestions: false,
+      reasoning: true,
     ),
   ),
   PlaygroundPreset(
@@ -342,6 +356,7 @@ String playgroundSnippet(PlaygroundConfig config) {
     if (!config.suggestions) '// suggestions cleared on the thread',
     if (!config.scrollToBottom) 'showScrollToLatest: false,',
     if (config.groupToolCalls) 'groupToolCalls: true,',
+    if (config.reasoning) 'showReasoning: true,',
     'maxWidth: ${config.maxWidth.round()},',
     'padding: EdgeInsets.symmetric(horizontal: 16, vertical: ${config.messageGap.round()}),',
     if (config.avatar)

@@ -265,6 +265,7 @@ class LocalRuntime extends AssistantRuntime {
       contextUsage: _contextUsage(),
       model: model,
       effort: effort,
+      thinkingTokens: _thinkingTokens(),
       suggestions: List<ThreadSuggestion>.unmodifiable(_suggestions),
     );
     _threadsState = ThreadsState(
@@ -954,6 +955,15 @@ class LocalRuntime extends AssistantRuntime {
   /// The default counter is a character heuristic (about four characters per
   /// token) so the ring works with no backend; hosts that know the real
   /// numbers pass a [ContextTokenCounter].
+  /// Sums what the backend reported as thinking tokens.
+  int _thinkingTokens() {
+    int total = 0;
+    for (final ThreadMessage message in _messages) {
+      total += message.metadata.thinkingTokens ?? 0;
+    }
+    return total;
+  }
+
   ContextUsage _contextUsage() {
     final int max = options.contextWindowTokens;
     if (max <= 0) return ContextUsage.empty;

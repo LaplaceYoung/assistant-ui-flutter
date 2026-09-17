@@ -103,16 +103,24 @@ class MessageTiming {
 
 /// Everything an adapter can attach to a message besides its content.
 class MessageMetadata {
-  const MessageMetadata({this.custom = const <String, Object?>{}, this.timing});
+  const MessageMetadata({
+    this.custom = const <String, Object?>{},
+    this.timing,
+    this.thinkingTokens,
+  });
 
   final Map<String, Object?> custom;
   final MessageTiming? timing;
+
+  /// Tokens the model spent thinking, when the backend reports them.
+  final int? thinkingTokens;
 
   MessageMetadata merge(MessageMetadata? other) {
     if (other == null) return this;
     return MessageMetadata(
       custom: <String, Object?>{...custom, ...other.custom},
       timing: other.timing ?? timing,
+      thinkingTokens: other.thinkingTokens ?? thinkingTokens,
     );
   }
 }

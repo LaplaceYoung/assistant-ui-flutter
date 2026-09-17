@@ -96,6 +96,7 @@ class ThreadState {
     this.suggestions = const <ThreadSuggestion>[],
     this.model,
     this.effort,
+    this.thinkingTokens = 0,
   });
 
   final List<ThreadMessage> messages;
@@ -113,6 +114,10 @@ class ThreadState {
 
   /// Its reasoning effort, when the model takes one.
   final String? effort;
+
+  /// Thinking tokens this thread has spent, summed over its messages. Zero when
+  /// nothing reports them.
+  final int thinkingTokens;
 
   /// Follow-up prompts the host put on offer; the thread clears them when a
   /// run starts again.

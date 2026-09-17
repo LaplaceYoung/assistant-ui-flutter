@@ -123,6 +123,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
               );
               final Widget side = _SidePane(
                 config: _config,
+                runtime: _runtime,
                 onChanged: _update,
                 showCode: _showCode,
                 onShowCode: (bool value) => setState(() => _showCode = value),
@@ -242,6 +243,14 @@ class _Header extends StatelessWidget {
       );
 }
 
+/// The levels the panel offers, keyed to the runtime's effort ids so a pick
+/// reaches the next run.
+const List<EffortLevel> kEffortLevels = <EffortLevel>[
+  EffortLevel(key: 'low', label: 'Low', budget: 2048),
+  EffortLevel(key: 'medium', label: 'Med', budget: 8192),
+  EffortLevel(key: 'high', label: 'High', budget: 32768),
+];
+
 class _Preview extends StatelessWidget {
   const _Preview({
     required this.config,
@@ -302,6 +311,7 @@ class _Preview extends StatelessWidget {
                   ),
                   showScrollToLatest: config.scrollToBottom,
                   groupToolCalls: config.groupToolCalls,
+                  showReasoning: config.reasoning,
                   showComposer: config.composer,
                   composerPlaceholder: 'Ask anything…',
                   emptyState: config.threadWelcome
@@ -437,6 +447,7 @@ class _PresetCard extends StatelessWidget {
 class _SidePane extends StatelessWidget {
   const _SidePane({
     required this.config,
+    required this.runtime,
     required this.onChanged,
     required this.showCode,
     required this.onShowCode,
@@ -444,6 +455,7 @@ class _SidePane extends StatelessWidget {
   });
 
   final PlaygroundConfig config;
+  final LocalRuntime runtime;
   final ValueChanged<PlaygroundConfig> onChanged;
   final bool showCode;
   final ValueChanged<bool> onShowCode;
@@ -545,10 +557,38 @@ class _SidePane extends StatelessWidget {
             onChanged: (bool v) => onChanged(config.copyWith(composer: v)),
           ),
           _Toggle(
+            label: 'Reasoning',
+            value: config.reasoning,
+            colors: colors,
+            onChanged: (bool v) => onChanged(config.copyWith(reasoning: v)),
+          ),
+          _Toggle(
             label: 'Group tool calls',
             value: config.groupToolCalls,
             colors: colors,
             onChanged: (bool v) => onChanged(config.copyWith(groupToolCalls: v)),
+          ),
+          const SizedBox(height: 18),
+          _SectionTitle('REASONING', colors: colors),
+          const SizedBox(height: 4),
+          Text(
+            'The run\'s thinking effort, with the budget the levels allow. The '
+            'tokens are what the adapter reported for this thread.',
+            style: LandingText.small(context).copyWith(
+              color: colors.mutedForeground,
+              fontSize: 11,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 8),
+          AnimatedBuilder(
+            animation: runtime,
+            builder: (BuildContext context, Widget? _) => AssistantReasoningEffort(
+              levels: kEffortLevels,
+              selectedKey: runtime.effort ?? 'low',
+              spent: runtime.state.thread.thinkingTokens,
+              onSelect: (String key) => runtime.setEffort(key),
+            ),
           ),
           const SizedBox(height: 18),
           _SectionTitle('STYLES', colors: colors),
@@ -907,8 +947,9 @@ class _PreviewAdapter implements ChatModelAdapter {
       );
       await Future<void>.delayed(const Duration(milliseconds: 12));
     }
-    yield const ChatModelRunResult(
-      content: <MessagePart>[
+    yield ChatModelRunResult(
+      metadata: const MessageMetadata(thinkingTokens: 640),
+      content: const <MessagePart>[
         ReasoningPart(
           'They want to see the controls take effect. Answer short, then '
           'offer the code.',

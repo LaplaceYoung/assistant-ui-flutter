@@ -38,6 +38,10 @@ void main() {
       'radius': 'full',
       'composer': '0',
     });
+    expect(
+      PlaygroundConfig.defaults.copyWith(reasoning: true).toQuery(),
+      <String, String>{'reasoning': '1'},
+    );
 
     // Round trip: what a link carries is what the visitor gets back.
     final PlaygroundConfig restored =
@@ -89,6 +93,17 @@ void main() {
       PlaygroundConfig.defaults.copyWith(spacing: PlaygroundSpacing.spacious).messageGap,
       40,
     );
+  });
+
+  test('reasoning follows upstream: off by default, on where it ships on', () {
+    expect(PlaygroundConfig.defaults.reasoning, isFalse);
+    for (final String id in <String>['claude', 'copilot']) {
+      expect(
+        kPresets.firstWhere((PlaygroundPreset p) => p.id == id).config.reasoning,
+        isTrue,
+        reason: '$id ships with reasoning on',
+      );
+    }
   });
 
   test('the snippet reflects the configuration', () {

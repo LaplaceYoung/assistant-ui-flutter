@@ -31,6 +31,7 @@ class AssistantThread extends StatelessWidget {
     this.maxWidth = 720,
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
     this.showComposer = true,
+    this.showReasoning = true,
     this.onPickAttachments,
     this.composerPlaceholder = 'Ask anything…',
     this.avatarBuilder,
@@ -57,6 +58,9 @@ class AssistantThread extends StatelessWidget {
   final double maxWidth;
   final EdgeInsets padding;
   final bool showComposer;
+
+  /// Whether the reasoning parts render — upstream's `components.reasoning`.
+  final bool showReasoning;
 
   /// Supplying this adds an attach button to the composer.
   final Future<List<PendingAttachment>> Function(BuildContext context)?
@@ -106,6 +110,7 @@ class AssistantThread extends StatelessWidget {
                                 onDownloadFile: onDownloadFile,
                                 avatarBuilder: avatarBuilder,
                                 isEditing: message.isEditing,
+                                showReasoning: showReasoning,
                               ),
                       );
                     },
@@ -263,6 +268,7 @@ class AssistantAssistantMessage extends StatelessWidget {
     this.onDownloadFile,
     this.avatarBuilder,
     this.isEditing = false,
+    this.showReasoning = true,
   });
 
   final ThreadMessage message;
@@ -274,6 +280,7 @@ class AssistantAssistantMessage extends StatelessWidget {
   final ValueChanged<FilePart>? onDownloadFile;
   final Widget Function(BuildContext context)? avatarBuilder;
   final bool isEditing;
+  final bool showReasoning;
 
   @override
   Widget build(BuildContext context) {
@@ -296,6 +303,7 @@ class AssistantAssistantMessage extends StatelessWidget {
                   builder: (BuildContext context, bool editing) => editing
                       ? const AssistantInlineComposer()
                       : AssistantMessageParts(
+                          showReasoning: showReasoning,
                           toolUIs: toolUIs,
                           groupToolCalls: groupToolCalls,
                           toolGroupBuilder: toolGroupBuilder,

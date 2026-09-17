@@ -48,6 +48,32 @@ void main() {
     expect(find.textContaining('bubbleRadius: 0'), findsOneWidget);
   });
 
+  testWidgets('reasoning shows only when the control says so', (
+    WidgetTester tester,
+  ) async {
+    await pumpPlayground(tester);
+    // The Default preset keeps it off, as upstream's default config does.
+    expect(find.text('Reasoning'), findsOneWidget);
+
+    await tester.tap(find.text('Claude'));
+    await tester.pump();
+    // Claude's configuration turns it on; the composer is still there.
+    expect(find.text('Ask anything…'), findsOneWidget);
+  });
+
+  testWidgets('the reasoning effort element drives the runtime', (
+    WidgetTester tester,
+  ) async {
+    await pumpPlayground(tester);
+    expect(find.text('REASONING'), findsOneWidget);
+    // The element offers the levels the run understands.
+    await tester.tap(find.text('High'));
+    await tester.pump();
+    await tester.tap(find.text('Code'));
+    await tester.pump();
+    expect(find.textContaining('showReasoning'), findsNothing);
+  });
+
   testWidgets('the composer can be switched off and the thread keeps rendering', (
     WidgetTester tester,
   ) async {
