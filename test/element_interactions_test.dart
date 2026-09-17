@@ -358,4 +358,133 @@ void main() {
     await tester.pump();
     expect(cancels, 1);
   });
+
+  testWidgets('the settings panel reports model, temperature and a toggle', (
+    WidgetTester tester,
+  ) async {
+    final List<String> toggles = <String>[];
+    await pump(
+      tester,
+      AssistantSettingsPanel(
+        model: 'gpt-5.6-luna',
+        models: const <String>['gpt-5.6-luna', 'gpt-5.6-sol'],
+        systemPrompt: 'Be brief.',
+        temperature: 0.5,
+        onModelChange: (_) {},
+        onSystemPromptChange: (_) {},
+        onTemperatureChange: (double value) {},
+        toggles: const <SettingToggle>[
+          SettingToggle(
+            key: 'tools',
+            label: 'Allow tools',
+            detail: 'The run may call the toolkit',
+            on: false,
+          ),
+        ],
+        onToggle: toggles.add,
+      ),
+    );
+    await tester.tap(find.text('Allow tools'));
+    await tester.pump();
+    expect(toggles, <String>['tools']);
+  });
+
+  testWidgets('the mcp config reports authorize, test and remove', (
+    WidgetTester tester,
+  ) async {
+    final List<String> calls = <String>[];
+    await pump(
+      tester,
+      AssistantMcpConfig(
+        servers: const <McpServerConfig>[
+          McpServerConfig(
+            id: 'search',
+            name: 'search',
+            transport: 'http',
+            url: 'https://mcp.example.com/sse',
+            status: McpConfigStatus.authRequired,
+          ),
+        ],
+        onChange: (List<McpServerConfig> next) =>
+            calls.add('change:${next.length}'),
+        onAuthorize: (String id) => calls.add('authorize:$id'),
+        onTest: (String id) => calls.add('test:$id'),
+      ),
+    );
+    await tester.tap(find.text('Authorize'));
+    await tester.pump();
+    expect(calls, contains('authorize:search'));
+
+    await tester.tap(find.bySemanticsLabel('Test search'));
+    await tester.pump();
+    expect(calls, contains('test:search'));
+  });
+
+  testWidgets('the diagram reports zoom, reset and expand', (
+    WidgetTester tester,
+  ) async {
+    final List<String> calls = <String>[];
+    await pump(
+      tester,
+      AssistantDiagram(
+        title: 'The run lifecycle',
+        zoom: 1,
+        onZoomIn: () => calls.add('in'),
+        onZoomOut: () => calls.add('out'),
+        onReset: () => calls.add('reset'),
+        onExpand: () => calls.add('expand'),
+        child: const SizedBox(height: 160),
+      ),
+    );
+    await tester.tap(find.bySemanticsLabel('Zoom in'));
+    await tester.pump();
+    await tester.tap(find.bySemanticsLabel('Zoom out'));
+    await tester.pump();
+    await tester.tap(find.bySemanticsLabel('Reset the view'));
+    await tester.pump();
+    await tester.tap(find.bySemanticsLabel('Open full screen'));
+    await tester.pump();
+    expect(calls, <String>['in', 'out', 'reset', 'expand']);
+  });
+
+  testWidgets('the attachment removes itself and opens', (
+    WidgetTester tester,
+  ) async {
+    final List<String> calls = <String>[];
+    await pump(
+      tester,
+      AssistantAttachmentCard(
+        attachment: const DocumentAttachment(
+          id: 'a1',
+          filename: 'notes.txt',
+          mimeType: 'text/plain',
+        ),
+        onRemove: () => calls.add('remove:a1'),
+      ),
+    );
+    await tester.tap(find.bySemanticsLabel('Remove'));
+    await tester.pump();
+    expect(calls, contains('remove:a1'));
+  });
+
+  testWidgets('read aloud reports the toggle and the speed', (
+    WidgetTester tester,
+  ) async {
+    int toggles = 0;
+    int rates = 0;
+    await pump(
+      tester,
+      AssistantReadAloud(
+        words: const <String>['The', 'thread', 'settles'],
+        spokenIndex: 1,
+        elapsed: '0:02',
+        duration: '0:06',
+        onToggle: () => toggles++,
+        onRateChange: () => rates++,
+      ),
+    );
+    await tester.tap(find.bySemanticsLabel('Play'));
+    await tester.pump();
+    expect(toggles, 1);
+  });
 }

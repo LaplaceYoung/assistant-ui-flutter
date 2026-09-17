@@ -80,11 +80,16 @@ class AssistantAttachmentCard extends StatelessWidget {
             ),
           ),
           if (onRemove != null)
-            GestureDetector(
-              onTap: onRemove,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 6),
-                child: Icon(Icons.close, size: 14, color: theme.mutedForeground),
+            Semantics(
+              button: true,
+              label: 'Remove',
+              child: GestureDetector(
+                onTap: onRemove,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 6),
+                  child:
+                      Icon(Icons.close, size: 14, color: theme.mutedForeground),
+                ),
               ),
             ),
         ],

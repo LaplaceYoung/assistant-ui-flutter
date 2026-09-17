@@ -43,6 +43,8 @@ Found by pressing things rather than reading them:
 |---|---|---|
 | `thread-list` rows | The archive and delete buttons were wired to `onPressed: () {}` — they hovered, and did nothing | Both call `ThreadsRuntimeApi.archive` / `unarchive` / `delete` for their own row; `test/thread_list_actions_test.dart` hovers to reveal them and asserts the thread moved |
 | `chat-panel` composer | The composer was a static `Text` that looked like a field; only the send chip was tappable | With `onSend` the composer is a real `TextField` — type, press Enter or the send chip; without it, the static strip stays |
+| `settings-panel` toggle rows | Only the switch answered a tap; the label above it, which reads as part of the setting, did nothing | The row takes the tap |
+| `attachment` remove | The close icon was a bare gesture with no label, so neither a reader nor a screen reader could name it | `Semantics(button: true, label: 'Remove')` |
 
 `test/element_interactions_test.dart` taps the primary control of sixteen
 elements — the regenerate menu, the quote toolbar, the feedback dialog, the

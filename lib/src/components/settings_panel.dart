@@ -159,7 +159,14 @@ class AssistantSettingsPanel extends StatelessWidget {
                   padding: EdgeInsets.only(
                     bottom: index == toggles.length - 1 ? 0 : 12,
                   ),
-                  child: Row(
+                  // The whole row is the target: a label that looks like part of
+                  // the setting should answer a tap the way its switch does.
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onToggle == null
+                        ? null
+                        : () => onToggle!(toggle.key),
+                    child: Row(
                     children: <Widget>[
                       Expanded(
                         child: Column(
@@ -193,11 +200,14 @@ class AssistantSettingsPanel extends StatelessWidget {
                       _Switch(
                         on: toggle.on,
                         label: toggle.label,
+                        // The label above is part of the row, so the row is the
+                        // target; the switch merely reflects it.
                         onTap: onToggle == null
                             ? null
                             : () => onToggle!(toggle.key),
                       ),
                     ],
+                    ),
                   ),
                 ),
             ],
