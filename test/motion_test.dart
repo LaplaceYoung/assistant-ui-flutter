@@ -360,6 +360,111 @@ void main() {
 
   });
 
+  group('content family wiring', () {
+    testWidgets('a revealed word fades in and settles its colour', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(const MaterialApp(
+        home: Scaffold(
+          body: AssistantStreamingText(
+            segments: <StreamingSegment>[
+              StreamingSegment('The runtime streams'),
+            ],
+            count: 3,
+            streaming: true,
+          ),
+        ),
+      ));
+      await tester.pump();
+
+      // Every shown word fades in over 500ms.
+      final AuiFadeInBlur entry =
+          tester.widget<AuiFadeInBlur>(find.byType(AuiFadeInBlur).first);
+      expect(entry.duration, const Duration(milliseconds: 500));
+      expect(tester.widget<Opacity>(find.byType(Opacity).first).opacity, 0);
+
+      // The colour settles over 700ms once a word is no longer newest.
+      final Iterable<AnimatedDefaultTextStyle> colour =
+          tester.widgetList<AnimatedDefaultTextStyle>(
+        find.byType(AnimatedDefaultTextStyle),
+      );
+      expect(
+        colour.any((AnimatedDefaultTextStyle style) =>
+            style.duration == const Duration(milliseconds: 700)),
+        isTrue,
+      );
+
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(tester.widget<Opacity>(find.byType(Opacity).first).opacity, 1);
+      expect(find.text('runtime'), findsOneWidget);
+    });
+
+    testWidgets('a popover grows in from 0.95 over 150ms', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: AuiZoomFadeIn(child: Text('basis')),
+          ),
+        ),
+      ));
+      await tester.pump();
+
+      final Finder popover = find.byType(AuiZoomFadeIn);
+      expect(
+        tester
+            .widget<FadeTransition>(
+              find.descendant(of: popover, matching: find.byType(FadeTransition)),
+            )
+            .opacity
+            .value,
+        0,
+      );
+      double scale() => tester
+          .widget<ScaleTransition>(
+            find.descendant(of: popover, matching: find.byType(ScaleTransition)),
+          )
+          .scale
+          .value;
+      expect(scale(), closeTo(0.95, 0.001));
+      expect(
+        tester.widget<AuiZoomFadeIn>(popover).duration,
+        const Duration(milliseconds: 150),
+      );
+
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(scale(), closeTo(1, 0.001));
+    });
+
+    testWidgets('the confidence basis uses the popover entry', (
+      WidgetTester tester,
+    ) async {
+      // The basis pill shows while its claim is hovered, and it enters with
+      // the popover animation.
+      await tester.pumpWidget(const MaterialApp(
+        home: Scaffold(
+          body: AssistantConfidenceMarker(
+            hoveredId: 'c1',
+            claims: <ConfidenceClaim>[
+              ConfidenceClaim(
+                id: 'c1',
+                text: 'partial tool calls',
+                confidence: Confidence.grounded,
+                basis: 'threading.md',
+              ),
+            ],
+          ),
+        ),
+      ));
+      await tester.pump();
+
+      await tester.pump();
+      expect(find.byType(AuiZoomFadeIn), findsOneWidget);
+      expect(find.textContaining('threading.md'), findsOneWidget);
+    });
+  });
+
   group('panel and list rows', () {
     testWidgets('the palette row fill transitions instead of snapping', (
       WidgetTester tester,

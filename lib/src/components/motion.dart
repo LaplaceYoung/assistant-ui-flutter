@@ -207,6 +207,71 @@ class AuiAnimatedProgressBar extends StatelessWidget {
   }
 }
 
+/// The popover entry: `fade-in zoom-in-95 animate-in duration-150`, the
+/// radix-layer default the elements use for tooltips, menus and popovers.
+class AuiZoomFadeIn extends StatefulWidget {
+  const AuiZoomFadeIn({
+    super.key,
+    required this.child,
+    this.duration = const Duration(milliseconds: 150),
+    this.from = 0.95,
+    this.alignment = Alignment.topCenter,
+    this.trigger,
+  });
+
+  final Widget child;
+  final Duration duration;
+
+  /// The starting scale.
+  final double from;
+
+  /// Where the zoom grows from: radix transforms from the popover's side.
+  final Alignment alignment;
+
+  /// Replays the animation whenever this changes.
+  final Object? trigger;
+
+  @override
+  State<AuiZoomFadeIn> createState() => _AuiZoomFadeInState();
+}
+
+class _AuiZoomFadeInState extends State<AuiZoomFadeIn>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: widget.duration,
+  )..forward();
+
+  @override
+  void didUpdateWidget(AuiZoomFadeIn oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
+    if (oldWidget.trigger != widget.trigger) {
+      _controller.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => FadeTransition(
+        opacity: CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+        child: ScaleTransition(
+          alignment: widget.alignment,
+          scale: Tween<double>(begin: widget.from, end: 1).animate(
+            CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+          ),
+          child: widget.child,
+        ),
+      );
+}
+
 /// Hover colour transitions: `transition-colors duration-150/200`.
 class AuiHoverColor extends StatefulWidget {
   const AuiHoverColor({

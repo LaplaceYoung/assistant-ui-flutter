@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'surfaces.dart';
+import 'motion.dart';
 import 'theme.dart';
 
 /// How well a claim is supported.
@@ -162,7 +163,11 @@ class _Basis extends StatelessWidget {
       Confidence.inferred => 'inferred',
       Confidence.uncertain => 'unverified',
     };
-    return Container(
+    // `fade-in zoom-in-95 animate-in duration-150`: the basis pill grows in
+    // from the claim it belongs to.
+    return AuiZoomFadeIn(
+      alignment: Alignment.bottomCenter,
+      child: Container(
       decoration: BoxDecoration(
         color: theme.background,
         border: Border.all(color: theme.border.withValues(alpha: 0.6)),
@@ -187,6 +192,7 @@ class _Basis extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

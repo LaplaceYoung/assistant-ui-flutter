@@ -50,7 +50,9 @@ cd /tmp/aui-upstream && git sparse-checkout set packages/ui/src/components/react
 | `message-queue` | 队列行 `fade-in slide-in-from-bottom-1 fill-mode-both duration-300` 入场（已补齐） | `test/motion_test.dart` |
 | `attachment` | 上传线 `transition-[width] duration-300` 缓动（已补齐） | `test/motion_test.dart` |
 | `composer-voice` | 电平条 `transition-[height,background-color] duration-150` 缓动（已补齐）；mic 旋转/波形原为动画 | `test/composer_extras_test.dart` |
-| `streaming-text` | 最末词 500ms 淡入与旧词 `transition-colors duration-700`、光标 `animate-pulse` | 待补（当前为着色高亮） |
+| `streaming-text` | 每个词到达时 500ms 淡入（`fade-in animate-in duration-500`）+ 新鲜色 700ms 回落（`transition-colors duration-700`）+ 光标 `animate-pulse`（已补齐） | `test/motion_test.dart` |
+| `confidence-marker` | basis 气泡 `fade-in zoom-in-95 animate-in duration-150`（`AuiZoomFadeIn`，从 0.95 放大 + 淡入，自底部锚点） | `test/motion_test.dart` |
+| `typing-indicator` | 三点 `animate-bounce` 交错 | 等价实现（相位错开 1/3 周期） |
 | `tool-error` | Retry/Skip 走 `AuiPillButton`（150ms 颜色 + 0.96 按压），重试时 `AuiSpinner` 旋转 | `test/motion_test.dart` |
 | `mermaid-diagram` | streaming 骨架 + 内置绘制 | `test/mermaid_renderer_test.dart` |
 
@@ -62,5 +64,6 @@ cd /tmp/aui-upstream && git sparse-checkout set packages/ui/src/components/react
 | `AuiPressable` | `active:scale-[0.96/0.98]` + `hover:-translate-y-px`，150ms |
 | `AuiAnimatedProgressBar` | `transition-[width] duration-500` |
 | `AuiHoverColor` | `transition-colors duration-150/200` |
+| `AuiZoomFadeIn` | radix 弹层开合 `fade-in zoom-in-95 animate-in duration-150` |
 
 `AuiPillButton`（所有 pill 按钮共用）现在自带 150ms 颜色过渡 + 按压 0.96 缩放，因此 tool 错误重试/跳过、elicitation、对话框等元素一并获得同一套按压反馈。

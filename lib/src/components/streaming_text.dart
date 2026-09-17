@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'surfaces.dart';
+import 'motion.dart';
 import 'theme.dart';
 
 /// A run of text, optionally in the mono style.
@@ -60,13 +61,14 @@ class AssistantStreamingText extends StatelessWidget {
             for (final (int i, (String, bool) entry) in shown.indexed)
               Padding(
                 padding: const EdgeInsets.only(right: 4),
-                child: Text(
-                  entry.$1,
+                // Each word fades in over 500ms as it arrives, and its fresh
+                // colour settles over 700ms — upstream's
+                // `fade-in animate-in duration-500` plus
+                // `transition-colors duration-700`.
+                child: _StreamingWord(
+                  key: ValueKey<String>('word-$i'),
+                  text: entry.$1,
                   style: base.copyWith(
-                    // The two newest words read as fresh while streaming.
-                    color: streaming && shown.length - 1 - i < 2
-                        ? blue
-                        : null,
                     fontFamily: entry.$2 ? theme.code(context).fontFamily : null,
                     fontFamilyFallback:
                         entry.$2 ? theme.code(context).fontFamilyFallback : null,
@@ -75,6 +77,9 @@ class AssistantStreamingText extends StatelessWidget {
                         ? (Paint()..color = auiFg(theme, 0.06))
                         : null,
                   ),
+                  freshStyle: streaming && shown.length - 1 - i < 2
+                      ? TextStyle(color: blue)
+                      : null,
                 ),
               ),
             if (streaming && shown.isNotEmpty) const _StreamingCaret(),
@@ -125,4 +130,33 @@ class _StreamingCaretState extends State<_StreamingCaret>
       ),
     );
   }
+}
+
+/// One revealed word: it fades in once, then its fresh tint settles back to the
+/// body colour.
+class _StreamingWord extends StatelessWidget {
+  const _StreamingWord({
+    super.key,
+    required this.text,
+    required this.style,
+    required this.freshStyle,
+  });
+
+  final String text;
+  final TextStyle style;
+
+  /// Applied while the word is one of the newest; null once it settles.
+  final TextStyle? freshStyle;
+
+  @override
+  Widget build(BuildContext context) => AuiFadeInBlur(
+        duration: const Duration(milliseconds: 500),
+        blur: 0,
+        child: AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeOut,
+          style: freshStyle == null ? style : style.merge(freshStyle),
+          child: Text(text),
+        ),
+      );
 }
