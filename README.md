@@ -370,6 +370,25 @@ popover entry (`fade-in zoom-in-95 duration-150`), press feedback
 `Duration.zero` under `MediaQuery.disableAnimations`, matching upstream's
 `motion-reduce:` variants.
 
+## Publishing
+
+The package is publish-ready: `dart pub publish --dry-run` validates it (the only
+warning left is the `docs/` directory name, which is kept because the whole
+repository references it).
+
+Uploading needs a pub.dev token, which this repository does not hold. On the
+account that owns the package:
+
+```bash
+# 1. Create a token scoped to the package: https://pub.dev/settings/tokens
+gh secret set PUB_TOKEN --repo LaplaceYoung/assistant-ui-flutter
+# 2. Tag a release; .github/workflows/publish.yml does the rest
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+The same workflow runs `dart pub publish --dry-run` on every push to `main`, so a
+broken package is caught long before a tag.
+
 ## Verification
 
 ```bash

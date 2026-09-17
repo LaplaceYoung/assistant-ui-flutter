@@ -1,0 +1,61 @@
+name: publish
+
+# Publishes `assistant_ui` to pub.dev when a version tag is pushed.
+#
+# One-time setup, on the account that owns the package:
+#
+#   1. Create a pub.dev token: https://pub.dev/settings/tokens
+#      (scope it to the `assistant_ui` package).
+#   2. Store it as the repository secret PUB_TOKEN:
+#          gh secret set PUB_TOKEN --repo LaplaceYoung/assistant-ui-flutter
+#   3. Tag a release:
+#          git tag v0.1.0 && git push origin v0.1.0
+#
+# The dry-run job runs on every push, so the package is validated long before a
+# release is tagged.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  dry-run:
+    if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart pub publish --dry-run
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Validate before uploading
+        run: dart pub publish --dry-run
+      - name: Authenticate against pub.dev
+        env:
+          PUB_TOKEN: ${{ secrets.PUB_TOKEN }}
+        run: |
+          if [ -z "$PUB_TOKEN" ]; then
+            echo "The PUB_TOKEN secret is not set; see the header of this workflow." >&2
+            exit 1
+          fi
+          dart pub token add https://pub.dev --env-var PUB_TOKEN
+      - name: Publish
+        env:
+          PUB_TOKEN: ${{ secrets.PUB_TOKEN }}
+        run: flutter pub publish --force
