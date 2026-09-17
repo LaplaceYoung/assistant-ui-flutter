@@ -200,6 +200,117 @@ void main() {
     });
   });
 
+  group('tool family wiring', () {
+    Widget timeline() => MaterialApp(
+          home: Scaffold(
+            body: AssistantToolTimeline(
+              // The steps live in the collapsible body.
+              initiallyOpen: true,
+              activeLabel: 'Working',
+              restingLabel: 'Worked',
+              visibleSteps: 2,
+              steps: const <AssistantTimelineStep>[
+                AssistantTimelineStep(verb: 'Read', chip: 'a.dart', icon: Icons.description),
+                AssistantTimelineStep(verb: 'Edit', chip: 'b.dart', icon: Icons.edit),
+              ],
+            ),
+          ),
+        );
+
+    testWidgets('each revealed step slides in over 300ms', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(timeline());
+      await tester.pump();
+
+      expect(find.byType(AuiFadeInBlur), findsWidgets);
+      final AuiFadeInBlur entry = tester.widget<AuiFadeInBlur>(
+        find.byType(AuiFadeInBlur).first,
+      );
+      expect(entry.duration, const Duration(milliseconds: 300));
+      expect(entry.slideFrom, const Offset(0, 4));
+
+      // It is mid-animation right after the frame, and settled later.
+      await tester.pump(const Duration(milliseconds: 350));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('the trigger chevron turns on the element curve', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(timeline());
+      await tester.pump();
+
+      final AnimatedRotation rotation = tester.widget<AnimatedRotation>(
+        find.byType(AnimatedRotation).first,
+      );
+      expect(rotation.duration, const Duration(milliseconds: 200));
+      expect(rotation.curve, const Cubic(0.32, 0.72, 0, 1));
+    });
+
+    testWidgets('the group body drops in when it opens', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: AssistantToolGroup(
+            label: 'Read 2 files',
+            onOpenChange: (bool _) {},
+            tools: const <GroupedTool>[
+              GroupedTool(
+                id: 'c1',
+                name: 'read_file',
+                target: 'a.dart',
+                state: GroupedToolState.done,
+              ),
+            ],
+          ),
+        ),
+      ));
+      await tester.pump();
+      // Closed: no body, so no entry animation for it.
+      expect(find.byType(AuiFadeInBlur), findsNothing);
+
+      await tester.tap(find.text('Read 2 files'));
+      await tester.pump();
+      final AuiFadeInBlur entry =
+          tester.widget<AuiFadeInBlur>(find.byType(AuiFadeInBlur));
+      expect(entry.duration, const Duration(milliseconds: 200));
+      expect(entry.slideFrom, const Offset(0, -4));
+      expect(tester.widget<Opacity>(find.byType(Opacity)).opacity, 0);
+
+      await tester.pump(const Duration(milliseconds: 250));
+      expect(tester.widget<Opacity>(find.byType(Opacity)).opacity, 1);
+    });
+
+    testWidgets('the group header hover colour animates', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: AssistantToolGroup(
+            label: 'Read 2 files',
+            initiallyOpen: true,
+            tools: const <GroupedTool>[
+              GroupedTool(
+                id: 'c1',
+                name: 'read_file',
+                target: 'a.dart',
+                state: GroupedToolState.done,
+              ),
+            ],
+            onOpenChange: (bool _) {},
+          ),
+        ),
+      ));
+      await tester.pump();
+      final AnimatedContainer header = tester.widget<AnimatedContainer>(
+        find.byType(AnimatedContainer).first,
+      );
+      expect(header.duration, const Duration(milliseconds: 150));
+    });
+  });
+
   group('agent family wiring', () {
     testWidgets('the status label replays its entry per state', (
       WidgetTester tester,

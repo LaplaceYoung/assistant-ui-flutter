@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'motion.dart';
 import 'surfaces.dart';
 import 'theme.dart';
 
@@ -100,13 +101,26 @@ class _AssistantToolGroupState extends State<AssistantToolGroup> {
                 failed: failed,
                 onTap: widget.onOpenChange == null ? null : _toggle,
               ),
-              if (_open) ...<Widget>[
-                Container(
-                  height: 1,
-                  color: auiFg(theme, 0.06),
+              if (_open)
+                // `fade-in slide-in-from-top-1 animate-in duration-200`: the
+                // body drops in rather than appearing.
+                AuiFadeInBlur(
+                  duration: const Duration(milliseconds: 200),
+                  blur: 0,
+                  slideFrom: const Offset(0, -4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(
+                        height: 1,
+                        color: auiFg(theme, 0.06),
+                      ),
+                      for (final GroupedTool tool in widget.tools)
+                        _ToolRow(tool: tool),
+                    ],
+                  ),
                 ),
-                for (final GroupedTool tool in widget.tools) _ToolRow(tool: tool),
-              ],
             ],
           ),
         ),
@@ -154,7 +168,10 @@ class _HeaderState extends State<_Header> {
           button: tappable,
           expanded: widget.open,
           label: '${widget.label}, ${widget.count}',
-          child: Container(
+          child: AnimatedContainer(
+            // `hover:bg-foreground/[0.03] transition-colors`.
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
             color: tappable && _hovered ? auiFg(theme, 0.03) : null,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(

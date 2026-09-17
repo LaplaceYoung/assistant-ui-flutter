@@ -43,8 +43,9 @@ cd /tmp/aui-upstream && git sparse-checkout set packages/ui/src/components/react
 | `agent-plan` | 进度条 `transition-[width] duration-500` 缓动到新比例 | `test/motion_test.dart` |
 | `approval-card` | 终态行 `fade-in animate-in duration-300`；按钮 `active:scale-[0.96]` + 150ms 颜色过渡（`AuiPillButton` 统一实现） | `test/motion_test.dart` |
 | `artifact-card` | 悬停上抬 1px（150ms）+ `active:scale-[0.98]`；角标箭头 150ms 淡入；word-count 行 `fade-in blur-in-[2px] duration-300` | `test/motion_test.dart` |
-| `tool-group` | 头部 chevron 200ms 旋转 | `test/tool_family_test.dart` |
-| `tool-timeline` | 折叠触发器 + 双标签切换；**CSS blur/逐行入场未做** | 待补 |
+| `tool-group` | 头部 chevron 200ms 旋转 + `hover:bg-[0.03] transition-colors`；展开体 `fade-in slide-in-from-top-1 duration-200`（现已补齐） | `test/motion_test.dart` |
+| `tool-timeline` | 触发器 chevron 200ms + `cubic-bezier(0.32,0.72,0,1)`；每一步 `fade-in slide-in-from-bottom-1 duration-300` 逐行入场（现已补齐） | `test/motion_test.dart` |
+| `tool-error` | Retry/Skip 走 `AuiPillButton`（150ms 颜色 + 0.96 按压），重试时 `AuiSpinner` 旋转 | `test/motion_test.dart` |
 | `mermaid-diagram` | streaming 骨架 + 内置绘制 | `test/mermaid_renderer_test.dart` |
 
 ## 共享动效原语（`components/motion.dart`）

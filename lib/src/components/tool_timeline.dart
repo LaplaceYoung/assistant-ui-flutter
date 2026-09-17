@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'motion.dart';
 import 'surfaces.dart';
 import 'theme.dart';
 
@@ -130,11 +131,19 @@ class _AssistantToolTimelineState extends State<AssistantToolTimeline> {
                               ? 0
                               : 10,
                         ),
-                        child: _StepRow(
-                          step: step,
-                          active: widget.streaming &&
-                              index == steps.length - 1,
-                          labelStyle: labelStyle,
+                        // `fade-in slide-in-from-bottom-1 animate-in
+                        // duration-300`: a step slides up as it is revealed.
+                        child: AuiFadeInBlur(
+                          key: ValueKey<String>('step-$index'),
+                          duration: const Duration(milliseconds: 300),
+                          blur: 0,
+                          slideFrom: const Offset(0, 4),
+                          child: _StepRow(
+                            step: step,
+                            active: widget.streaming &&
+                                index == steps.length - 1,
+                            labelStyle: labelStyle,
+                          ),
                         ),
                       ),
                     if (widget.stats.isNotEmpty)
@@ -207,8 +216,10 @@ class _TriggerState extends State<_Trigger> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 AnimatedRotation(
+                  // `duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]`.
                   turns: widget.open ? 0.25 : 0,
                   duration: const Duration(milliseconds: 200),
+                  curve: const Cubic(0.32, 0.72, 0, 1),
                   child: Icon(
                     Icons.chevron_right,
                     size: 14,
