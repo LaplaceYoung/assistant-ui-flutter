@@ -281,7 +281,10 @@ class _TriggerRow extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: Container(
+        child: AnimatedContainer(
+          // `transition-colors` as the highlighted row moves.
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
           color: highlighted ? theme.muted : Colors.transparent,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(

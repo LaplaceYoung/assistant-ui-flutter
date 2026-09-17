@@ -360,6 +360,61 @@ void main() {
 
   });
 
+  group('panel and list rows', () {
+    testWidgets('the palette row fill transitions instead of snapping', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: AssistantCommandPalette(
+            commands: const <PaletteCommand>[
+              PaletteCommand(id: 'c1', label: 'New thread', group: 'Thread'),
+            ],
+            onRun: (String _) {},
+          ),
+        ),
+      ));
+      await tester.pump();
+
+      final Iterable<AnimatedContainer> rows =
+          tester.widgetList<AnimatedContainer>(find.byType(AnimatedContainer));
+      expect(
+        rows.any((AnimatedContainer row) =>
+            row.duration == const Duration(milliseconds: 150)),
+        isTrue,
+      );
+    });
+
+    testWidgets('the settings switch slides over 200ms', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: AssistantSettingsPanel(
+            model: 'gpt-5.6-luna',
+            models: const <String>['gpt-5.6-luna'],
+            systemPrompt: '',
+            temperature: 0.7,
+            toggles: const <SettingToggle>[
+              SettingToggle(
+                key: 'streaming',
+                label: 'Streaming',
+                detail: 'Stream tokens as they arrive',
+                on: false,
+              ),
+            ],
+          ),
+        ),
+      ));
+      await tester.pump();
+      final AnimatedContainer track = tester.widget<AnimatedContainer>(
+        find.byType(AnimatedContainer).first,
+      );
+      expect(track.duration, const Duration(milliseconds: 200));
+      expect(track.alignment, Alignment.centerLeft);
+    });
+  });
+
   group('agent family wiring', () {
     testWidgets('the status label replays its entry per state', (
       WidgetTester tester,

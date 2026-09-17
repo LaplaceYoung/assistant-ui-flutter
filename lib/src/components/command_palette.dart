@@ -353,7 +353,10 @@ class _RowState extends State<_Row> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: tappable ? () => widget.onRun!(widget.command.id) : null,
-        child: Container(
+        child: AnimatedContainer(
+          // `transition-colors` on the row fill.
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
           decoration: BoxDecoration(
             color: fill,
             borderRadius: BorderRadius.circular(12),

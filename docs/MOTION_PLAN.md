@@ -45,6 +45,8 @@ cd /tmp/aui-upstream && git sparse-checkout set packages/ui/src/components/react
 | `artifact-card` | 悬停上抬 1px（150ms）+ `active:scale-[0.98]`；角标箭头 150ms 淡入；word-count 行 `fade-in blur-in-[2px] duration-300` | `test/motion_test.dart` |
 | `tool-group` | 头部 chevron 200ms 旋转 + `hover:bg-[0.03] transition-colors`；展开体 `fade-in slide-in-from-top-1 duration-200`（现已补齐） | `test/motion_test.dart` |
 | `tool-timeline` | 触发器 chevron 200ms + `cubic-bezier(0.32,0.72,0,1)`；每一步 `fade-in slide-in-from-bottom-1 duration-300` 逐行入场（现已补齐） | `test/motion_test.dart` |
+| `command-palette` / `model-selector` / `composer-trigger-popover` | 行底色 `transition-colors`（本为瞬时切换，现统一为 150ms 缓动） | `test/motion_test.dart` |
+| `settings-panel` | 开关轨道 200ms 颜色 + 旋钮位移（`transition-colors/transform duration-200`）；分段控件 150ms | `test/motion_test.dart` |
 | `message-queue` | 队列行 `fade-in slide-in-from-bottom-1 fill-mode-both duration-300` 入场（已补齐） | `test/motion_test.dart` |
 | `attachment` | 上传线 `transition-[width] duration-300` 缓动（已补齐） | `test/motion_test.dart` |
 | `composer-voice` | 电平条 `transition-[height,background-color] duration-150` 缓动（已补齐）；mic 旋转/波形原为动画 | `test/composer_extras_test.dart` |
