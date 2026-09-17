@@ -98,6 +98,10 @@ class _ExampleAppState extends State<ExampleApp> {
                         value: 'messages',
                         child: Text('Message pieces'),
                       ),
+                      PopupMenuItem<String>(
+                        value: 'navigation',
+                        child: Text('Search, diffs and files'),
+                      ),
                       PopupMenuItem<String>(value: 'tools', child: Text('Tools')),
                       PopupMenuItem<String>(value: 'agents', child: Text('Agents')),
                       PopupMenuItem<String>(
@@ -265,6 +269,8 @@ class _ThreadHost extends StatelessWidget {
         return const PiecesDemo();
       case 'messages':
         return const MessagesDemo();
+      case 'navigation':
+        return const NavigationDemo();
       default:
         return const AssistantThread(
           turnAnchor: AuiTurnAnchor.top,
@@ -2526,6 +2532,256 @@ class _MessagesDemoState extends State<MessagesDemo> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Finding things and reading code: conversation and thread search, the artifact
+/// card, a unified diff, a diff accepted hunk by hunk, a file tree with counts, a
+/// runnable snippet, the turn rail and the icon button.
+class NavigationDemo extends StatelessWidget {
+  const NavigationDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: ListView(
+          key: const ValueKey<String>('navigation-page'),
+          padding: const EdgeInsets.all(24),
+          children: <Widget>[
+            _Section(
+              title: 'Conversation search',
+              detail: 'query field, hit counter, stepping through the matches',
+              child: SizedBox(
+                height: 260,
+                child: AssistantConversationSearch(
+                query: 'settle',
+                activeIndex: 1,
+                hits: const <SearchHit>[
+                  SearchHit(
+                    id: 'h1',
+                    before: 'The thread ',
+                    match: 'settles',
+                    after: ' once the run finished.',
+                    position: 0.12,
+                  ),
+                  SearchHit(
+                    id: 'h2',
+                    before: 'Nothing runs, so it is already ',
+                    match: 'settled',
+                    after: '.',
+                    position: 0.88,
+                  ),
+                ],
+                ),
+              ),
+            ),
+            _Section(
+              title: 'Thread search',
+              detail: 'pinned first, then groups, with arrow-key stepping',
+              child: SizedBox(
+                height: 280,
+                child: AssistantThreadSearch(
+                activeId: 't2',
+                threads: const <SearchableThread>[
+                  SearchableThread(
+                    id: 't1',
+                    title: 'Streaming notes',
+                    group: 'Pinned',
+                    preview: 'Parts arrive cumulatively…',
+                    pinned: true,
+                  ),
+                  SearchableThread(
+                    id: 't2',
+                    title: 'Tool continuations',
+                    group: 'Today',
+                    preview: 'A tool result re-enters the model…',
+                  ),
+                  SearchableThread(
+                    id: 't3',
+                    title: 'Quota questions',
+                    group: 'Today',
+                    preview: 'The banner turns amber at 90%…',
+                  ),
+                ],
+                ),
+              ),
+            ),
+            _Section(
+              title: 'Artifact card',
+              detail: 'live word count while generating, meta when settled',
+              child: Column(
+                children: <Widget>[
+                  const AssistantArtifactCard(
+                    title: 'release-notes.md',
+                    meta: 'generating',
+                    generating: true,
+                    words: 412,
+                  ),
+                  const SizedBox(height: 12),
+                  AssistantArtifactCard(
+                    title: 'annual-report.md',
+                    meta: '4.2k words · 18 KB',
+                    onTap: () {},
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Code diff',
+              detail: 'gutter marks, tints and the +/- counts',
+              child: const AssistantCodeDiff(
+                filename: 'lib/src/runtime/local_runtime.dart',
+                additions: 4,
+                deletions: 2,
+                lines: <DiffLine>[
+                  DiffLine(kind: DiffKind.context, text: '  void setModel(String? id) {'),
+                  DiffLine(kind: DiffKind.removed, text: '    _model = id;'),
+                  DiffLine(kind: DiffKind.added, text: '    _modelSet = true;'),
+                  DiffLine(kind: DiffKind.added, text: '    _emit();'),
+                  DiffLine(kind: DiffKind.context, text: '  }'),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Reviewable diff',
+              detail: 'hunks kept or discarded one by one, with the apply gate',
+              child: AssistantReviewableDiff(
+                filename: 'pubspec.yaml',
+                onKeep: (_) {},
+                onDiscard: (_) {},
+                hunks: const <DiffHunk>[
+                  DiffHunk(
+                    id: 'k1',
+                    range: '@@ -12,3 +12,4 @@',
+                    decision: HunkDecision.kept,
+                    lines: <DiffLine>[
+                      DiffLine(kind: DiffKind.context, text: 'dependencies:'),
+                      DiffLine(kind: DiffKind.added, text: '  assistant_ui:'),
+                    ],
+                  ),
+                  DiffHunk(
+                    id: 'k2',
+                    range: '@@ -40,2 +41,2 @@',
+                    decision: HunkDecision.discarded,
+                    lines: <DiffLine>[
+                      DiffLine(kind: DiffKind.removed, text: '  sdk: ^3.9.0'),
+                      DiffLine(kind: DiffKind.added, text: '  sdk: ^3.10.0'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'File tree',
+              detail: 'folder and file rows with per-file diff counts',
+              child: const SizedBox(
+                height: 260,
+                child: AssistantFileTree(
+                visibleCount: 6,
+                totalAdditions: 17,
+                totalDeletions: 4,
+                nodes: <FileTreeNode>[
+                  FileTreeNode(path: 'lib', name: 'lib', depth: 0, isFolder: true),
+                  FileTreeNode(
+                    path: 'lib/src',
+                    name: 'src',
+                    depth: 1,
+                    isFolder: true,
+                  ),
+                  FileTreeNode(
+                    path: 'lib/src/runtime',
+                    name: 'runtime.dart',
+                    depth: 2,
+                    additions: 12,
+                    deletions: 3,
+                  ),
+                  FileTreeNode(
+                    path: 'test',
+                    name: 'test',
+                    depth: 0,
+                    isFolder: true,
+                  ),
+                  FileTreeNode(
+                    path: 'test/run_test.dart',
+                    name: 'run_test.dart',
+                    depth: 1,
+                    additions: 4,
+                  ),
+                  FileTreeNode(
+                    path: 'README.md',
+                    name: 'README.md',
+                    depth: 0,
+                    additions: 1,
+                    deletions: 1,
+                  ),
+                ],
+                ),
+              ),
+            ),
+            _Section(
+              title: 'Code runner',
+              detail: 'run control, duration and the output panel',
+              child: AssistantCodeRunner(
+                language: 'dart',
+                code: 'void main() => print("settle");',
+                state: RunState.ok,
+                durationMs: 240,
+                output: const <String>['settle'],
+                onRun: () {},
+              ),
+            ),
+            _Section(
+              title: 'Conversation map',
+              detail: 'a rail of ticks per turn, with previews',
+              // The rail is vertical, so it needs a height to lay out in.
+              child: SizedBox(
+                height: 240,
+                child: AssistantConversationMap(
+                activeId: 'c2',
+                visibleIds: const <String>['c1', 'c2', 'c3'],
+                entries: const <ConversationMapEntry>[
+                  ConversationMapEntry(id: 'c1', title: 'Streaming notes'),
+                  ConversationMapEntry(
+                    id: 'c2',
+                    title: 'Tool continuations',
+                    preview: 'A tool result re-enters the model…',
+                  ),
+                  ConversationMapEntry(id: 'c3', title: 'Quota questions'),
+                ],
+                ),
+              ),
+            ),
+            _Section(
+              title: 'Tooltip icon button',
+              detail: 'the icon button the chrome is built from',
+              child: Row(
+                children: <Widget>[
+                  AssistantTooltipIconButton(
+                    icon: Icons.copy,
+                    tooltip: 'Copy',
+                    onPressed: () {},
+                  ),
+                  const SizedBox(width: 8),
+                  AssistantTooltipIconButton(
+                    icon: Icons.refresh,
+                    tooltip: 'Retry',
+                    shape: AssistantIconButtonShape.circle,
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              'Each piece is the shipped widget with the props a host would pass.',
+              style: theme.small(context).copyWith(color: theme.mutedForeground),
+            ),
+          ],
         ),
       ),
     );

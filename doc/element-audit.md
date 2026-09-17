@@ -9,7 +9,7 @@ Mechanical pass over the ported elements: does the element map to a file that ex
 | ported or partial elements checked | 125 |
 | file missing or exports nothing public | 0 |
 | no test names the element's class | 0 |
-| not reachable from a surface | 33 |
+| not reachable from a surface | 24 |
 
 ## No widget
 
@@ -27,16 +27,10 @@ None.
 
 Nothing in the gallery, the example or the landing renders the element, so a reader cannot see it running.
 
-- `artifact-card`
 - `assistant-modal`
 - `chat-panel`
-- `code-diff`
-- `code-runner`
-- `conversation-map`
-- `conversation-search`
 - `document-reference`
 - `feedback-dialog`
-- `file-tree`
 - `flow-expand`
 - `generative-ui`
 - `image-generation`
@@ -49,14 +43,11 @@ Nothing in the gallery, the example or the landing renders the element, so a rea
 - `permission-grant`
 - `prompt-library`
 - `research-report`
-- `reviewable-diff`
 - `settings-panel`
 - `shared-conversation`
 - `shiki-highlighter`
 - `syntax-highlighter`
-- `thread-search`
 - `threadlist-sidebar`
-- `tooltip-icon-button`
 - `voice-conversation`
 - `web-preview`
 - `web-search`

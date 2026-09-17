@@ -85,4 +85,23 @@ void main() {
     expect(find.text('Inline citation'), findsOneWidget);
     expect(find.text('Retrieval chunks'), findsOneWidget);
   });
+
+  testWidgets('the navigation page opens on search, and lists the rest', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: const Scaffold(body: NavigationDemo()),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(AssistantConversationSearch), findsOneWidget);
+    expect(find.byType(AssistantThreadSearch), findsOneWidget);
+    expect(find.text('Conversation search'), findsOneWidget);
+  });
 }
