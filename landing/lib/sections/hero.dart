@@ -46,6 +46,10 @@ class HeroSection extends StatelessWidget {
                   child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    // The port says what it is, rather than dressing up as the
+                    // React original.
+                    const _PortBadge(),
+                    const SizedBox(height: 18),
                     ConstrainedBox(
                       constraints: BoxConstraints(
                         // `max-w-[20ch]` at 72px comes out at 897px.
@@ -253,4 +257,36 @@ class _DottedBubblesPainter extends CustomPainter {
   @override
   bool shouldRepaint(_DottedBubblesPainter oldDelegate) =>
       oldDelegate.color != color;
+}
+
+/// The identity pill: what this page is, and the dependency that gets it.
+class _PortBadge extends StatelessWidget {
+  const _PortBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    final LandingColors colors = LandingColors.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: colors.muted,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: colors.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(Icons.flutter_dash, size: 15, color: colors.foreground),
+          const SizedBox(width: 7),
+          Text(
+            'Flutter port of assistant-ui — no React underneath',
+            style: LandingText.small(context).copyWith(
+              color: colors.mutedForeground,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
