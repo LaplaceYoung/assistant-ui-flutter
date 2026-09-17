@@ -138,6 +138,11 @@ reads as three missing elements when they are three ported ones.
 | Connection state | `Picked the stream back up · +184 tokens` after a drop | `AssistantConnectionState` | Aligned |
 | Shared conversation | Shared by and when, the read-only turn, `Continue in your own chat` | `AssistantSharedConversation` | Aligned |
 | Search in conversation | `1 / 3` with step arrows and hits marked down the scrollbar | `AssistantConversationSearch` takes the hits with their positions | Aligned |
+| Thread search | Pinned first, then grouped by day | `AssistantThreadSearch` | Aligned |
+| Launcher | The floating entry point and the panel it opens into | `AssistantLauncherBubble` | Aligned |
+| Settings | Model, system prompt, temperature, and the tool / memory switches | `AssistantSettingsPanel` | Aligned |
+| Onboarding | `1 of 3` with Skip and Next | `AssistantOnboarding` | Aligned |
+| Mobile composer | Quick actions above, thumb-sized targets, the mic | `AssistantMobileComposer` | Aligned |
 
 ## Method
 
