@@ -90,6 +90,19 @@ file names (`Background runs` is `background-inbox`, `Checkpoints` is
 `checkpoint-history`, `Schedule` is `schedule-card`); comparing by name alone
 reads as three missing elements when they are three ported ones.
 
+## Fifth read: knowledge and structured output
+
+| Card in the catalogue | Port | Status |
+|---|---|---|
+| Research report | `research-report` — per-section state and source counts | Aligned |
+| Map | `map-answer` — pins, a route, the list they came from | Aligned |
+| Data table | `data-table` — model / context / cost with provider initials | Aligned |
+| Number ticker | `number-ticker` — rolling digits, grouped figures | Aligned |
+| Chart | `chart` — area over one x-scale, the delta in the corner | Aligned |
+| Web preview | `web-preview` — the URL bar and the chrome; the element says it draws the chrome only and the host supplies the frame | Aligned, including the caveat upstream states in the card |
+| Flow graph | `flow-graph` — labelled nodes over bezier edges | Aligned |
+| Diagram | `diagram` — zoom, reset and expand over a host figure | Aligned |
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command
