@@ -69,10 +69,10 @@ void main() {
     );
     // The defaults upstream ships.
     expect(auiDefaultEffortOptions.map((ModelSelectorEffortOption o) => o.id),
-        <String>['low', 'medium', 'high']);
+        <String>['low', 'medium', 'high', 'max']);
     expect(
       selector.models.first.effortOptions!.map((ModelSelectorEffortOption o) => o.name),
-      <String>['Low', 'Med', 'High'],
+      <String>['Low', 'Med', 'High', 'Max'],
     );
     // A model without `efforts` offers none.
     expect(selector.models.last.effortOptions, isNull);

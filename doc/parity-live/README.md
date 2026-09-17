@@ -19,7 +19,7 @@ port's pages are demos, so the comparison is by element and by eye.
 
 | Where | Live | Port | Status |
 |---|---|---|---|
-| Reasoning effort | Low / Medium / **High / Max**, with `13,920 / 24,000` spent against the budget | Low / Med / High, spent from `ThreadState.thinkingTokens` | **`Max` is missing** — add it to the default effort set |
+| Reasoning effort | Low / Medium / High / **Max**, with `13,920 / 24,000` spent against the budget | Low / Med / High / Max, spent from `ThreadState.thinkingTokens` | **Aligned** — `Max` was added to the default set, the playground's levels and the landing's pill |
 | Streaming text | Tokens land in blue and settle into ink as the run advances | Text streams in one colour; only the cursor marks progress | **Not ported** — needs a per-token age in the markdown renderer |
 | Element count | The catalogue says **144 interface pieces** | `doc/element-coverage.md` walks **125** | **The inventory is behind** — refresh it from the live list before claiming coverage |
 | Loader | Described as a pixel matrix that keeps time | `AssistantLoadingState` draws a 3×2 grid that pulses | Same idea, different pattern — check the matrix shape |

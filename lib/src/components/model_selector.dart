@@ -19,6 +19,8 @@ const List<ModelSelectorEffortOption> auiDefaultEffortOptions =
   ModelSelectorEffortOption(id: 'low', name: 'Low'),
   ModelSelectorEffortOption(id: 'medium', name: 'Med'),
   ModelSelectorEffortOption(id: 'high', name: 'High'),
+  // Upstream's picker carries a fourth level; the set matches it.
+  ModelSelectorEffortOption(id: 'max', name: 'Max'),
 ];
 
 /// One entry of the selector.

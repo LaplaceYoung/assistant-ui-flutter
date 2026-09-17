@@ -62,7 +62,6 @@ on:
 
 | Gap | What it needs |
 |---|---|
-| The effort picker lacks upstream's `Max` level | Add it to the default effort set in `model_selector.dart` and to the playground's levels |
 | Streaming text does not colour new tokens | The markdown renderer needs a per-token age, so the newest words land in blue and settle into ink |
 | The inventory walks 125 elements; the live catalogue says 144 | Refresh `tool/sync_element_coverage.dart`'s inventory from the live list, then close the difference |
 

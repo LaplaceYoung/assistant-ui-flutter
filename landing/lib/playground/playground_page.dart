@@ -253,6 +253,7 @@ const List<EffortLevel> kEffortLevels = <EffortLevel>[
   EffortLevel(key: 'low', label: 'Low', budget: 2048),
   EffortLevel(key: 'medium', label: 'Med', budget: 8192),
   EffortLevel(key: 'high', label: 'High', budget: 32768),
+  EffortLevel(key: 'max', label: 'Max', budget: 65536),
 ];
 
 class _Preview extends StatelessWidget {
