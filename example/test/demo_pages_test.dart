@@ -123,4 +123,25 @@ void main() {
     expect(find.byType(AssistantMermaidDiagram), findsOneWidget);
     expect(find.text('Streaming'), findsOneWidget);
   });
+
+  testWidgets('the surfaces page opens on the sidebar and the modal', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: const Scaffold(body: SurfacesDemo()),
+      ),
+    );
+    await tester.pump();
+
+    // The page is a lazy list; this asserts what a reader lands on. The
+    // surfaces below the fold each carry their own tests in the package.
+    expect(find.byType(AssistantThreadList), findsOneWidget);
+    expect(find.text('Thread list'), findsOneWidget);
+    expect(find.text('Sidebar'), findsOneWidget);
+  });
 }

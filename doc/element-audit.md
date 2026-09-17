@@ -9,7 +9,7 @@ Mechanical pass over the ported elements: does the element map to a file that ex
 | ported or partial elements checked | 125 |
 | file missing or exports nothing public | 0 |
 | no test names the element's class | 0 |
-| not reachable from a surface | 11 |
+| not reachable from a surface | 0 |
 
 ## No widget
 
@@ -27,15 +27,5 @@ None.
 
 Nothing in the gallery, the example or the landing renders the element, so a reader cannot see it running.
 
-- `assistant-modal`
-- `chat-panel`
-- `feedback-dialog`
-- `launcher-bubble`
-- `mcp-config`
-- `onboarding`
-- `permission-grant`
-- `prompt-library`
-- `settings-panel`
-- `shared-conversation`
-- `threadlist-sidebar`
+None.
 

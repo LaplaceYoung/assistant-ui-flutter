@@ -106,6 +106,10 @@ class _ExampleAppState extends State<ExampleApp> {
                         value: 'rendering',
                         child: Text('Rendering'),
                       ),
+                      PopupMenuItem<String>(
+                        value: 'surfaces',
+                        child: Text('Surfaces'),
+                      ),
                       PopupMenuItem<String>(value: 'tools', child: Text('Tools')),
                       PopupMenuItem<String>(value: 'agents', child: Text('Agents')),
                       PopupMenuItem<String>(
@@ -277,6 +281,8 @@ class _ThreadHost extends StatelessWidget {
         return const NavigationDemo();
       case 'rendering':
         return const RenderingDemo();
+      case 'surfaces':
+        return const SurfacesDemo();
       default:
         return const AssistantThread(
           turnAnchor: AuiTurnAnchor.top,
@@ -3012,6 +3018,257 @@ class RenderingDemo extends StatelessWidget {
               style: theme.small(context).copyWith(color: theme.mutedForeground),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The chrome a host mounts around the thread: the sidebar, the corner modal and
+/// its bubble, the chat panel, a shared conversation, a settings panel, the MCP
+/// config, the prompt library, the feedback dialog, the permission request, the
+/// onboarding steps and the MCP status list.
+class SurfacesDemo extends StatefulWidget {
+  const SurfacesDemo({super.key});
+
+  @override
+  State<SurfacesDemo> createState() => _SurfacesDemoState();
+}
+
+class _SurfacesDemoState extends State<SurfacesDemo> {
+  // The sidebar and the modal read the runtime, so the page provides one; it
+  // never runs.
+  late final LocalRuntime _runtime = LocalRuntime(adapter: _NullAdapter());
+
+  @override
+  void dispose() {
+    _runtime.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    return AuiRuntimeProvider(
+      runtime: _runtime,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 900),
+          child: ListView(
+            key: const ValueKey<String>('surfaces-page'),
+          padding: const EdgeInsets.all(24),
+          children: <Widget>[
+            _Section(
+              title: 'Thread list',
+              detail: 'search, archived toggle, the thread rows',
+              child: const SizedBox(height: 360, child: AssistantThreadList()),
+            ),
+            _Section(
+              title: 'Sidebar',
+              detail: 'the product header, the list and the source link',
+              child: SizedBox(
+                height: 480,
+                child: AssistantThreadListSidebar(
+                  onOpenSite: () {},
+                  onOpenSource: () {},
+                ),
+              ),
+            ),
+            _Section(
+              title: 'Corner modal',
+              detail: 'the resizable panel the bubble opens',
+              child: const SizedBox(
+                height: 420,
+                child: AssistantModal(initiallyOpen: true),
+              ),
+            ),
+            _Section(
+              title: 'Launcher bubble',
+              detail: 'closed with a greeting, and the unread count',
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const AssistantLauncherBubble(
+                    greeting: 'Need a hand?',
+                    prompts: <String>['Summarize', 'Draft a reply'],
+                  ),
+                  const SizedBox(width: 16),
+                  const AssistantLauncherBubble(
+                    open: true,
+                    unread: 3,
+                    greeting: 'Need a hand?',
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Chat panel',
+              detail: 'the compact panel with messages and a composer',
+              child: AssistantChatPanel(
+                typing: true,
+                composerPlaceholder: 'Reply…',
+                onSend: () {},
+                messages: const <AssistantChatPanelMessage>[
+                  AssistantChatPanelMessage(text: 'Is the export ready?'),
+                  AssistantChatPanelMessage(
+                    text: 'Almost — the last section is writing.',
+                    fromUser: false,
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Shared conversation',
+              detail: 'who shared it, when, and the turns',
+              child: AssistantSharedConversation(
+                title: 'How threads settle',
+                sharedBy: 'Ada',
+                sharedAt: '2 hours ago',
+                onContinue: () {},
+                turns: const <SharedTurn>[
+                  SharedTurn(id: 'sh1', role: 'user', text: 'When is a run done?'),
+                  SharedTurn(
+                    id: 'sh2',
+                    role: 'assistant',
+                    text: 'When the stream closes and its tools are done.',
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Settings panel',
+              detail: 'the settings the host exposes, grouped',
+              child: AssistantSettingsPanel(
+                model: 'gpt-5.6-sol',
+                models: const <String>[
+                  'gpt-5.6-luna',
+                  'gpt-5.6-sol',
+                  'claude-opus-4.7',
+                ],
+                systemPrompt: 'You are a helpful assistant.',
+                temperature: 0.7,
+                toggles: const <SettingToggle>[
+                  SettingToggle(
+                    key: 'stream',
+                    label: 'Stream answers',
+                    detail: 'Parts arrive as they are written',
+                    on: true,
+                  ),
+                  SettingToggle(
+                    key: 'tools',
+                    label: 'Allow tools',
+                    detail: 'The run may call the toolkit',
+                    on: true,
+                  ),
+                  SettingToggle(
+                    key: 'memory',
+                    label: 'Remember context',
+                    detail: 'Carry earlier turns into the next run',
+                    on: false,
+                  ),
+                ],
+                onModelChange: (_) {},
+                onSystemPromptChange: (_) {},
+              ),
+            ),
+            _Section(
+              title: 'MCP config',
+              detail: 'transport, command or url, status',
+              child: const AssistantMcpConfig(
+                servers: <McpServerConfig>[
+                  McpServerConfig(
+                    id: 'docs',
+                    name: 'docs',
+                    transport: 'stdio',
+                    command: 'npx',
+                    args: <String>['-y', 'mcp-docs-server'],
+                    status: McpConfigStatus.connected,
+                  ),
+                  McpServerConfig(
+                    id: 'search',
+                    name: 'search',
+                    transport: 'http',
+                    url: 'https://mcp.example.com/sse',
+                    status: McpConfigStatus.authPending,
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Prompt library',
+              detail: 'searchable saved prompts with the variables they take',
+              child: AssistantPromptLibrary(
+                selectedId: 'p2',
+                prompts: const <SavedPrompt>[
+                  SavedPrompt(
+                    id: 'p1',
+                    name: 'Review the diff',
+                    body: 'Review this change: {diff}',
+                    variables: <String>['diff'],
+                  ),
+                  SavedPrompt(
+                    id: 'p2',
+                    name: 'Summarize the thread',
+                    body: 'Summarize the last {count} turns for {audience}.',
+                    variables: <String>['count', 'audience'],
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Feedback dialog',
+              detail: 'reasons, a note and the sent state',
+              child: AssistantFeedbackDialog(
+                reasons: const <String>['Wrong answer', 'Too verbose', 'Off topic'],
+                selected: const <String>['Too verbose'],
+                onToggleReason: (_) {},
+                onSubmit: () {},
+              ),
+            ),
+            _Section(
+              title: 'Permission grant',
+              detail: 'what it reaches, and the scope buttons while pending',
+              child: AssistantPermissionGrant(
+                capability: 'Read the repository',
+                requester: 'search_docs',
+                reach: const <String>['src/**', 'README.md'],
+                onGrant: (_) {},
+              ),
+            ),
+            _Section(
+              title: 'Onboarding',
+              detail: 'the steps, with a worked example',
+              child: AssistantOnboarding(
+                index: 1,
+                steps: const <OnboardingStep>[
+                  OnboardingStep(
+                    title: 'Point the runtime at a backend',
+                    body: 'An adapter turns a prompt into a stream of parts.',
+                    example: 'LocalRuntime(adapter: yourAdapter)',
+                  ),
+                  OnboardingStep(
+                    title: 'Mount the thread',
+                    body: 'The thread reads the state and draws it.',
+                    example: 'AssistantThread()',
+                  ),
+                  OnboardingStep(
+                    title: 'Ship',
+                    body: 'Everything else is presentation.',
+                    example: 'flutter build web',
+                  ),
+                ],
+                onNext: () {},
+                onSkip: () {},
+              ),
+            ),
+              Text(
+                'Each surface is the shipped widget; the panels the host '
+                'normally mounts full-height are given a box here.',
+                style:
+                    theme.small(context).copyWith(color: theme.mutedForeground),
+              ),
+            ],
+          ),
         ),
       ),
     );
