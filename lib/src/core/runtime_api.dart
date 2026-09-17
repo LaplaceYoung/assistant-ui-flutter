@@ -487,6 +487,20 @@ abstract class AssistantRuntime extends ChangeNotifier {
   /// Current snapshot. Cheap to read; never mutated in place.
   AuiState get state;
 
+  /// The model the next run should use, when the host picked one. Runtimes
+  /// whose backend chooses report null.
+  String? get model => null;
+
+  /// The model's reasoning effort (`low` / `medium` / `high`), when it takes
+  /// one.
+  String? get effort => null;
+
+  /// Picks the model. Runtimes that do not support a pick ignore it.
+  void setModel(String? id) {}
+
+  /// Picks the reasoning effort. Ignored where the model takes none.
+  void setEffort(String? id) {}
+
   ThreadRuntimeApi get thread;
   ComposerRuntimeApi get composer;
 

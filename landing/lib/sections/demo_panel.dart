@@ -320,47 +320,94 @@ class _DemoComposer extends StatelessWidget {
   }
 }
 
+/// The model pill: a live menu. Picking a model or an effort level writes to
+/// the runtime, and the pill follows what the runtime reports.
 class _ModelPill extends StatelessWidget {
   const _ModelPill();
+
+  static const List<ModelOption> _models = <ModelOption>[
+    ModelOption(
+      id: 'gpt-5.6-luna',
+      name: 'GPT-5.6 Luna',
+      description: 'Balanced, fast',
+      usesDefaultEfforts: true,
+    ),
+    ModelOption(id: 'gpt-5.6-sol', name: 'GPT-5.6 Sol', description: 'Deeper, slower'),
+    ModelOption(id: 'claude-opus-4.7', name: 'Claude Opus 4.7'),
+  ];
 
   @override
   Widget build(BuildContext context) {
     final LandingColors colors = LandingColors.of(context);
-    return AssistantMenuButton(
-      width: 240,
-      items: <AssistantMenuItem>[
-        AssistantMenuItem(
-          label: 'GPT-5.6 Luna',
-          description: 'Balanced, fast',
-          selected: true,
-          onSelected: () {},
-        ),
-        AssistantMenuItem(label: 'GPT-5.6 Sol', onSelected: () {}),
-        const AssistantMenuItem.separator(),
-        AssistantMenuItem(
-          label: 'Reasoning effort: Low',
-          description: 'Applies to the next run',
-          onSelected: () {},
-        ),
-      ],
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            'GPT-5.6 Luna',
-            style: LandingText.small(context).copyWith(color: colors.mutedForeground),
+    final AssistantRuntime runtime = AuiRuntimeProvider.of(context);
+    return AnimatedBuilder(
+      animation: runtime,
+      builder: (BuildContext context, Widget? _) {
+        final String modelId = runtime.thread.state.model ?? 'gpt-5.6-luna';
+        final ModelOption model = _models.firstWhere(
+          (ModelOption option) => option.id == modelId,
+          orElse: () => _models.first,
+        );
+        final List<ModelSelectorEffortOption>? efforts = model.effortOptions;
+        final String? effortId =
+            runtime.thread.state.effort ?? efforts?.first.id;
+        final String effortLabel = efforts == null
+            ? ''
+            : efforts
+                .firstWhere(
+                  (ModelSelectorEffortOption option) => option.id == effortId,
+                  orElse: () => efforts.first,
+                )
+                .name;
+
+        return AssistantMenuButton(
+          width: 260,
+          items: <AssistantMenuItem>[
+            for (final ModelOption option in _models)
+              AssistantMenuItem(
+                label: option.name,
+                description: option.description ?? '',
+                selected: option.id == model.id,
+                onSelected: () => runtime.setModel(option.id),
+              ),
+            if (efforts != null) ...<AssistantMenuItem>[
+              const AssistantMenuItem.separator(),
+              for (final ModelSelectorEffortOption option in efforts)
+                AssistantMenuItem(
+                  label: 'Reasoning effort: ${option.name}',
+                  description: option.id == effortId ? 'Applies to the next run' : '',
+                  selected: option.id == effortId,
+                  onSelected: () => runtime.setEffort(option.id),
+                ),
+            ],
+          ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                model.name,
+                style: LandingText.small(context)
+                    .copyWith(color: colors.mutedForeground),
+              ),
+              if (efforts != null) ...<Widget>[
+                const SizedBox(width: 4),
+                Text('·',
+                    style: LandingText.small(context)
+                        .copyWith(color: colors.mutedForeground)),
+                const SizedBox(width: 4),
+                Text(
+                  effortLabel,
+                  style: LandingText.small(context)
+                      .copyWith(color: colors.mutedForeground),
+                ),
+              ],
+              const SizedBox(width: 4),
+              Icon(Icons.keyboard_arrow_down,
+                  size: 14, color: colors.mutedForeground),
+            ],
           ),
-          const SizedBox(width: 4),
-          Text('·', style: LandingText.small(context).copyWith(color: colors.mutedForeground)),
-          const SizedBox(width: 4),
-          Text(
-            'Low',
-            style: LandingText.small(context).copyWith(color: colors.mutedForeground),
-          ),
-          const SizedBox(width: 4),
-          Icon(Icons.keyboard_arrow_down, size: 14, color: colors.mutedForeground),
-        ],
-      ),
+        );
+      },
     );
   }
 }

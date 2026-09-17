@@ -70,6 +70,43 @@ class LocalRuntimeOptions {
 /// Covers the same ground as `useLocalRuntime`: streaming, cancellation,
 /// regeneration, editing, branching, and tool execution.
 class LocalRuntime extends AssistantRuntime {
+  String? _model;
+  String? _effort;
+  // `setModel(null)` clears the pick rather than falling back to the seed, so
+  // the two have to be told apart.
+  bool _modelSet = false;
+  bool _effortSet = false;
+
+  /// The model a run should use: the host's pick, else the option's seed.
+  @override
+  String? get model => _modelSet ? _model : options.model;
+
+  /// The reasoning effort the model runs at, when it takes one.
+  @override
+  String? get effort => _effortSet ? _effort : options.effort;
+
+  /// Picks the model; the next run carries it in [ModelContext]. Passing null
+  /// clears the pick.
+  @override
+  void setModel(String? id) {
+    if (_modelSet && id == _model) return;
+    _model = id;
+    _modelSet = true;
+    // The state is a snapshot, so it has to be rebuilt for the pick to show.
+    _emit();
+    notifyListeners();
+  }
+
+  /// Picks the reasoning effort for [model]. Passing null clears the pick.
+  @override
+  void setEffort(String? id) {
+    if (_effortSet && id == _effort) return;
+    _effort = id;
+    _effortSet = true;
+    _emit();
+    notifyListeners();
+  }
+
   LocalRuntime({
     required ChatModelAdapter adapter,
     List<ThreadMessage> initialMessages = const <ThreadMessage>[],
@@ -167,37 +204,6 @@ class LocalRuntime extends AssistantRuntime {
 
   Toolkit get tools => options.tools;
 
-  /// The model a run should use: the host's pick, else the option's seed.
-  String? get model => _modelSet ? _model : options.model;
-  String? _model;
-
-  /// The reasoning effort the model runs at, when it takes one.
-  String? get effort => _effortSet ? _effort : options.effort;
-  String? _effort;
-
-  // `setModel(null)` clears the pick rather than falling back to the seed, so
-  // the two have to be told apart.
-  bool _modelSet = false;
-  bool _effortSet = false;
-
-  /// Picks the model; the next run carries it in [ModelContext]. Passing null
-  /// clears the pick.
-  void setModel(String? id) {
-    if (_modelSet && id == _model) return;
-    _model = id;
-    _modelSet = true;
-    _emit();
-    notifyListeners();
-  }
-
-  /// Picks the reasoning effort for [model]. Passing null clears the pick.
-  void setEffort(String? id) {
-    if (_effortSet && id == _effort) return;
-    _effort = id;
-    _effortSet = true;
-    _emit();
-    notifyListeners();
-  }
 
   ModelContext get modelContext => ModelContext(
         systemPrompt: options.systemPrompt,
