@@ -181,3 +181,55 @@ class AssistantContextBar extends StatelessWidget {
     );
   }
 }
+
+/// The same usage written out — the live element's third presentation:
+/// `112,900 / 128,000`, coloured by the band the ratio sits in.
+class AssistantContextText extends StatelessWidget {
+  const AssistantContextText({
+    super.key,
+    this.warningColor = const Color(0xFFF5A524),
+    this.overColor = const Color(0xFFE5484D),
+    this.showMax = true,
+  });
+
+  final Color warningColor;
+  final Color overColor;
+  final bool showMax;
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    return AuiStateBuilder<ContextUsage>(
+      selector: (AuiState state) => state.thread.contextUsage,
+      builder: (BuildContext context, ContextUsage usage) {
+        if (usage.maxTokens <= 0) return const SizedBox.shrink();
+        final Color color = usage.isOverLimit
+            ? overColor
+            : (usage.isNearLimit ? warningColor : theme.mutedForeground);
+        final String used = _group(usage.usedTokens);
+        final String label = showMax
+            ? '$used / ${_group(usage.maxTokens)}'
+            : used;
+        return Text(
+          label,
+          style: theme.small(context).copyWith(
+            fontSize: 11,
+            color: color,
+            fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+          ),
+        );
+      },
+    );
+  }
+
+  /// `128000` reads as `128,000`.
+  static String _group(int value) {
+    final String digits = value.abs().toString();
+    final StringBuffer out = StringBuffer(value < 0 ? '-' : '');
+    for (int i = 0; i < digits.length; i++) {
+      if (i > 0 && (digits.length - i) % 3 == 0) out.write(',');
+      out.write(digits[i]);
+    }
+    return out.toString();
+  }
+}

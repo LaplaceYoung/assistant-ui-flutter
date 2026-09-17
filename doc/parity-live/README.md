@@ -152,6 +152,11 @@ reads as three missing elements when they are three ported ones.
 | Assistant modal (AUI) | The floating bubble, a thread list, a resizable window | `AssistantModal` | Aligned |
 | Assistant sidebar (AUI) | `New Thread`, `Search threads`, the active row, the product header and its source link | `AssistantThreadListSidebar` | Aligned |
 | Thread list (AUI) | The sidebar beside the thread: search, active selection, thread actions | `AssistantThreadList` with `AssistantShell` | Aligned |
+| Orb (AUI) | The voice orb with connection, mute and speaking states | `AssistantVoiceConversation` | Aligned |
+| Reasoning (AUI) | A collapsible renderer that follows the active part | `AssistantReasoning`, hidden on request by `showReasoning` | Aligned |
+| Message timing (AUI) | First token, total, speed, chunks | `AssistantMessageTiming` reads the same four fields | Aligned |
+| Conversation map (AUI) | One tick per turn, the read turn marked, on-screen ones deepened, hover preview, click to jump | `AssistantConversationMap` | Aligned |
+| Context display | Three presentations: Ring, Bar, Text | `AssistantContextRing`, `AssistantContextBar`, and — added in this pass — `AssistantContextText` for the third | **Text added** |
 
 The connected block is the composed elements — the ones the port's styled layer
 builds on its primitives — so the comparison is between two assemblies of the same

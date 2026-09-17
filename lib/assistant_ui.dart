@@ -60,7 +60,7 @@ export 'src/components/parts.dart'
         attachmentSizeLabel,
         attachmentTypeLabel;
 export 'src/components/composer_context.dart'
-    show AssistantContextBar, AssistantContextRing;
+    show AssistantContextBar, AssistantContextRing, AssistantContextText;
 export 'src/components/composer_triggers.dart'
     show
         AssistantDirectiveText,
