@@ -178,10 +178,18 @@ class _AssistantThinkingIndicatorState extends State<AssistantThinkingIndicator>
 /// Placeholder shown while the model has produced nothing yet — the
 /// `loading-state` element, drawn as a pulsing matrix instead of a spinner.
 class AssistantLoadingState extends StatefulWidget {
-  const AssistantLoadingState({super.key, this.cellSize = 4, this.spacing = 3});
+  const AssistantLoadingState({
+    super.key,
+    this.cellSize = 5,
+    this.spacing = 4,
+    this.label = 'Generating',
+  });
 
   final double cellSize;
   final double spacing;
+
+  /// The caption under the matrix; the live element carries one.
+  final String? label;
 
   @override
   State<AssistantLoadingState> createState() => _AssistantLoadingStateState();
@@ -189,8 +197,10 @@ class AssistantLoadingState extends StatefulWidget {
 
 class _AssistantLoadingStateState extends State<AssistantLoadingState>
     with SingleTickerProviderStateMixin {
+  // The live element is a three-by-three matrix of round cells that a wave
+  // walks through, with its caption underneath.
   static const int _columns = 3;
-  static const int _rows = 2;
+  static const int _rows = 3;
 
   late final AnimationController _controller = AnimationController(
     vsync: this,
@@ -228,6 +238,20 @@ class _AssistantLoadingStateState extends State<AssistantLoadingState>
                 ],
               ),
             ),
+          if (widget.label != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: SizedBox(
+                width: _columns * widget.cellSize + (_columns - 1) * widget.spacing,
+                child: Text(
+                  widget.label!,
+                  textAlign: TextAlign.center,
+                  style: theme.small(context).copyWith(
+                    color: theme.mutedForeground,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -243,7 +267,7 @@ class _AssistantLoadingStateState extends State<AssistantLoadingState>
         height: widget.cellSize,
         decoration: BoxDecoration(
           color: theme.mutedForeground,
-          borderRadius: BorderRadius.circular(1),
+          shape: BoxShape.circle,
         ),
       ),
     );
