@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   assistant_ui:
     path: ../
+  # The nav rows open real links, which means window.open on web.
+  web: ^1.1.0
 
 dev_dependencies:
   flutter_test:

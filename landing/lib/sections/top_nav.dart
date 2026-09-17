@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../landing_theme.dart';
+import '../open_url.dart';
 import '../widgets.dart';
 
 /// Sticky top navigation: logo, section links with dropdowns, the search and
@@ -32,65 +33,59 @@ class TopNav extends StatefulWidget {
 /// followed by its entries.
   /// The dropdowns, grouped the way the live nav groups them: a heading
   /// followed by its entries.
-const Map<String, List<(String?, List<(String, String)>)>> kNavMenus =
-    <String, List<(String?, List<(String, String)>)>>{
-  'Products': <(String?, List<(String, String)>)>[
+/// The nav's menus point at what this repository actually ships: the gallery
+/// (the example app, deployed next to the landing), the element and package
+/// coverage matrices, the motion plan and the parity report. Upstream's own
+/// pages (docs, Playground, careers, …) are not replicated here, so linking
+/// them would be a dead end.
+const Map<String, List<(String?, List<NavEntry>)>> kNavMenus =
+    <String, List<(String?, List<NavEntry>)>>{
+  'Products': <(String?, List<NavEntry>)>[
       (
-        'Platforms',
-        <(String, String)>[
-          ('Docs', 'Guides and API reference'),
-          ('React', 'The browser package'),
-          ('React Native', 'Chat UI for Expo and bare RN'),
-          ('Ink', 'Terminal chat for React Ink'),
-          ('Hosted', 'Managed backend'),
-          ('Cloud', 'Threads, persistence, analytics'),
-          ('Playground', 'Try it in the browser'),
+        'This repository',
+        <NavEntry>[
+          NavEntry('Gallery', 'Every element family, running', 'https://laplaceyoung.github.io/assistant-ui-flutter/gallery/'),
+          NavEntry('Landing replica', 'This page, rebuilt in Flutter', 'https://laplaceyoung.github.io/assistant-ui-flutter/'),
+          NavEntry('Source', 'The package on GitHub', 'https://github.com/LaplaceYoung/assistant-ui-flutter'),
+          NavEntry('pub.dev', 'assistant_ui — not published yet', 'https://github.com/LaplaceYoung/assistant-ui-flutter#readme'),
         ],
       ),
       (
-        'Primitives',
-        <(String, String)>[
-          ('tw-shimmer', 'Tailwind shimmer for loading states'),
-          ('Heat Graph', 'Contribution-style activity grid'),
-          ('Safe Content Frame', 'Sandboxed embeds'),
-          ('react-o11y', 'OpenTelemetry for React'),
+        'Coverage',
+        <NavEntry>[
+          NavEntry('Elements', '121 of 125 upstream elements', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/element-coverage.md'),
+          NavEntry('Packages', '23 of 46 upstream packages', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/package-coverage.md'),
+          NavEntry('Motion', 'Every animation token, mapped', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/MOTION_PLAN.md'),
+          NavEntry('Parity', 'The landing vs the live page', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/landing/parity/REPORT.md'),
         ],
       ),
     ],
-  'Resources': <(String?, List<(String, String)>)>[
+  'Resources': <(String?, List<NavEntry>)>[
       (
-        'Learn',
-        <(String, String)>[('Interactive course', 'Build an assistant step by step')],
-      ),
-      (
-        null,
-        <(String, String)>[
-          ('Changelog', 'Every release'),
-          ('Showcase', 'What people shipped'),
+        'Read',
+        <NavEntry>[
+          NavEntry('README', 'Install, wire a runtime, ship', 'https://github.com/LaplaceYoung/assistant-ui-flutter#readme'),
+          NavEntry('Port plan', 'The wave plan and its rules', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/PORT_PLAN.md'),
         ],
       ),
       (
         'Open source',
-        <(String, String)>[
-          ('Packages', 'The runtime, the store, the UI'),
-          ('OSS', 'MIT licensed core'),
+        <NavEntry>[
+          NavEntry('Issues', 'Report what is missing', 'https://github.com/LaplaceYoung/assistant-ui-flutter/issues'),
+          NavEntry('License', 'MIT, derived from assistant-ui', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/LICENSE'),
         ],
-      ),
-      (
-        'Company',
-        <(String, String)>[
-          ('Blog', 'Notes from the team'),
-          ('Careers', 'Open roles'),
-          ('Brand', 'Logos and assets'),
-          ('Traction', 'Where we are'),
-        ],
-      ),
-      (
-        null,
-        <(String, String)>[('Status', 'Live uptime')],
       ),
     ],
   };
+
+/// One row of a nav menu: a label, its subtitle and where it goes.
+class NavEntry {
+  const NavEntry(this.label, this.detail, this.url);
+
+  final String label;
+  final String detail;
+  final String url;
+}
 
 class _TopNavState extends State<TopNav> {
 
@@ -205,7 +200,7 @@ class _NavItem extends StatefulWidget {
   });
 
   final String label;
-  final List<(String?, List<(String, String)>)>? menu;
+  final List<(String?, List<NavEntry>)>? menu;
   final bool open;
   final void Function(String label, Rect anchor) onOpen;
   final VoidCallback onCloseRequest;
@@ -226,7 +221,7 @@ class _NavItemState extends State<_NavItem> {
   @override
   Widget build(BuildContext context) {
     final LandingColors colors = LandingColors.of(context);
-    final List<(String?, List<(String, String)>)>? menu = widget.menu;
+    final List<(String?, List<NavEntry>)>? menu = widget.menu;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       // The live nav opens on hover and keeps the click toggle as a fallback.
@@ -291,7 +286,7 @@ class NavMenuPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<(String?, List<(String, String)>)>? items = kNavMenus[label];
+    final List<(String?, List<NavEntry>)>? items = kNavMenus[label];
     if (items == null) return const SizedBox.shrink();
     return MouseRegion(
       onEnter: (_) => onEnter?.call(),
@@ -304,7 +299,7 @@ class NavMenuPanel extends StatelessWidget {
 class _Dropdown extends StatelessWidget {
   const _Dropdown({required this.items});
 
-  final List<(String?, List<(String, String)>)> items;
+  final List<(String?, List<NavEntry>)> items;
 
   @override
   Widget build(BuildContext context) {
@@ -328,7 +323,7 @@ class _Dropdown extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          for (final (String? group, List<(String, String)> entries) in items)
+          for (final (String? group, List<NavEntry> entries) in items)
             ...<Widget>[
               if (group != null)
                 Padding(
@@ -346,29 +341,36 @@ class _Dropdown extends StatelessWidget {
                     ),
                   ),
                 ),
-              for (final (String title, String subtitle) in entries)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        title,
-                        style: LandingText.small(context).copyWith(
-                          color: colors.foreground,
-                          fontWeight: FontWeight.w500,
-                        ),
+              for (final NavEntry entry in entries)
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => openUrl(entry.url),
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            entry.label,
+                            style: LandingText.small(context).copyWith(
+                              color: colors.foreground,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            entry.detail,
+                            style: LandingText.small(context).copyWith(
+                              color: colors.mutedForeground,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: LandingText.small(context).copyWith(
-                          color: colors.mutedForeground,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
             ],

@@ -42,16 +42,20 @@ void main() {
     await mouse.moveTo(tester.getCenter(find.text('Products')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Platforms'.toUpperCase()), findsOneWidget);
-    expect(find.text('tw-shimmer'), findsOneWidget);
-    expect(find.text('Safe Content Frame'), findsOneWidget);
+    // The menus point at what this repository ships, not at upstream's pages.
+    expect(find.text('THIS REPOSITORY'), findsOneWidget);
+    expect(find.text('Gallery'), findsOneWidget);
+    expect(find.text('COVERAGE'), findsOneWidget);
+    expect(find.text('Elements'), findsOneWidget);
+    expect(find.text('Parity'), findsOneWidget);
 
     await mouse.moveTo(tester.getCenter(find.text('Resources')));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Interactive course'), findsOneWidget);
-    expect(find.text('Traction'), findsOneWidget);
-    expect(find.text('Blog'), findsOneWidget);
+    expect(find.text('README'), findsOneWidget);
+    expect(find.text('Port plan'), findsOneWidget);
+    expect(find.text('Issues'), findsOneWidget);
+    expect(find.text('License'), findsOneWidget);
   });
 
   testWidgets('the setup tabs swap the runtime sample', (

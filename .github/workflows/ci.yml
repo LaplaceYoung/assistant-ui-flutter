@@ -34,7 +34,7 @@ jobs:
         run: git diff --exit-code docs/element-coverage.md docs/package-coverage.md
 
   landing:
-    name: landing (analyze + test + build)
+    name: web apps (analyze + test + build)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,10 +51,18 @@ jobs:
         run: flutter test
       - working-directory: landing
         run: flutter build web --release --base-href /assistant-ui-flutter/
+      - run: flutter build web --release --base-href /assistant-ui-flutter/gallery/
+        working-directory: example
+      - name: Assemble the Pages tree (landing at /, gallery at /gallery)
+        run: |
+          mkdir -p pages/gallery
+          cp -R landing/build/web/. pages/
+          cp -R example/build/web/. pages/gallery/
+          touch pages/.nojekyll
       - uses: actions/upload-artifact@v4
         with:
-          name: landing-web
-          path: landing/build/web
+          name: pages-tree
+          path: pages
           retention-days: 5
 
   deploy:
@@ -67,12 +75,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: landing-web
-          path: landing-web
+          name: pages-tree
+          path: pages-tree
       - name: Publish the build to the gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: landing-web
+          publish_dir: pages-tree
           publish_branch: gh-pages
           commit_message: 'deploy: landing from ${{ github.sha }}'
