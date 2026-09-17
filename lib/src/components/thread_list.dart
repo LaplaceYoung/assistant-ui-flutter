@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/runtime_api.dart';
+import '../primitives/runtime_provider.dart';
 import '../primitives/thread_list.dart';
 import 'theme.dart';
 import 'tooltip_icon_button.dart';
@@ -130,6 +131,7 @@ class _ThreadRowState extends State<_ThreadRow> {
   @override
   Widget build(BuildContext context) {
     final AssistantTheme theme = AssistantTheme.of(context);
+    final AssistantRuntime runtime = AuiRuntimeProvider.of(context);
     final bool active = widget.isActive;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
@@ -167,24 +169,31 @@ class _ThreadRowState extends State<_ThreadRow> {
                   AuiThreadListItemArchive(
                     builder: (BuildContext context, bool archived) =>
                         AssistantTooltipIconButton(
-                      icon: archived ? Icons.unarchive_outlined : Icons.archive_outlined,
+                      icon: archived
+                          ? Icons.unarchive_outlined
+                          : Icons.archive_outlined,
                       tooltip: archived ? 'Unarchive' : 'Archive',
                       size: 24,
                       iconSize: 13,
                       radius: 6,
                       foregroundColor: theme.mutedForeground,
-                      onPressed: () {},
+                      // The action is the runtime's. A no-op here would swallow
+                      // the tap the reader expects to work.
+                      onPressed: () => archived
+                          ? runtime.threads.unarchive(widget.item.id)
+                          : runtime.threads.archive(widget.item.id),
                     ),
                   ),
                   AuiThreadListItemDelete(
-                    builder: (BuildContext context) => AssistantTooltipIconButton(
+                    builder: (BuildContext context) =>
+                        AssistantTooltipIconButton(
                       icon: Icons.delete_outline,
                       tooltip: 'Delete',
                       size: 24,
                       iconSize: 13,
                       radius: 6,
                       foregroundColor: theme.mutedForeground,
-                      onPressed: () {},
+                      onPressed: () => runtime.threads.delete(widget.item.id),
                     ),
                   ),
                 ],

@@ -164,9 +164,13 @@ void main() {
       ));
       expect(find.text('What does this page do?'), findsOneWidget);
       expect(find.text('It renders a thread.'), findsOneWidget);
-      expect(find.text('Ask about this page…'), findsOneWidget);
+      // A host that sends gets a field to type in, with the placeholder as its
+      // hint.
+      expect(find.byType(TextField), findsOneWidget);
       expect(find.byType(AssistantTypingIndicator), findsOneWidget);
 
+      await tester.enterText(find.byType(TextField), 'ping');
+      await tester.pump();
       await tester.tap(find.bySemanticsLabel('Send'));
       await tester.pump();
       expect(sends, 1);

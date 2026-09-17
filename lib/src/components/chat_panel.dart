@@ -11,7 +11,7 @@ import 'theme.dart';
 /// `ChatPanelComposer`); the port exposes them as one widget plus
 /// [AssistantChatPanelMessage] and [AssistantChatPanelTyping] for hosts that
 /// build their own layout.
-class AssistantChatPanel extends StatelessWidget {
+class AssistantChatPanel extends StatefulWidget {
   const AssistantChatPanel({
     super.key,
     this.messages = const <AssistantChatPanelMessage>[],
@@ -33,7 +33,9 @@ class AssistantChatPanel extends StatelessWidget {
   final double height;
 
   @override
-  Widget build(BuildContext context) {
+  State<AssistantChatPanel> createState() => _AssistantChatPanelState();
+
+  Widget _buildPanel(BuildContext context, _AssistantChatPanelState? state) {
     final AssistantTheme theme = AssistantTheme.of(context);
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 448),
@@ -76,27 +78,51 @@ class AssistantChatPanel extends StatelessWidget {
                     child: Row(
                       children: <Widget>[
                         Expanded(
-                          child: Text(
-                            composerPlaceholder!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              height: 1.3,
-                              color: auiFg(theme, 0.35),
-                            ),
-                          ),
+                          // A host that sends gets a field to type in; without
+                          // one the composer stays the static strip upstream
+                          // shows.
+                          child: state == null
+                              ? Text(
+                                  composerPlaceholder!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    height: 1.3,
+                                    color: auiFg(theme, 0.35),
+                                  ),
+                                )
+                              : TextField(
+                                  controller: state._controller,
+                                  onSubmitted: (_) => state._submit(),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    height: 1.3,
+                                    color: auiFg(theme, 0.9),
+                                  ),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    isCollapsed: true,
+                                    border: InputBorder.none,
+                                    hintText: composerPlaceholder!,
+                                    hintStyle: TextStyle(
+                                      fontSize: 13,
+                                      height: 1.3,
+                                      color: auiFg(theme, 0.35),
+                                    ),
+                                  ),
+                                ),
                         ),
                         Semantics(
                           button: true,
                           label: 'Send',
                           child: GestureDetector(
-                            onTap: onSend,
+                            onTap: () => state?._submit(),
                             child: Container(
                               width: 28,
                               height: 28,
                               decoration: BoxDecoration(
-                                color: onSend == null
+                                color: state == null
                                     ? theme.primary.withValues(alpha: 0.3)
                                     : theme.primary,
                                 shape: BoxShape.circle,
@@ -185,4 +211,24 @@ class AssistantChatPanelTyping extends StatelessWidget {
       ),
     );
   }
+}
+
+class _AssistantChatPanelState extends State<AssistantChatPanel> {
+  final TextEditingController _controller = TextEditingController();
+
+  void _submit() {
+    if (widget.onSend == null) return;
+    if (_controller.text.trim().isEmpty) return;
+    _controller.clear();
+    widget.onSend!();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget._buildPanel(context, this);
 }
