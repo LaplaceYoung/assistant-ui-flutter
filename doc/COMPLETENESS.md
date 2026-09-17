@@ -19,6 +19,7 @@ hand when something moves; the two matrices under it are generated.
 Commands, in the order a reviewer would run them:
 
 ```bash
+dart run tool/audit_elements.dart  # file, test and surface per element
 flutter pub get && flutter analyze lib test example tool && flutter test
 cd landing && flutter pub get && flutter analyze && flutter test && cd ..
 dart run tool/sync_element_coverage.dart && dart run tool/sync_package_coverage.dart
@@ -28,7 +29,8 @@ tool/landing_parity.sh          # needs the network: compares against the live s
 
 ## Known gaps
 
-`doc/GAPS.md` lists what is missing with a reason per line: the playground
+`doc/element-audit.md` is the mechanical pass over the ported elements — file,
+test, reachable surface — and `doc/GAPS.md` lists what is missing with a reason per line: the playground
 controls this port cannot honour yet, the four partial elements, and the
 verification that has not been done (no per-element visual diff, no pixel
 comparison of the playground).
