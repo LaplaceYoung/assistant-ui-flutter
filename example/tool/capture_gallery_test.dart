@@ -34,7 +34,10 @@ Future<void> _loadFonts() async {
       _flutterRootFromTool();
   final List<(String, String)> fonts = <(String, String)>[
     ('Public Sans', '../landing/assets/fonts/PublicSans[wght].ttf'),
+    // The theme asks for the generic `monospace` family, so register the file
+    // under that name as well as its own.
     ('JetBrains Mono', '../landing/assets/fonts/JetBrainsMono[wght].ttf'),
+    ('monospace', '../landing/assets/fonts/JetBrainsMono[wght].ttf'),
     if (flutterRoot != null)
       (
         'MaterialIcons',
