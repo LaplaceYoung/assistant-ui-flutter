@@ -62,7 +62,6 @@ on:
 
 | Gap | What it needs |
 |---|---|
-| Streaming text does not colour new tokens | The markdown renderer needs a per-token age, so the newest words land in blue and settle into ink |
 
 ## Verification not yet done
 

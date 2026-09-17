@@ -53,6 +53,7 @@ export 'src/components/markdown.dart' show AssistantMarkdown, parseInline;
 export 'src/components/parts.dart'
     show
         AssistantMessageParts,
+        AssistantStreamingMarkdown,
         AssistantReasoning,
         AssistantToolCallCard,
         attachmentIcon,

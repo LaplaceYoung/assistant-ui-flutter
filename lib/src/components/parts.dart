@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../core/adapters.dart';
@@ -108,8 +110,9 @@ class AssistantMessageParts extends StatelessWidget {
     final AssistantTheme theme = AssistantTheme.of(context);
     switch (part) {
       case TextPart():
-        return AssistantMarkdown(
+        return AssistantStreamingMarkdown(
           text: part.text,
+          streaming: status == PartStatus.running,
           style: theme.body(context),
           trailing:
               status == PartStatus.running ? const AuiStreamingCursor() : null,
@@ -147,8 +150,9 @@ class AssistantMessageParts extends StatelessWidget {
     final AssistantTheme theme = AssistantTheme.of(context);
     switch (part) {
       case TextPart():
-        return AssistantMarkdown(
+        return AssistantStreamingMarkdown(
           text: part.text,
+          streaming: status == PartStatus.running,
           style: theme.body(context),
           trailing:
               status == PartStatus.running ? const AuiStreamingCursor() : null,
@@ -630,4 +634,84 @@ String attachmentTypeLabel(String mimeType) {
   if (mime.endsWith('plain')) return 'TXT';
   final int slash = mime.indexOf('/');
   return slash == -1 ? mime.toUpperCase() : mime.substring(slash + 1).toUpperCase();
+}
+
+/// Message text that knows which characters just arrived.
+///
+/// The runtime hands the whole part on every frame, so the widget keeps the
+/// length it last drew: the difference is tinted, then settles back into ink
+/// after [freshDuration]. That is upstream's streaming text — new tokens land in
+/// blue and fade into the body colour.
+class AssistantStreamingMarkdown extends StatefulWidget {
+  const AssistantStreamingMarkdown({
+    super.key,
+    required this.text,
+    this.streaming = false,
+    this.style,
+    this.codeStyle,
+    this.trailing,
+    this.freshDuration = const Duration(milliseconds: 600),
+  });
+
+  final String text;
+  final bool streaming;
+  final TextStyle? style;
+  final TextStyle? codeStyle;
+  final Widget? trailing;
+  final Duration freshDuration;
+
+  @override
+  State<AssistantStreamingMarkdown> createState() =>
+      _AssistantStreamingMarkdownState();
+}
+
+class _AssistantStreamingMarkdownState
+    extends State<AssistantStreamingMarkdown> {
+  /// How much of the text the last frame drew — everything before this is
+  /// settled ink.
+  late int _drawn = widget.text.length;
+  late int _freshFrom = _drawn;
+  Timer? _settle;
+  bool _fresh = false;
+
+  @override
+  void didUpdateWidget(AssistantStreamingMarkdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.text.length <= _drawn) return;
+    final int previous = _drawn;
+    setState(() {
+      _drawn = widget.text.length;
+      _freshFrom = previous;
+      _fresh = widget.streaming;
+    });
+    _settle?.cancel();
+    if (!widget.streaming) return;
+    _settle = Timer(widget.freshDuration, () {
+      if (mounted) setState(() => _fresh = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _settle?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    final bool dark = theme.brightness == Brightness.dark;
+    final Color? fresh = _fresh
+        ? (dark ? const Color(0xFF60A5FA) : const Color(0xFF3B82F6))
+        : null;
+    return AssistantMarkdown(
+      text: widget.text,
+      style: widget.style,
+      codeStyle: widget.codeStyle,
+      trailing: widget.trailing,
+      // Everything drawn up to the previous frame is settled; the rest is new.
+      freshFrom: fresh == null ? null : _freshFrom,
+      freshColor: fresh,
+    );
+  }
 }

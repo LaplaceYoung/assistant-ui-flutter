@@ -27,9 +27,20 @@ class AssistantMarkdown extends StatelessWidget {
     this.spacing = 10,
     this.mermaidDiagram,
     this.mathRenderer,
+    this.freshFrom,
+    this.freshColor,
   });
 
   final String text;
+
+  /// Index from which the text is still landing: those characters are drawn in
+  /// [freshColor] and the rest in the body colour. Upstream lands new tokens in
+  /// blue and lets them settle into ink; the caller owns the timing, this owns
+  /// the paint.
+  final int? freshFrom;
+
+  /// The tint fresh characters take.
+  final Color? freshColor;
   final TextStyle? style;
   final TextStyle? codeStyle;
 
@@ -106,6 +117,10 @@ class AssistantMarkdown extends StatelessWidget {
           theme: theme,
           onTapLink: onTapLink,
           trailing: i == blocks.length - 1 ? trailing : null,
+          // Only the last paragraph can be mid-landing, and only while the run
+          // writes; earlier blocks are settled by definition.
+          freshFrom: i == blocks.length - 1 ? freshFrom : null,
+          freshColor: freshColor,
         ),
       );
     }
@@ -267,6 +282,8 @@ sealed class _Block {
     required AssistantTheme theme,
     required ValueChanged<String>? onTapLink,
     required Widget? trailing,
+    int? freshFrom,
+    Color? freshColor,
   });
 }
 
@@ -283,18 +300,94 @@ class _ParagraphBlock extends _Block {
     required AssistantTheme theme,
     required ValueChanged<String>? onTapLink,
     required Widget? trailing,
+    int? freshFrom,
+    Color? freshColor,
   }) {
+    List<InlineSpan> spans = parseInline(
+      text,
+      base: base,
+      code: code,
+      theme: theme,
+      onTapLink: onTapLink,
+    );
+    // The characters still landing are drawn in the tint; the rest are ink.
+    if (freshFrom != null && freshColor != null && freshFrom < text.length) {
+      spans = _tintTail(spans, text.length - freshFrom, base, freshColor);
+    }
     return Text.rich(
       TextSpan(
         style: base,
         children: <InlineSpan>[
-          ...parseInline(text, base: base, code: code, theme: theme, onTapLink: onTapLink),
+          ...spans,
           if (trailing != null)
             WidgetSpan(alignment: PlaceholderAlignment.middle, child: trailing),
         ],
       ),
     );
   }
+}
+
+/// Recolours the last [count] characters of [spans].
+///
+/// Walks back over the plain text spans — links and code keep their own colour —
+/// and splits the one the cut lands in, so a sentence that is half settled draws
+/// half in ink.
+List<InlineSpan> _tintTail(
+  List<InlineSpan> spans,
+  int count,
+  TextStyle base,
+  Color freshColor,
+) {
+  int remaining = count;
+  List<InlineSpan> tint(List<InlineSpan> level) {
+    final List<InlineSpan> out = List<InlineSpan>.of(level);
+    for (int i = out.length - 1; i >= 0 && remaining > 0; i--) {
+      final InlineSpan span = out[i];
+      if (span is TextSpan) {
+        final String value = span.text ?? '';
+        if (span.children != null && span.children!.isNotEmpty) {
+          // A wrapper span: its own text (if any) comes before its children, so
+          // the tail is in the children first.
+          final List<InlineSpan> children = tint(span.children!);
+          final int take = remaining.clamp(0, value.length);
+          out[i] = TextSpan(
+            style: span.style,
+            text:
+                take == 0 ? value : value.substring(0, value.length - take),
+            children: children,
+          );
+          if (take > 0) {
+            out.insert(
+              i + 1,
+              TextSpan(
+                text: value.substring(value.length - take),
+                style: (span.style ?? base).copyWith(color: freshColor),
+              ),
+            );
+            remaining -= take;
+          }
+          continue;
+        }
+        if (value.isEmpty) continue;
+        final int take = remaining.clamp(0, value.length);
+        out[i] = TextSpan(
+          style: span.style,
+          text: value.substring(0, value.length - take),
+        );
+        out.insert(
+          i + 1,
+          TextSpan(
+            text: value.substring(value.length - take),
+            style: (span.style ?? base).copyWith(color: freshColor),
+          ),
+        );
+        remaining -= take;
+      }
+    }
+    return out;
+  }
+
+  return tint(spans);
 }
 
 class _HeadingBlock extends _Block {
@@ -311,6 +404,8 @@ class _HeadingBlock extends _Block {
     required AssistantTheme theme,
     required ValueChanged<String>? onTapLink,
     required Widget? trailing,
+    int? freshFrom,
+    Color? freshColor,
   }) {
     final double scale = switch (level) {
       1 => 1.5,
@@ -372,6 +467,8 @@ class _CodeBlock extends _Block {
     required AssistantTheme theme,
     required ValueChanged<String>? onTapLink,
     required Widget? trailing,
+    int? freshFrom,
+    Color? freshColor,
   }) {
     // The copy affordance only makes sense once the block has settled.
     final bool copyable = trailing == null;
@@ -469,6 +566,8 @@ class _MathBlock extends _Block {
     required AssistantTheme theme,
     required ValueChanged<String>? onTapLink,
     required Widget? trailing,
+    int? freshFrom,
+    Color? freshColor,
   }) {
     return _MathFallback(tex: tex, theme: theme, display: true);
   }
@@ -542,6 +641,8 @@ class _QuoteBlock extends _Block {
     required AssistantTheme theme,
     required ValueChanged<String>? onTapLink,
     required Widget? trailing,
+    int? freshFrom,
+    Color? freshColor,
   }) {
     return Container(
       padding: const EdgeInsets.only(left: 12),
@@ -575,6 +676,8 @@ class _ListBlock extends _Block {
     required AssistantTheme theme,
     required ValueChanged<String>? onTapLink,
     required Widget? trailing,
+    int? freshFrom,
+    Color? freshColor,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -636,6 +739,8 @@ class _DividerBlock extends _Block {
     required AssistantTheme theme,
     required ValueChanged<String>? onTapLink,
     required Widget? trailing,
+    int? freshFrom,
+    Color? freshColor,
   }) {
     return Container(height: 1, color: theme.border);
   }
@@ -655,6 +760,8 @@ class _TableBlock extends _Block {
     required AssistantTheme theme,
     required ValueChanged<String>? onTapLink,
     required Widget? trailing,
+    int? freshFrom,
+    Color? freshColor,
   }) {
     TextStyle cellStyle(TextStyle style) =>
         style.copyWith(fontSize: (style.fontSize ?? 14) - 1, height: 1.35);

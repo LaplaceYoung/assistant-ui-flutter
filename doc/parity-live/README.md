@@ -20,7 +20,7 @@ port's pages are demos, so the comparison is by element and by eye.
 | Where | Live | Port | Status |
 |---|---|---|---|
 | Reasoning effort | Low / Medium / High / **Max**, with `13,920 / 24,000` spent against the budget | Low / Med / High / Max, spent from `ThreadState.thinkingTokens` | **Aligned** — `Max` was added to the default set, the playground's levels and the landing's pill |
-| Streaming text | Tokens land in blue and settle into ink as the run advances | Text streams in one colour; only the cursor marks progress | **Not ported** — needs a per-token age in the markdown renderer |
+| Streaming text | Tokens land in blue and settle into ink as the run advances | The thread's text does the same: `AssistantStreamingMarkdown` tints what arrived since the last frame and settles it after 600ms | **Aligned** — the element already existed; the thread now uses its treatment |
 | Element count | The catalogue says **144 interface pieces** | `doc/official_elements.txt` holds **140 files**, **125 unique** after the 25 `.aui` variants are folded in | **Checked, not a gap** — the inventory matches upstream file for file (see below); the catalogue counts its sections its own way |
 | Loader | Described as a pixel matrix that keeps time | `AssistantLoadingState` draws a 3×2 grid that pulses | Same idea, different pattern — check the matrix shape |
 
