@@ -2067,6 +2067,11 @@ class _StatesDemoState extends State<StatesDemo> {
             ),
           ),
           _Section(
+            title: 'Stopped run',
+            detail: 'the half-written answer, with Continue and Discard',
+            child: const _StoppedRunSample(),
+          ),
+          _Section(
             title: 'Follow-up suggestions',
             detail: 'chips read from the thread state, with edge fades',
             child: AssistantFollowUpSuggestions(
@@ -3294,4 +3299,57 @@ class _SurfacesDemoState extends State<SurfacesDemo> {
       ),
     );
   }
+}
+
+/// A thread stopped mid-answer, so the states page shows what Continue and
+/// Discard look like on a real message.
+class _StoppedRunSample extends StatefulWidget {
+  const _StoppedRunSample();
+
+  @override
+  State<_StoppedRunSample> createState() => _StoppedRunSampleState();
+}
+
+class _StoppedRunSampleState extends State<_StoppedRunSample> {
+  late final LocalRuntime _runtime = LocalRuntime(
+    adapter: _NullAdapter(),
+    initialMessages: <ThreadMessage>[
+      ThreadMessage.single(
+        id: 'stopped',
+        role: MessageRole.assistant,
+        createdAt: DateTime(2026, 1, 1),
+        status: const MessageStatusIncomplete(reason: IncompleteReason.cancelled),
+        content: const <MessagePart>[TextPart('The run was stopped here —')],
+      ),
+    ],
+  );
+
+  @override
+  void dispose() {
+    _runtime.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AuiRuntimeProvider(
+        runtime: _runtime,
+        child: AuiThreadMessages(
+          builder: (
+            BuildContext context,
+            ThreadMessage message,
+            bool isLast,
+          ) =>
+              AuiMessage(
+            message: message,
+            isLast: isLast,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const AssistantMessageParts(),
+                AssistantContinueRun(onDiscard: () {}),
+              ],
+            ),
+          ),
+        ),
+      );
 }

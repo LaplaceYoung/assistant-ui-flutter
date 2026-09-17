@@ -7,7 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// reader can see them running and a regression in one of them fails here.
 void main() {
   Future<void> pump(WidgetTester tester, Widget page) async {
-    tester.view.physicalSize = const Size(1200, 2200);
+    // Tall enough to build every section of the states page.
+    tester.view.physicalSize = const Size(1200, 3200);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     // `Scaffold` supplies the `Material` the composer's text field needs.
@@ -30,6 +31,10 @@ void main() {
     expect(find.byType(AssistantErrorState), findsWidgets);
     expect(find.byType(AssistantFollowUpSuggestions), findsOneWidget);
     expect(find.byType(AssistantMessageTiming), findsOneWidget);
+    // The stopped run shows Continue and Discard on a real message.
+    expect(find.byType(AssistantContinueRun), findsOneWidget);
+    expect(find.text('stopped by you'), findsOneWidget);
+    expect(find.text('Discard'), findsOneWidget);
   });
 
   testWidgets('the pieces page shows the pickers and the message pieces', (
