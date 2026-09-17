@@ -125,7 +125,11 @@ class _VoiceWaveformState extends State<_VoiceWaveform>
     final double phase = (_controller.value + index / _bars) % 1.0;
     final double wave = math.sin(phase * 2 * math.pi);
     final double scale = 0.35 + 0.65 * ((wave + 1) / 2);
-    return Container(
+    // `transition-[height,background-color] duration-150`: each bar eases to
+    // its new height instead of stepping.
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeOut,
       width: 2.5,
       height: widget.height * scale,
       decoration: BoxDecoration(

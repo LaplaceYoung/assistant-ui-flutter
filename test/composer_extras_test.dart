@@ -173,6 +173,16 @@ void main() {
       await tester.pump();
       expect(runtime.state.composer.text, 'hello from speech');
 
+      // The waveform bars ease between heights (`transition-[height,
+      // background-color] duration-150`).
+      final Iterable<AnimatedContainer> bars =
+          tester.widgetList<AnimatedContainer>(find.byType(AnimatedContainer));
+      expect(
+        bars.any((AnimatedContainer bar) =>
+            bar.duration == const Duration(milliseconds: 150)),
+        isTrue,
+      );
+
       await tester.tap(find.byIcon(Icons.stop));
       await tester.pump();
       await tester.pump();

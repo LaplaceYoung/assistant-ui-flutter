@@ -4,6 +4,7 @@ import '../core/attachments.dart';
 import '../core/message_part.dart';
 import '../primitives/message.dart';
 import 'message_attachment.dart';
+import 'motion.dart';
 import 'theme.dart';
 
 /// Attachment rendered as a card or thumbnail — the `attachment` element.
@@ -127,10 +128,12 @@ class _ImageThumbnail extends StatelessWidget {
               left: 0,
               right: 0,
               bottom: 0,
-              child: LinearProgressIndicator(
-                value: progress,
-                minHeight: 3,
-                backgroundColor: theme.border,
+              // `transition-[width] duration-300` on the upload line.
+              child: AuiAnimatedProgressBar(
+                value: progress!,
+                height: 3,
+                duration: const Duration(milliseconds: 300),
+                track: theme.border,
                 color: theme.primary,
               ),
             ),

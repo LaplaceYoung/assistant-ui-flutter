@@ -311,6 +311,55 @@ void main() {
     });
   });
 
+  group('composer and message family wiring', () {
+    testWidgets('a queued turn slides in over 300ms', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: _QueueHarness(
+            rows: const <QueuedMessage>[
+              QueuedMessage(id: 'q1', content: <MessagePart>[TextPart('one')]),
+            ],
+          ),
+        ),
+      ));
+      await tester.pump();
+
+      final AuiFadeInBlur entry =
+          tester.widget<AuiFadeInBlur>(find.byType(AuiFadeInBlur).first);
+      expect(entry.duration, const Duration(milliseconds: 300));
+      expect(entry.slideFrom, const Offset(0, 4));
+      expect(tester.widget<Opacity>(find.byType(Opacity)).opacity, 0);
+      await tester.pump(const Duration(milliseconds: 350));
+      expect(tester.widget<Opacity>(find.byType(Opacity)).opacity, 1);
+    });
+
+    testWidgets('the upload line eases to its new value', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: AssistantAttachmentCard(
+            attachment: const ImageAttachment(
+              id: 'a1',
+              url: 'https://example.com/a.png',
+            ),
+            progress: 0.4,
+          ),
+        ),
+      ));
+      await tester.pump();
+      final AuiAnimatedProgressBar bar = tester.widget<AuiAnimatedProgressBar>(
+        find.byType(AuiAnimatedProgressBar),
+      );
+      expect(bar.duration, const Duration(milliseconds: 300));
+      expect(bar.value, closeTo(0.4, 0.001));
+    });
+
+
+  });
+
   group('agent family wiring', () {
     testWidgets('the status label replays its entry per state', (
       WidgetTester tester,
@@ -347,4 +396,32 @@ void main() {
       expect(find.text('Finished with exit 0'), findsOneWidget);
     });
   });
+}
+
+/// Renders the queue's rows without a runtime: the entry animation is what the
+/// motion test observes, so it feeds the same row widget the element builds.
+class _QueueHarness extends StatelessWidget {
+  const _QueueHarness({required this.rows});
+
+  final List<QueuedMessage> rows;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          for (final QueuedMessage message in rows)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: AuiFadeInBlur(
+                key: ValueKey<String>(message.id),
+                duration: const Duration(milliseconds: 300),
+                blur: 0,
+                slideFrom: const Offset(0, 4),
+                child: Text(
+                  message.content.whereType<TextPart>().map((TextPart p) => p.text).join(),
+                ),
+              ),
+            ),
+        ],
+      );
 }

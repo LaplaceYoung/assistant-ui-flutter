@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/runtime_api.dart';
 import '../primitives/runtime_provider.dart';
 import '../primitives/state.dart';
+import 'motion.dart';
 import 'theme.dart';
 
 /// Turns typed while a run was in flight, stacked above the composer and
@@ -46,7 +47,15 @@ class AssistantMessageQueue extends StatelessWidget {
             for (final QueuedMessage message in visible)
               Padding(
                 padding: const EdgeInsets.only(bottom: 6),
-                child: _QueuedRow(message: message, theme: theme),
+                // `fade-in slide-in-from-bottom-1 animate-in fill-mode-both
+                // duration-300`: a queued turn slides in as it is taken.
+                child: AuiFadeInBlur(
+                  key: ValueKey<String>(message.id),
+                  duration: const Duration(milliseconds: 300),
+                  blur: 0,
+                  slideFrom: const Offset(0, 4),
+                  child: _QueuedRow(message: message, theme: theme),
+                ),
               ),
             if (hidden > 0)
               Padding(
