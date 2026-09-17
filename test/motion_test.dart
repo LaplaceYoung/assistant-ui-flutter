@@ -360,6 +360,77 @@ void main() {
 
   });
 
+  group('reduced motion', () {
+    Widget reduce(Widget child) => MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: Scaffold(body: Center(child: child)),
+          ),
+        );
+
+    testWidgets('the entry animation lands immediately', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(reduce(const AuiFadeInBlur(child: Text('label'))));
+      await tester.pump();
+      expect(tester.widget<Opacity>(find.byType(Opacity)).opacity, 1);
+      expect(find.text('label'), findsOneWidget);
+    });
+
+    testWidgets('the popover is already open', (WidgetTester tester) async {
+      await tester.pumpWidget(reduce(const AuiZoomFadeIn(child: Text('basis'))));
+      await tester.pump();
+      expect(
+        tester
+            .widget<FadeTransition>(
+              find.descendant(
+                of: find.byType(AuiZoomFadeIn),
+                matching: find.byType(FadeTransition),
+              ),
+            )
+            .opacity
+            .value,
+        1,
+      );
+    });
+
+    testWidgets('press feedback and the bar are instant', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(reduce(
+        Column(
+          children: <Widget>[
+            AuiPillButton(label: 'Allow once', onPressed: () {}),
+            const AuiAnimatedProgressBar(value: 0.5, color: Colors.blue),
+          ],
+        ),
+      ));
+      await tester.pump();
+
+      expect(
+        tester
+            .widget<AnimatedScale>(
+              find.descendant(
+                of: find.byType(AuiPillButton),
+                matching: find.byType(AnimatedScale),
+              ),
+            )
+            .duration,
+        Duration.zero,
+      );
+      expect(
+        tester.widget<AuiAnimatedProgressBar>(find.byType(AuiAnimatedProgressBar))
+            .duration,
+        const Duration(milliseconds: 500),
+        reason: 'the declared duration stays; the helper zeroes it at build time',
+      );
+      expect(auiMotionDuration(
+        tester.element(find.byType(AuiAnimatedProgressBar)) as BuildContext,
+        const Duration(milliseconds: 500),
+      ), Duration.zero);
+    });
+  });
+
   group('content family wiring', () {
     testWidgets('a revealed word fades in and settles its colour', (
       WidgetTester tester,

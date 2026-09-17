@@ -2,6 +2,14 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+/// The duration to use for a piece of motion: zero when the platform asks for
+/// reduced motion (`prefers-reduced-motion` on web, and the accessibility
+/// setting on the other platforms — upstream's `motion-reduce:*`).
+Duration auiMotionDuration(BuildContext context, Duration base) =>
+    MediaQuery.maybeDisableAnimationsOf(context) ?? false
+        ? Duration.zero
+        : base;
+
 /// The entry animation the elements use: `fade-in blur-in-[2px] animate-in
 /// duration-300`. Runs once when the widget appears or when [trigger] changes.
 class AuiFadeInBlur extends StatefulWidget {
@@ -44,10 +52,22 @@ class _AuiFadeInBlurState extends State<AuiFadeInBlur>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reduced motion: land on the final state and stay there.
+    final bool reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    _controller.duration =
+        reduced ? Duration.zero : widget.duration;
+    if (reduced && _controller.value != 1) {
+      _controller.value = 1;
+    }
+  }
+
+  @override
   void didUpdateWidget(AuiFadeInBlur oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.duration != widget.duration) {
-      _controller.duration = widget.duration;
+      _controller.duration = auiMotionDuration(context, widget.duration);
     }
     if (oldWidget.trigger != widget.trigger || oldWidget.child != widget.child) {
       _controller.forward(from: 0);
@@ -141,11 +161,11 @@ class _AuiPressableState extends State<AuiPressable> {
         onTap: widget.onTap,
         child: AnimatedScale(
           scale: _pressed ? widget.pressedScale : 1,
-          duration: widget.duration,
+          duration: auiMotionDuration(context, widget.duration),
           curve: Curves.easeOut,
           child: AnimatedSlide(
             offset: Offset(0, _hovered && !_pressed ? -widget.hoverLift / 10 : 0),
-            duration: widget.duration,
+            duration: auiMotionDuration(context, widget.duration),
             curve: Curves.easeOut,
             child: widget.child,
           ),
@@ -178,7 +198,7 @@ class AuiAnimatedProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: value, end: value),
-      duration: duration,
+      duration: auiMotionDuration(context, duration),
       curve: Curves.easeOut,
       builder: (BuildContext context, double animated, Widget? _) => LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) =>
@@ -243,10 +263,17 @@ class _AuiZoomFadeInState extends State<AuiZoomFadeIn>
   )..forward();
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final bool reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    if (reduced && _controller.value != 1) _controller.value = 1;
+  }
+
+  @override
   void didUpdateWidget(AuiZoomFadeIn oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.duration != widget.duration) {
-      _controller.duration = widget.duration;
+      _controller.duration = auiMotionDuration(context, widget.duration);
     }
     if (oldWidget.trigger != widget.trigger) {
       _controller.forward(from: 0);
@@ -302,7 +329,7 @@ class _AuiHoverColorState extends State<AuiHoverColor> {
         child: GestureDetector(
           onTap: widget.onTap,
           child: AnimatedContainer(
-            duration: widget.duration,
+            duration: auiMotionDuration(context, widget.duration),
             curve: Curves.easeOut,
             child: widget.builder(context, _hovered),
           ),

@@ -56,6 +56,14 @@ cd /tmp/aui-upstream && git sparse-checkout set packages/ui/src/components/react
 | `tool-error` | Retry/Skip 走 `AuiPillButton`（150ms 颜色 + 0.96 按压），重试时 `AuiSpinner` 旋转 | `test/motion_test.dart` |
 | `mermaid-diagram` | streaming 骨架 + 内置绘制 | `test/mermaid_renderer_test.dart` |
 
+## 减少动态效果（motion-reduce）
+
+`components/motion.dart` 里的 `auiMotionDuration(context, base)` 在
+`MediaQuery.disableAnimations` 为真时返回 `Duration.zero`；四个共享原语、进度条与
+`AuiPillButton` 的颜色/按压缩放都经它取时长，对应上游的 `motion-reduce:animate-none`
+与 `motion-reduce:transition-none`。断言在 `test/motion_test.dart` 的
+`reduced motion` 组。
+
 ## 共享动效原语（`components/motion.dart`）
 
 | 原语 | 覆盖的上游写法 |

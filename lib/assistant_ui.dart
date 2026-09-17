@@ -466,7 +466,8 @@ export 'src/components/motion.dart'
         AuiFadeInBlur,
         AuiHoverColor,
         AuiPressable,
-        AuiZoomFadeIn;
+        AuiZoomFadeIn,
+        auiMotionDuration;
 
 /// The web-preview element and its platform frame: chrome around an iframe on
 /// web, the host's own frame elsewhere.

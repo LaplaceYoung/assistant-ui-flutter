@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'motion.dart';
 import 'theme.dart';
 
 /// Fills, borders, text styles and controls shared by the tool, HITL and panel
@@ -333,12 +334,19 @@ class _AuiPillButtonState extends State<AuiPillButton> {
           onTapUp: enabled ? (_) => setState(() => _pressed = false) : null,
           onTap: widget.onPressed,
           child: AnimatedScale(
-            // `active:scale-[0.96]` over the same 150ms as the colours.
+            // `active:scale-[0.96]` over the same 150ms as the colours, and
+            // instant when the platform asks for reduced motion.
             scale: _pressed ? 0.96 : 1,
-            duration: const Duration(milliseconds: 150),
+            duration: auiMotionDuration(
+              context,
+              const Duration(milliseconds: 150),
+            ),
             curve: Curves.easeOut,
             child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
+            duration: auiMotionDuration(
+              context,
+              const Duration(milliseconds: 150),
+            ),
             height: widget.height,
             padding: EdgeInsets.symmetric(horizontal: widget.padding),
             decoration: BoxDecoration(

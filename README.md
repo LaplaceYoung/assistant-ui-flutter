@@ -353,6 +353,23 @@ AuiIf(
 );
 ```
 
+## Motion
+
+The interaction motion is aligned family by family against the upstream element
+sources: `docs/motion-inventory.json` records which animation tokens each of the
+121 animated elements carries, and `docs/MOTION_PLAN.md` maps every token to its
+Flutter equivalent, lists what is aligned (with the test that proves it) and
+what is not.
+
+Shared primitives in `components/motion.dart` cover the recurring patterns:
+entry (`fade-in blur-in-[2px] animate-in duration-300`, optionally sliding),
+popover entry (`fade-in zoom-in-95 duration-150`), press feedback
+(`active:scale-[0.96/0.98]`, hover lift), hover colours
+(`transition-colors duration-150/200`) and the animated progress bar
+(`transition-[width] duration-500`). Every one of them collapses to
+`Duration.zero` under `MediaQuery.disableAnimations`, matching upstream's
+`motion-reduce:` variants.
+
 ## Verification
 
 ```bash

@@ -164,7 +164,9 @@ const Map<String, Entry> _entries = <String, Entry>{
       note: 'paper card with counts and per-call rows; the .aui Root/Trigger/Content trio is not ported'),
   'tool-timeline': Entry('ported',
       dart: 'components/tool_timeline.dart',
-      note: 'swap label, revealed steps, diff stats; no blur/entry animations'),
+      note: 'swap label, revealed steps and diff stats; every revealed step enters '
+          'with fade + slide-in-from-bottom over 300ms and the trigger chevron turns '
+          'on the element curve, both per the upstream classes'),
   'tool-error': Entry('ported',
       dart: 'components/tool_error.dart',
       note: 'name/target/attempt, monospace error block, retry + skip'),
@@ -353,7 +355,8 @@ const Map<String, Entry> _entries = <String, Entry>{
       note: 'rules the day changes, times on hover'),
   'streaming-text': Entry('ported',
       dart: 'components/streaming_text.dart',
-      note: 'word reveal with the newest words tinted and a caret'),
+      note: 'word reveal where each word fades in over 500ms, its fresh tint '
+          'settles over 700ms and a pulsing caret trails the stream'),
   'shared-conversation': Entry('ported',
       dart: 'components/shared_conversation.dart',
       note: 'read-only turns with continue-in-your-own-chat'),
