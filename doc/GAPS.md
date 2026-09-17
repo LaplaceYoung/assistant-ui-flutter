@@ -63,7 +63,6 @@ on:
 | Gap | What it needs |
 |---|---|
 | Streaming text does not colour new tokens | The markdown renderer needs a per-token age, so the newest words land in blue and settle into ink |
-| The inventory walks 125 elements; the live catalogue says 144 | Refresh `tool/sync_element_coverage.dart`'s inventory from the live list, then close the difference |
 
 ## Verification not yet done
 
