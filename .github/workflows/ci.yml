@@ -55,6 +55,10 @@ jobs:
         run: flutter test
       - working-directory: landing
         run: flutter build web --release --base-href /assistant-ui-flutter/
+      - working-directory: example
+        run: flutter analyze
+      - working-directory: example
+        run: flutter test
       - run: flutter build web --release --base-href /assistant-ui-flutter/gallery/
         working-directory: example
       - name: Assemble the Pages tree (landing at /, gallery at /gallery)

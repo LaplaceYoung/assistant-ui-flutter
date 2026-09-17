@@ -90,6 +90,10 @@ class _ExampleAppState extends State<ExampleApp> {
                         value: 'states',
                         child: Text('States and indicators'),
                       ),
+                      PopupMenuItem<String>(
+                        value: 'pieces',
+                        child: Text('Pickers and pieces'),
+                      ),
                       PopupMenuItem<String>(value: 'tools', child: Text('Tools')),
                       PopupMenuItem<String>(value: 'agents', child: Text('Agents')),
                       PopupMenuItem<String>(
@@ -252,7 +256,9 @@ class _ThreadHost extends StatelessWidget {
       case 'motion':
         return const _MotionDemo();
       case 'states':
-        return const _StatesDemo();
+        return const StatesDemo();
+      case 'pieces':
+        return const PiecesDemo();
       default:
         return const AssistantThread(
           turnAnchor: AuiTurnAnchor.top,
@@ -1931,14 +1937,14 @@ class _MotionDemoState extends State<_MotionDemo> {
 /// The states a thread moves through, side by side: the empty state, the
 /// loading and typing indicators, a failed run, the follow-up chips and the
 /// timing readout. Each is the shipped widget, not a copy.
-class _StatesDemo extends StatefulWidget {
-  const _StatesDemo();
+class StatesDemo extends StatefulWidget {
+  const StatesDemo({super.key});
 
   @override
-  State<_StatesDemo> createState() => _StatesDemoState();
+  State<StatesDemo> createState() => _StatesDemoState();
 }
 
-class _StatesDemoState extends State<_StatesDemo> {
+class _StatesDemoState extends State<StatesDemo> {
   late final LocalRuntime _runtime = LocalRuntime(
     adapter: _NullAdapter(),
     initialMessages: <ThreadMessage>[
@@ -2120,6 +2126,169 @@ class _NullAdapter implements ChatModelAdapter {
     yield const ChatModelRunResult(
       content: <MessagePart>[],
       status: MessageStatusComplete(),
+    );
+  }
+}
+
+/// The pickers and the message-level pieces: the mobile composer, the model
+/// picker, the regenerate menu, a quoted reply and the attachment rows. Each is
+/// the shipped widget with the props a host would pass.
+class PiecesDemo extends StatefulWidget {
+  const PiecesDemo({super.key});
+
+  @override
+  State<PiecesDemo> createState() => _PiecesDemoState();
+}
+
+class _PiecesDemoState extends State<PiecesDemo> {
+  String _model = 'gpt-5.6-sol';
+  String _composer = '';
+  String _action = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: <Widget>[
+            _Section(
+              title: 'Mobile composer',
+              detail: 'quick actions, attach, send or stop, keyboard-aware',
+              child: AssistantMobileComposer(
+                value: _composer,
+                actions: const <String>['Summarize', 'Translate'],
+                onAction: (String action) =>
+                    setState(() => _action = action),
+                onAttach: () {},
+                onValueChange: (String value) =>
+                    setState(() => _composer = value),
+                onSend: () {},
+                onStop: () {},
+              ),
+            ),
+            _Section(
+              title: 'Model picker',
+              detail: 'families with capability chips and the current model checked',
+              child: AssistantModelPicker(
+                models: const <PickableModel>[
+                  PickableModel(
+                    id: 'gpt-5.6-sol',
+                    name: 'GPT-5.6 Sol',
+                    family: 'OpenAI',
+                    context: '256k',
+                    price: '\$3 / Mtok',
+                    capabilities: <String>['tools', 'vision'],
+                  ),
+                  PickableModel(
+                    id: 'gpt-5.6-luna',
+                    name: 'GPT-5.6 Luna',
+                    family: 'OpenAI',
+                    context: '128k',
+                    price: '\$1 / Mtok',
+                    capabilities: <String>['tools'],
+                  ),
+                  PickableModel(
+                    id: 'claude-opus-4.7',
+                    name: 'Claude Opus 4.7',
+                    family: 'Anthropic',
+                    context: '200k',
+                    price: '\$5 / Mtok',
+                    capabilities: <String>['tools', 'vision', 'audio'],
+                  ),
+                ],
+                selectedId: _model,
+                onSelect: (String id) => setState(() => _model = id),
+              ),
+            ),
+            _Section(
+              title: 'Regenerate menu',
+              detail: 're-run with the same model, or pick another',
+              child: AssistantRegenerateMenu(
+                options: const <RegenerateOption>[
+                  RegenerateOption(
+                    id: 'same',
+                    label: 'Same model',
+                    detail: 'GPT-5.6 Sol',
+                  ),
+                  RegenerateOption(
+                    id: 'luna',
+                    label: 'GPT-5.6 Luna',
+                    detail: 'Faster, cheaper',
+                  ),
+                  RegenerateOption(
+                    id: 'opus',
+                    label: 'Claude Opus 4.7',
+                    detail: 'Deeper reasoning',
+                  ),
+                ],
+                currentId: 'same',
+                open: true,
+              ),
+            ),
+            _Section(
+              title: 'Quote reply',
+              detail: 'the selection toolbar and the quoted reply it produces',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  AssistantQuoteReply(
+                    before: 'The run streams ',
+                    selection: 'token by token',
+                    after: ' and settles when the tools are done.',
+                    toolbarVisible: true,
+                    actions: const <QuoteAction>[
+                      QuoteAction(key: 'reply', label: 'Reply', icon: Icons.reply),
+                      QuoteAction(key: 'copy', label: 'Copy', icon: Icons.copy),
+                    ],
+                    onAction: (_) {},
+                  ),
+                  const SizedBox(height: 16),
+                  AssistantQuoteReply(
+                    before: 'Earlier the answer said ',
+                    selection: 'tools are done',
+                    after: ', which is where the thread settles.',
+                    quoted: 'tools are done',
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Message attachments',
+              detail: 'document and image rows a message carries',
+              child: AssistantMessageAttachmentList(
+                attachments: const <MessageAttachmentItem>[
+                  MessageAttachmentItem(
+                    id: 'a1',
+                    name: 'report.pdf',
+                    size: '1.2 MB',
+                    pages: 12,
+                  ),
+                  MessageAttachmentItem(
+                    id: 'a2',
+                    name: 'diagram.png',
+                    size: '480 KB',
+                    kind: AttachmentKind.image,
+                  ),
+                  MessageAttachmentItem(
+                    id: 'a3',
+                    name: 'notes.txt',
+                    size: '4 KB',
+                  ),
+                ],
+                onOpen: (String id) {},
+              ),
+            ),
+            Text(
+              'Picks report back: model: $_model'
+              '${_action.isEmpty ? '' : ' · last action: $_action'}',
+              style: theme.small(context).copyWith(color: theme.mutedForeground),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

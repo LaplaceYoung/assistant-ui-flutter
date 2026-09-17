@@ -8,8 +8,8 @@ Mechanical pass over the ported elements: does the element map to a file that ex
 |---|---|
 | ported or partial elements checked | 125 |
 | file missing or exports nothing public | 0 |
-| no test names the element's class | 3 |
-| not reachable from a surface | 46 |
+| no test names the element's class | 0 |
+| not reachable from a surface | 41 |
 
 ## No widget
 
@@ -21,9 +21,7 @@ None.
 
 No test file names the element's class. The element may still be covered through a shared test; these are the ones to check by hand.
 
-- `message-actions`
-- `message-branches`
-- `stopped-run`
+None.
 
 ## No surface
 
@@ -51,15 +49,10 @@ Nothing in the gallery, the example or the landing renders the element, so a rea
 - `math-block`
 - `mcp-config`
 - `mermaid-diagram`
-- `message-attachment`
-- `mobile-composer`
-- `model-picker`
 - `onboarding`
 - `permission-grant`
 - `prompt-library`
 - `quota-banner`
-- `quote-reply`
-- `regenerate-menu`
 - `research-report`
 - `retrieval-chunks`
 - `reviewable-diff`
