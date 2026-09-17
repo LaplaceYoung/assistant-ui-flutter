@@ -144,6 +144,18 @@ reads as three missing elements when they are three ported ones.
 | Onboarding | `1 of 3` with Skip and Next | `AssistantOnboarding` | Aligned |
 | Mobile composer | Quick actions above, thumb-sized targets, the mic | `AssistantMobileComposer` | Aligned |
 
+## Tenth read: the connected block's first cards
+
+| Card in the catalogue | Port | Status |
+|---|---|---|
+| Thread (AUI) | Messages, composer, auto-scroll and accessibility in one container | `AssistantThread` | Aligned |
+| Assistant modal (AUI) | The floating bubble, a thread list, a resizable window | `AssistantModal` | Aligned |
+
+The connected block is the composed elements — the ones the port's styled layer
+builds on its primitives — so the comparison is between two assemblies of the same
+parts. Its remaining cards, and the renderer, primitive and generative sections,
+are still unread.
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command
