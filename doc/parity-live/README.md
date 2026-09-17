@@ -134,6 +134,10 @@ reads as three missing elements when they are three ported ones.
 | Chat panel | The whole family working together | Aligned (the port's chat panel draws the same) |
 | Empty state | `What are we building?`, three prompt pills, the composer centred | `AssistantEmptyState` takes the greeting, the suggestions and the composer | Aligned |
 | Scroll anchor | Pinning pauses while tokens arrive; a jump pill appears once content lands out of view | `AssistantThread(showScrollToLatest:)` over the scroll-to-bottom primitive | Aligned |
+| Canvas | The document takes the room with `v3 saved`, copy and close | `AssistantCanvasSplit` takes the title, version, saved flag, lines and both actions | Aligned |
+| Connection state | `Picked the stream back up · +184 tokens` after a drop | `AssistantConnectionState` | Aligned |
+| Shared conversation | Shared by and when, the read-only turn, `Continue in your own chat` | `AssistantSharedConversation` | Aligned |
+| Search in conversation | `1 / 3` with step arrows and hits marked down the scrollbar | `AssistantConversationSearch` takes the hits with their positions | Aligned |
 
 ## Method
 
