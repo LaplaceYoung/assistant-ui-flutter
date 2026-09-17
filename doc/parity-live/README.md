@@ -76,6 +76,20 @@ the first capture stopped around card 21.
 | Plan | `5 of 5` with a checklist and per-step states | `AssistantAgentPlan` | Aligned |
 | Agent status | Name, model tag, progress bar, done rows with their model | `AssistantAgentStatus` | Aligned |
 
+## Fourth read: the agent tail
+
+| Card in the catalogue | Port | Status |
+|---|---|---|
+| Handoff | `agent-handoff` — from → to pills, the reason, what came along | Aligned |
+| Background runs | `background-inbox` — ready versus in-flight | Aligned |
+| Checkpoints | `checkpoint-history` — the current mark and what each point gives back | Aligned |
+| Schedule | `schedule-card` — cadence, next run, recent runs with their outcomes | Aligned |
+
+The catalogue names a few elements by what they show rather than by the port's
+file names (`Background runs` is `background-inbox`, `Checkpoints` is
+`checkpoint-history`, `Schedule` is `schedule-card`); comparing by name alone
+reads as three missing elements when they are three ported ones.
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command
