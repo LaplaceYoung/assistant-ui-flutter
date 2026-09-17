@@ -54,7 +54,7 @@ separately, so it is a different count, not a missing one.
 | Where | Live | Port | Status |
 |---|---|---|---|
 | Stopped run | `stopped by you`, then **Continue** and **Discard** | Continue only, with no note | **Discard added** — the note, the pill and the discard action, so a half-written answer can be dropped |
-| Draft restore | The behaviour and a card that shows the restored draft as an underline diff | The behaviour is ported into the runtime (drafts survive a thread switch); the diff-underlined card is not | **Open** — the card is a view over a draft the runtime already keeps |
+| Draft restore | `Add a regression test for draft…`, `unsent draft · 2 minutes ago`, **Restore** and a dismiss | `AssistantDraftRestore` — the text, the age in the same units, Restore and dismiss; the host supplies the draft and its timestamp | **Aligned** |
 | Feedback dialog | Reason chips, a note, `Send feedback` | Same | Aligned |
 | Timestamps | Day rules with times on hover | Same (`AssistantDaySeparator`) | Aligned |
 | Speaker identity | Avatars with the name, the model and per-turn durations | Same shape | Aligned |
@@ -110,6 +110,15 @@ reads as three missing elements when they are three ported ones.
 | Trace waterfall | `trace-waterfall` — span bars by status, durations to the right, a running pulse | Aligned |
 | Cost meter | `cost-meter` — this run over the session, per-model token split and cost | Aligned |
 | Quota banner | `quota-banner` — what is left, the reset time, `47 of 50 used`, upgrade | Aligned |
+
+## Seventh read: the composer
+
+| Card in the catalogue | Port | Status |
+|---|---|---|
+| Composer | `composer.dart` — attach, the model chip, dictation, send, and the context ring from `context-display` | Aligned |
+| Slash commands | `command-palette` — the menu above the input, filtered as you type, arrow wrap, enter | Aligned |
+| Mentions | No upstream element file backs this card; it is a behaviour of the unified composer, which the port mirrors | Aligned by construction |
+| Attachments | `attachments` and the composer's chips — per-file progress before the message sends | Aligned |
 
 ## Method
 

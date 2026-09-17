@@ -139,6 +139,7 @@ export 'src/components/flow.dart'
         FlowNodeVariant,
         FlowTone,
         auiFlowNodeWidth;
+export 'src/components/draft_restore.dart';
 export 'src/components/flow_expand.dart' show AssistantFlowExpand;
 export 'src/components/flow_graph.dart'
     show

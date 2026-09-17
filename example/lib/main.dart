@@ -3219,6 +3219,16 @@ class _SurfacesDemoState extends State<SurfacesDemo> {
               ),
             ),
             _Section(
+              title: 'Draft restore',
+              detail: 'the sentence never sent, with its age and Restore',
+              child: AssistantDraftRestore(
+                text: 'Add a regression test for the draft path…',
+                savedAt: DateTime.now().subtract(const Duration(minutes: 2)),
+                onRestore: () {},
+                onDismiss: () {},
+              ),
+            ),
+            _Section(
               title: 'Prompt library',
               detail: 'searchable saved prompts with the variables they take',
               child: AssistantPromptLibrary(

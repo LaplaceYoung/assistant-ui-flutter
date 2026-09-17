@@ -37,8 +37,8 @@ The design pass: six bands of the live catalogue have been read against the port
 observability — with five differences found and fixed (the effort picker's fourth
 level, the streaming tint, the loader's matrix, the stopped run's discard, and a
 coverage count that turned out not to be a gap). What is left is written down in
-`doc/parity-live/README.md`: the draft-restore card, and the catalogue's voice,
-thread, connected, renderer, primitive and generative sections.
+`doc/parity-live/README.md`: the catalogue's voice, thread, connected, renderer,
+primitive and generative sections.
 
 `doc/element-audit.md` is the mechanical pass over the ported elements — file,
 test, reachable surface; its "no surface" list is the work queue, and the states

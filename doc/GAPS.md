@@ -56,9 +56,6 @@ cannot come back quietly.
 
 ## Differences the live catalogue showed
 
-The draft-restore card: the runtime keeps per-thread drafts, but the element that
-shows a restored draft as an underline diff is not built. `doc/parity-live/README.md`
-carries it with the rest of the second read.
 
 
 `doc/parity-live/README.md` records the first read of
