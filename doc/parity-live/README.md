@@ -120,6 +120,13 @@ reads as three missing elements when they are three ported ones.
 | Mentions | No upstream element file backs this card; it is a behaviour of the unified composer, which the port mirrors | Aligned by construction |
 | Attachments | `attachments` and the composer's chips — per-file progress before the message sends | Aligned |
 
+## Eighth read: voice
+
+| Card in the catalogue | Port | Status |
+|---|---|---|
+| Voice conversation | Orb, caption (`Listening · Listening for you`), `you` / `ai` transcript rows, mic, the red end button | `AssistantVoiceConversation` takes the mode, the amplitude, the transcript and the three controls | Aligned |
+| Read aloud | The answer with the spoken words lit, pause, progress, `0:00 / 0:05`, speed, volume | `AssistantReadAloud` reads the same values | Aligned |
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command
