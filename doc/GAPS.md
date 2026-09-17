@@ -44,10 +44,13 @@ Found by pressing things rather than reading them:
 | `thread-list` rows | The archive and delete buttons were wired to `onPressed: () {}` — they hovered, and did nothing | Both call `ThreadsRuntimeApi.archive` / `unarchive` / `delete` for their own row; `test/thread_list_actions_test.dart` hovers to reveal them and asserts the thread moved |
 | `chat-panel` composer | The composer was a static `Text` that looked like a field; only the send chip was tappable | With `onSend` the composer is a real `TextField` — type, press Enter or the send chip; without it, the static strip stays |
 
-`test/element_interactions_test.dart` taps the primary control of nine more
-elements (regenerate menu, quote toolbar, feedback dialog, permission grant,
-launcher bubble, chat panel, artifact card, code runner) and asserts the callback
-fires, so this class of miss cannot come back quietly.
+`test/element_interactions_test.dart` taps the primary control of sixteen
+elements — the regenerate menu, the quote toolbar, the feedback dialog, the
+permission request (grant and deny), the launcher bubble, the chat panel, the
+artifact card, the code runner, thread search, the turn rail, the prompt library,
+the document reference's anchors, onboarding's next and skip, the memory chips
+and the job progress — and asserts the callback fires, so this class of miss
+cannot come back quietly.
 
 ## Verification not yet done
 

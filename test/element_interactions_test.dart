@@ -245,4 +245,117 @@ void main() {
     await tester.pump();
     expect(picked, 'p2');
   });
+
+  testWidgets('the document reference reports the page jumped to', (
+    WidgetTester tester,
+  ) async {
+    int? jumped;
+    await pump(
+      tester,
+      AssistantDocumentReference(
+        title: 'local_runtime.dart',
+        pages: 96,
+        activePage: 12,
+        onJump: (int page) => jumped = page,
+        anchors: const <DocumentAnchor>[
+          DocumentAnchor(page: 12, quote: 'final ChatModelAdapter _adapter;'),
+          DocumentAnchor(page: 88, quote: 'Future<void> get settled => _chain;'),
+        ],
+      ),
+    );
+    // The anchors are the jump targets.
+    await tester.tap(find.textContaining('settled').first, warnIfMissed: false);
+    await tester.pump();
+    expect(jumped, isNotNull);
+  });
+
+  testWidgets('onboarding reports next and skip', (WidgetTester tester) async {
+    int nexts = 0;
+    int skips = 0;
+    await pump(
+      tester,
+      AssistantOnboarding(
+        index: 0,
+        onNext: () => nexts++,
+        onSkip: () => skips++,
+        steps: const <OnboardingStep>[
+          OnboardingStep(
+            title: 'Point the runtime at a backend',
+            body: 'An adapter turns a prompt into parts.',
+            example: 'LocalRuntime(adapter: yourAdapter)',
+          ),
+          OnboardingStep(
+            title: 'Mount the thread',
+            body: 'The thread reads the state.',
+            example: 'AssistantThread()',
+          ),
+        ],
+      ),
+    );
+    await tester.tap(find.text('Next'));
+    await tester.pump();
+    expect(nexts, 1);
+
+    await tester.tap(find.text('Skip'));
+    await tester.pump();
+    expect(skips, 1);
+  });
+
+  testWidgets('the permission request can be denied', (WidgetTester tester) async {
+    GrantScope? granted;
+    await pump(
+      tester,
+      AssistantPermissionGrant(
+        capability: 'Read the repository',
+        requester: 'search_docs',
+        onGrant: (GrantScope scope) => granted = scope,
+      ),
+    );
+    await tester.tap(find.text('Deny'));
+    await tester.pump();
+    expect(granted, GrantScope.denied);
+  });
+
+  testWidgets('the memory chips report a forget', (WidgetTester tester) async {
+    String? forgotten;
+    await pump(
+      tester,
+      AssistantMemoryChips(
+        chips: const <MemoryChip>[
+          MemoryChip(
+            id: 'm1',
+            text: 'Prefers terse answers',
+            change: MemoryChange.added,
+          ),
+          MemoryChip(id: 'm2', text: 'Works in Dart', change: MemoryChange.updated),
+        ],
+        onForget: (String id) => forgotten = id,
+      ),
+    );
+    await tester.tap(find.byIcon(Icons.close).first);
+    await tester.pump();
+    expect(forgotten, isNotNull);
+  });
+
+  testWidgets('the job progress reports a cancel', (WidgetTester tester) async {
+    int cancels = 0;
+    await pump(
+      tester,
+      AssistantJobProgress(
+        title: 'Indexing the repository',
+        stages: const <JobStage>[
+          JobStage(name: 'Walking files', weight: 1),
+          JobStage(name: 'Embedding', weight: 3),
+          JobStage(name: 'Writing', weight: 1),
+        ],
+        stageIndex: 1,
+        stageProgress: 0.4,
+        eta: '2 min',
+        onCancel: () => cancels++,
+      ),
+    );
+    await tester.tap(find.bySemanticsLabel('Cancel the job'));
+    await tester.pump();
+    expect(cancels, 1);
+  });
 }
