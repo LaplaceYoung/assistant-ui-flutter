@@ -56,6 +56,22 @@ cd /tmp/aui-upstream && git sparse-checkout set packages/ui/src/components/react
 | `tool-error` | Retry/Skip 走 `AuiPillButton`（150ms 颜色 + 0.96 按压），重试时 `AuiSpinner` 旋转 | `test/motion_test.dart` |
 | `mermaid-diagram` | streaming 骨架 + 内置绘制 | `test/mermaid_renderer_test.dart` |
 
+## 浏览器复核
+
+`example` 有一个自动播放的动效页：`?page=motion` 每 1.6s 换一个相位，驱动工具组展开、逐步显形、词级流入与弹层开合，因此抓帧不需要命中坐标。抓法：
+
+```bash
+(cd example && flutter build web --release)
+python3 -m http.server 8195 --bind 127.0.0.1 --directory example/build/web &
+# 打开 http://127.0.0.1:8195/?page=motion，每 ~260ms 截一帧，跨一个完整周期
+```
+
+2026-09-17 的一次抓帧（12 帧，260ms 间隔）逐帧像素差 0.22%–0.39%，变化集中在相位切换处，contact sheet 见
+`docs/landing/parity/motion_frames.png`：相位 0 工具组闭合、时间线 1 步、流式 2 词；相位 1 展开出两行、2 步；
+相位 2 三步、4 词；相位 3 四步、词更长，之后循环。
+
+这证明动效在浏览器里真的在跑并改变布局；但它**不是**逐帧动效比对——采样间隔（260ms）与动画时长（150–300ms）同量级，没有单独隔离出某一动画的中途帧。
+
 ## 减少动态效果（motion-reduce）
 
 `components/motion.dart` 里的 `auiMotionDuration(context, base)` 在

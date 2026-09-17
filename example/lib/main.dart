@@ -238,6 +238,8 @@ class _ThreadHost extends StatelessWidget {
         return const _AgentFamilyDemo();
       case 'observability':
         return const _ObservabilityDemo();
+      case 'motion':
+        return const _MotionDemo();
       default:
         return const AssistantThread(
           turnAnchor: AuiTurnAnchor.top,
@@ -1794,4 +1796,121 @@ class _SpanTreeDemoState extends State<_SpanTreeDemo> {
   @override
   Widget build(BuildContext context) =>
       AuiSpanTimeline(tree: _tree, spacing: 8);
+}
+
+/// An auto-playing pass over the interaction motion, so a browser check can
+/// capture frames without having to hit a target: one phase every 1.6s drives
+/// the entry animations the elements ship.
+class _MotionDemo extends StatefulWidget {
+  const _MotionDemo();
+
+  @override
+  State<_MotionDemo> createState() => _MotionDemoState();
+}
+
+class _MotionDemoState extends State<_MotionDemo> {
+  Timer? _timer;
+  int _phase = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 1600), (_) {
+      if (mounted) setState(() => _phase = (_phase + 1) % 4);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    return ColoredBox(
+      color: theme.muted,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 470),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('phase $_phase', style: theme.code(context)),
+                const SizedBox(height: 14),
+                // 1. The tool group's body drops in (`duration-200`).
+                AssistantToolGroup(
+                  label: 'Read 2 files',
+                  open: _phase >= 1,
+                  initiallyOpen: false,
+                  tools: const <GroupedTool>[
+                    GroupedTool(
+                      id: 'm1',
+                      name: 'read_file',
+                      target: 'pubspec.yaml',
+                      state: GroupedToolState.done,
+                      durationMs: 12,
+                    ),
+                    GroupedTool(
+                      id: 'm2',
+                      name: 'read_file',
+                      target: 'README.md',
+                      state: GroupedToolState.done,
+                      durationMs: 9,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                // 2. Steps slide in one at a time (`duration-300`).
+                AssistantToolTimeline(
+                  initiallyOpen: true,
+                  activeLabel: 'Working',
+                  restingLabel: 'Worked for 12s',
+                  streaming: true,
+                  visibleSteps: 1 + _phase,
+                  steps: const <AssistantTimelineStep>[
+                    AssistantTimelineStep(verb: 'Read', chip: 'a.dart', icon: Icons.description),
+                    AssistantTimelineStep(verb: 'Edit', chip: 'b.dart', icon: Icons.edit),
+                    AssistantTimelineStep(verb: 'Run', chip: 'flutter test', icon: Icons.play_arrow),
+                    AssistantTimelineStep(verb: 'Write', chip: 'notes.md', icon: Icons.note_add),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                // 3. Words arrive and their tint settles (`500ms` / `700ms`).
+                AssistantStreamingText(
+                  count: 2 + _phase * 2,
+                  streaming: true,
+                  segments: const <StreamingSegment>[
+                    StreamingSegment('The runtime streams partial tokens as they arrive, '),
+                    StreamingSegment('so the thread keeps up', mono: true),
+                    StreamingSegment(' with the model.'),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                // 4. A popover grows in from 0.95 (`duration-150`).
+                AuiZoomFadeIn(
+                  trigger: _phase,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: theme.background,
+                      border: Border.all(color: theme.border),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      'grounded · threading.md',
+                      style: theme.code(context).copyWith(fontSize: 11),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

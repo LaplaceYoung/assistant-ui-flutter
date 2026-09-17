@@ -14,6 +14,7 @@ example/build/
 # the repository (for review) stay committed.
 docs/landing/parity/rep_*.png
 docs/landing/parity/src_*.png
+docs/landing/parity/frame_*.png
 
 # IDE
 .idea/
