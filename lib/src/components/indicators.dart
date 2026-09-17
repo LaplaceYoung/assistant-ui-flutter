@@ -220,7 +220,7 @@ class _AssistantLoadingStateState extends State<AssistantLoadingState>
       animation: _controller,
       builder: (BuildContext context, Widget? _) => Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           for (int row = 0; row < _rows; row++)
             Padding(
@@ -241,14 +241,10 @@ class _AssistantLoadingStateState extends State<AssistantLoadingState>
           if (widget.label != null)
             Padding(
               padding: const EdgeInsets.only(top: 10),
-              child: SizedBox(
-                width: _columns * widget.cellSize + (_columns - 1) * widget.spacing,
-                child: Text(
-                  widget.label!,
-                  textAlign: TextAlign.center,
-                  style: theme.small(context).copyWith(
-                    color: theme.mutedForeground,
-                  ),
+              child: Text(
+                widget.label!,
+                style: theme.small(context).copyWith(
+                  color: theme.mutedForeground,
                 ),
               ),
             ),
