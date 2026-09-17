@@ -163,6 +163,30 @@ builds on its primitives — so the comparison is between two assemblies of the 
 parts. Its remaining cards, and the renderer, primitive and generative sections,
 are still unread.
 
+## Eleventh to fourteenth read: the connected tail, renderers' first card
+
+| Card in the catalogue | Port | Status |
+|---|---|---|
+| Context display | Ring, bar, text, with a detailed hover view | `AssistantContextRing` / `AssistantContextBar` / `AssistantContextText` | Aligned (the text form added in this pass) |
+| MCP config dialog | Connectors and custom servers, authentication, connection state | `AssistantMcpConfig` | Aligned |
+| Attachment | Previews, progress and removal for composer and message attachments | `attachments`, `AssistantAttachmentCard` | Aligned |
+| Follow-up suggestions | Chips populated from the runtime's generated suggestions | `AssistantFollowUpSuggestions` | Aligned |
+| Sources | Favicon links for URLs, file badges for documents | `sources` | Aligned |
+| Image | Preview, loading state, actions, fullscreen | `ImagePart`, `AuiMessagePartImage`, `AssistantImageGeneration` | Aligned |
+| File | Type-aware icons, filename, size, download | `FilePart` chip — the download action stays the host's, as upstream documents | Aligned |
+| Model selector | Outline / Ghost / Muted, with the effort beside the model | `AssistantModelSelector` with the same three `ModelSelectorVariant`s | Aligned |
+| Composer trigger popover | Mentions, slash commands, the nested BACK level | `AssistantMentionPopover`, `AssistantSlashCommandMenu` | Aligned |
+| Directive text | Mention directives rendered into inline runtime-aware chips | `AssistantDirectiveText` | Aligned |
+| Markdown text | Headings, lists, links, tables and code blocks | `AssistantMarkdown` | Aligned |
+
+## What the capture cannot reach
+
+The catalogue renders its later sections lazily, so a tall-window capture stops
+around `Markdown text` — the rest of the renderer cards and the primitive and
+generative sections never lay out. Reading them needs a scroll-capable capture
+(the parity tool already scrolls over CDP for the landing); until then those three
+blocks are unread, and they are the only part of the catalogue left.
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command
