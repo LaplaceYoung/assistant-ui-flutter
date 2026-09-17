@@ -1,6 +1,6 @@
-// Generates docs/element-coverage.md from the official element inventory.
+// Generates doc/element-coverage.md from the official element inventory.
 //
-// The inventory (docs/official_elements.txt) is a snapshot of
+// The inventory (doc/official_elements.txt) is a snapshot of
 // packages/ui/src/components/react/assistant-ui/elements in the upstream repo.
 // Status lives here, next to the coverage report it produces, so the two can
 // never drift:
@@ -12,7 +12,7 @@
 //   curl -s "https://api.github.com/repos/assistant-ui/assistant-ui/contents/\
 //   packages/ui/src/components/react/assistant-ui/elements" \
 //     | jq -r '.[] | select(.type=="file") | .name' | grep -vE '\.(test|radix)\b' \
-//     | sed 's/\.tsx$//' | sort > docs/official_elements.txt
+//     | sed 's/\.tsx$//' | sort > doc/official_elements.txt
 import 'dart:io';
 
 /// status per element: ported | partial | planned | n/a
@@ -449,9 +449,9 @@ String _waveFor(String name) {
 }
 
 void main() {
-  final File inventory = File('docs/official_elements.txt');
+  final File inventory = File('doc/official_elements.txt');
   if (!inventory.existsSync()) {
-    stderr.writeln('docs/official_elements.txt is missing');
+    stderr.writeln('doc/official_elements.txt is missing');
     exit(1);
   }
   final List<String> raw = inventory
@@ -497,6 +497,6 @@ void main() {
   }
   out.writeln('| **total** | **${names.length}** |');
 
-  File('docs/element-coverage.md').writeAsStringSync(out.toString());
-  stdout.writeln('wrote docs/element-coverage.md (${names.length} elements)');
+  File('doc/element-coverage.md').writeAsStringSync(out.toString());
+  stdout.writeln('wrote doc/element-coverage.md (${names.length} elements)');
 }

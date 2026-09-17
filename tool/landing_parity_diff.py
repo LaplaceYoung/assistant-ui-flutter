@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Composes the parity frames and writes the difference report.
 
-    python3 tool/landing_parity_diff.py [--dir docs/landing/parity]
+    python3 tool/landing_parity_diff.py [--dir doc/landing/parity]
 
 Reads `src_<n>.png` / `rep_<n>.png`, writes `side_<n>.png` (the pair at half
 scale) and `REPORT.md` with the per-frame difference table.
@@ -34,7 +34,7 @@ def diff_percent(a: Image.Image, b: Image.Image) -> float:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dir", default="docs/landing/parity")
+    parser.add_argument("--dir", default="doc/landing/parity")
     args = parser.parse_args()
 
     folder = pathlib.Path(args.dir)

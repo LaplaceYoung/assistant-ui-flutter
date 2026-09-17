@@ -1,6 +1,6 @@
-// Generates docs/package-coverage.md from the official package inventory.
+// Generates doc/package-coverage.md from the official package inventory.
 //
-// The inventory (docs/official_packages.txt) is a snapshot of `packages/` in
+// The inventory (doc/official_packages.txt) is a snapshot of `packages/` in
 // the upstream repo. Status lives here, next to the report it produces, so the
 // two cannot drift:
 //
@@ -10,7 +10,7 @@
 //
 //   curl -s "https://api.github.com/repos/assistant-ui/assistant-ui/contents/\
 //   packages" | jq -r '.[] | select(.type=="dir") | .name' | sort \
-//     > docs/official_packages.txt
+//     > doc/official_packages.txt
 import 'dart:io';
 
 /// status per package: ported | partial | n/a
@@ -81,7 +81,7 @@ const Map<String, Entry> _entries = <String, Entry>{
           'primitives, hooks and the styled components'),
   'ui': Entry('ported',
       dart: 'components/, primitives/',
-      note: '119 of 125 elements ported, 4 partial, 2 n/a — see docs/element-coverage.md'),
+      note: '119 of 125 elements ported, 4 partial, 2 n/a — see doc/element-coverage.md'),
   'tw-shimmer': Entry('ported',
       dart: 'components/shimmer.dart',
       note: 'the effect with the CSS utility parameters (angle, speed, spread, '
@@ -136,7 +136,7 @@ const Map<String, Entry> _entries = <String, Entry>{
 };
 
 void main() {
-  final File inventory = File('docs/official_packages.txt');
+  final File inventory = File('doc/official_packages.txt');
   if (!inventory.existsSync()) {
     stderr.writeln('Missing ${inventory.path}');
     exit(1);
@@ -190,6 +190,6 @@ void main() {
   }
   out.writeln('| **total** | **${_entries.length}** |');
 
-  File('docs/package-coverage.md').writeAsStringSync(out.toString());
-  stdout.writeln('wrote docs/package-coverage.md (${packages.length} packages)');
+  File('doc/package-coverage.md').writeAsStringSync(out.toString());
+  stdout.writeln('wrote doc/package-coverage.md (${packages.length} packages)');
 }

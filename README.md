@@ -3,8 +3,8 @@
 [![Flutter](https://img.shields.io/badge/Flutter-3.47-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-%5E3.9-0175C2?logo=dart)](https://dart.dev)
 [![tests](https://img.shields.io/badge/tests-394-brightgreen)](test/)
-[![elements](https://img.shields.io/badge/elements-119%2F125%20ported-blue)](docs/element-coverage.md)
-[![packages](https://img.shields.io/badge/upstream%20packages-23%20ported-blue)](docs/package-coverage.md)
+[![elements](https://img.shields.io/badge/elements-119%2F125%20ported-blue)](doc/element-coverage.md)
+[![packages](https://img.shields.io/badge/upstream%20packages-23%20ported-blue)](doc/package-coverage.md)
 [![license](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 **A Flutter port of [assistant-ui](https://www.assistant-ui.com).** The whole
@@ -16,9 +16,9 @@ the assistant-ui landing page.
 |---|---|
 | Landing replica (live) | https://laplaceyoung.github.io/assistant-ui-flutter/ |
 | Repository | https://github.com/LaplaceYoung/assistant-ui-flutter |
-| Element coverage | [119 of 125 upstream elements ported](docs/element-coverage.md) |
-| Package coverage | [23 of 46 upstream packages ported, 1 partial, 22 n/a](docs/package-coverage.md) |
-| Landing parity | [mean 3.6% of pixels differ from the live page](docs/landing/parity/REPORT.md) |
+| Element coverage | [119 of 125 upstream elements ported](doc/element-coverage.md) |
+| Package coverage | [23 of 46 upstream packages ported, 1 partial, 22 n/a](doc/package-coverage.md) |
+| Landing parity | [mean 3.6% of pixels differ from the live page](doc/landing/parity/REPORT.md) |
 
 No React, no DOM, no web view: the same three layers, expressed as Flutter
 widgets.
@@ -356,8 +356,8 @@ AuiIf(
 ## Motion
 
 The interaction motion is aligned family by family against the upstream element
-sources: `docs/motion-inventory.json` records which animation tokens each of the
-121 animated elements carries, and `docs/MOTION_PLAN.md` maps every token to its
+sources: `doc/motion-inventory.json` records which animation tokens each of the
+121 animated elements carries, and `doc/MOTION_PLAN.md` maps every token to its
 Flutter equivalent, lists what is aligned (with the test that proves it) and
 what is not.
 
@@ -372,9 +372,8 @@ popover entry (`fade-in zoom-in-95 duration-150`), press feedback
 
 ## Publishing
 
-The package is publish-ready: `dart pub publish --dry-run` validates it (the only
-warning left is the `docs/` directory name, which is kept because the whole
-repository references it).
+The package is publish-ready: `dart pub publish --dry-run` validates it with no
+issues at all.
 
 Uploading needs a pub.dev token, which this repository does not hold. On the
 account that owns the package:
@@ -413,11 +412,11 @@ connection, ticker, spec sheet, timeline, todos, flow graph). Each vendor clone 
 and checked against its palette table in both the empty and conversation states.
 
 Coverage against the upstream catalogs lives in
-[`docs/element-coverage.md`](docs/element-coverage.md) (125 elements, generated
+[`doc/element-coverage.md`](doc/element-coverage.md) (125 elements, generated
 by `dart run tool/sync_element_coverage.dart`) and
-[`docs/package-coverage.md`](docs/package-coverage.md) (46 packages, generated
+[`doc/package-coverage.md`](doc/package-coverage.md) (46 packages, generated
 by `dart run tool/sync_package_coverage.dart`); the wave plan is in
-[`docs/PORT_PLAN.md`](docs/PORT_PLAN.md).
+[`doc/PORT_PLAN.md`](doc/PORT_PLAN.md).
 
 ## Landing page replica
 
@@ -434,8 +433,8 @@ cd landing && flutter run -d chrome
 flutter test          # 6 tests: sections, tabs, live showcase, anatomy, nav
 ```
 
-Spec, captures and the section-by-section mapping live in `docs/landing/`;
-the pixel comparison against the live page is in `docs/landing/parity/`.
+Spec, captures and the section-by-section mapping live in `doc/landing/`;
+the pixel comparison against the live page is in `doc/landing/parity/`.
 
 ## Differences from the React original
 

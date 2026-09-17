@@ -1,6 +1,6 @@
 // Captures the live page and the replica frame by frame for the parity check.
 //
-//   bun tool/landing_parity_capture.mjs --port 8181 --cdp 9401 --out docs/landing/parity
+//   bun tool/landing_parity_capture.mjs --port 8181 --cdp 9401 --out doc/landing/parity
 //
 // The live page scrolls with `window.scrollTo`; the replica is a Flutter canvas
 // whose own scroll view owns the offset, so it scrolls by wheel events of the
@@ -14,7 +14,7 @@ for (let i = 2; i < process.argv.length; i += 2) {
 const replicaUrl = args.get("replica") ?? "http://127.0.0.1:8181/";
 const liveUrl = args.get("live") ?? "https://www.assistant-ui.com/";
 const cdpPort = Number(args.get("cdp") ?? 9401);
-const out = args.get("out") ?? "docs/landing/parity";
+const out = args.get("out") ?? "doc/landing/parity";
 const width = Number(args.get("width") ?? 1280);
 const height = Number(args.get("height") ?? 1000);
 const step = Number(args.get("step") ?? 560);

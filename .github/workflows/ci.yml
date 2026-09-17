@@ -31,7 +31,7 @@ jobs:
           dart run tool/sync_element_coverage.dart
           dart run tool/sync_package_coverage.dart
       - name: Fail when a matrix drifted
-        run: git diff --exit-code docs/element-coverage.md docs/package-coverage.md
+        run: git diff --exit-code doc/element-coverage.md doc/package-coverage.md
 
   landing:
     name: web apps (analyze + test + build)

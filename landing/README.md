@@ -38,9 +38,9 @@ Company, Status) open on hover and render above the page from the page stack, si
 a pinned header paints the sections after it over anything its own child overflows.
 
 Copy, colours, type scale and spacing come from the captures in
-`docs/landing/` (`copy.md`, `theme.md`, `site.css`, `DESIGN.md`), and the
+`doc/landing/` (`copy.md`, `theme.md`, `site.css`, `DESIGN.md`), and the
 section-by-section pixel comparison against the live page lives in
-`docs/landing/parity/` (mean 3.7% of pixels differ; see that folder's README
+`doc/landing/parity/` (mean 3.7% of pixels differ; see that folder's README
 for the method and the geometry the fixes were driven by).
 
 ## Fidelity notes

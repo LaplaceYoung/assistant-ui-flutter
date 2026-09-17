@@ -6,7 +6,7 @@
 # Builds the replica, serves it without the Flutter service worker (which would
 # otherwise hand the browser the previous bundle), captures the live page and
 # the replica frame by frame over CDP, then composes the pairs and writes
-# docs/landing/parity/REPORT.md.
+# doc/landing/parity/REPORT.md.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -14,7 +14,7 @@ cd "$ROOT"
 
 PORT="${PORT:-8181}"
 CDP_PORT="${CDP_PORT:-9401}"
-OUT="${OUT:-docs/landing/parity}"
+OUT="${OUT:-doc/landing/parity}"
 CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 PROFILE="$(mktemp -d)"
 export PATH="$HOME/development/flutter/bin:$PATH"

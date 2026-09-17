@@ -53,10 +53,10 @@ const Map<String, List<(String?, List<NavEntry>)>> kNavMenus =
       (
         'Coverage',
         <NavEntry>[
-          NavEntry('Elements', '121 of 125 upstream elements', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/element-coverage.md'),
-          NavEntry('Packages', '23 of 46 upstream packages', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/package-coverage.md'),
-          NavEntry('Motion', 'Every animation token, mapped', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/MOTION_PLAN.md'),
-          NavEntry('Parity', 'The landing vs the live page', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/landing/parity/REPORT.md'),
+          NavEntry('Elements', '121 of 125 upstream elements', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/doc/element-coverage.md'),
+          NavEntry('Packages', '23 of 46 upstream packages', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/doc/package-coverage.md'),
+          NavEntry('Motion', 'Every animation token, mapped', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/doc/MOTION_PLAN.md'),
+          NavEntry('Parity', 'The landing vs the live page', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/doc/landing/parity/REPORT.md'),
         ],
       ),
     ],
@@ -65,7 +65,7 @@ const Map<String, List<(String?, List<NavEntry>)>> kNavMenus =
         'Read',
         <NavEntry>[
           NavEntry('README', 'Install, wire a runtime, ship', 'https://github.com/LaplaceYoung/assistant-ui-flutter#readme'),
-          NavEntry('Port plan', 'The wave plan and its rules', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/docs/PORT_PLAN.md'),
+          NavEntry('Port plan', 'The wave plan and its rules', 'https://github.com/LaplaceYoung/assistant-ui-flutter/blob/main/doc/PORT_PLAN.md'),
         ],
       ),
       (
