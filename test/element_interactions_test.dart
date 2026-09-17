@@ -487,4 +487,108 @@ void main() {
     await tester.pump();
     expect(toggles, 1);
   });
+
+  testWidgets('dragging the temperature slider reports the value', (
+    WidgetTester tester,
+  ) async {
+    final List<double> values = <double>[];
+    await pump(
+      tester,
+      AssistantSettingsPanel(
+        model: 'gpt-5.6-luna',
+        models: const <String>['gpt-5.6-luna'],
+        systemPrompt: 'Be brief.',
+        temperature: 0.2,
+        onModelChange: (_) {},
+        onSystemPromptChange: (_) {},
+        onTemperatureChange: values.add,
+      ),
+    );
+    // A slider answers a drag, not a tap.
+    await tester.drag(find.byType(Slider), const Offset(120, 0));
+    await tester.pump();
+    expect(values, isNotEmpty);
+    expect(values.last, greaterThan(0.2));
+  });
+
+  testWidgets('the search steps through the matches', (
+    WidgetTester tester,
+  ) async {
+    final List<int> steps = <int>[];
+    await pump(
+      tester,
+      // The pane lays out inside a bounded box.
+      SizedBox(
+        height: 260,
+        child: AssistantConversationSearch(
+        query: 'settle',
+        activeIndex: 0,
+        onQueryChange: (_) {},
+        onStep: steps.add,
+        hits: const <SearchHit>[
+          SearchHit(
+            id: 'h1',
+            before: 'The thread ',
+            match: 'settles',
+            after: ' once the run finished.',
+            position: 0.1,
+          ),
+          SearchHit(
+            id: 'h2',
+            before: 'It is already ',
+            match: 'settled',
+            after: '.',
+            position: 0.9,
+          ),
+        ],
+        ),
+      ),
+    );
+    await tester.tap(find.bySemanticsLabel('Next match'));
+    await tester.pump();
+    expect(steps, <int>[1]);
+
+    await tester.tap(find.bySemanticsLabel('Previous match'));
+    await tester.pump();
+    expect(steps, <int>[1, -1]);
+  });
+
+  testWidgets('read aloud cycles the playback speed', (
+    WidgetTester tester,
+  ) async {
+    int rates = 0;
+    await pump(
+      tester,
+      AssistantReadAloud(
+        words: const <String>['The', 'thread', 'settles'],
+        spokenIndex: 0,
+        elapsed: '0:01',
+        duration: '0:06',
+        onToggle: () {},
+        onRateChange: () => rates++,
+      ),
+    );
+    await tester.tap(find.bySemanticsLabel(RegExp('Playback speed')).first);
+    await tester.pump();
+    expect(rates, 1);
+  });
+
+  testWidgets('the canvas copy and close report back', (
+    WidgetTester tester,
+  ) async {
+    final List<String> calls = <String>[];
+    await pump(
+      tester,
+      AssistantCanvasSplit(
+        title: 'release-notes.md',
+        onCopy: () => calls.add('copy'),
+        onClose: () => calls.add('close'),
+      ),
+    );
+    await tester.tap(find.bySemanticsLabel('Copy release-notes.md'));
+    await tester.pump();
+    await tester.tap(find.bySemanticsLabel('Close the canvas'));
+    await tester.pump();
+    expect(calls, <String>['copy', 'close']);
+  });
 }
