@@ -60,6 +60,22 @@ separately, so it is a different count, not a missing one.
 | Speaker identity | Avatars with the name, the model and per-turn durations | Same shape | Aligned |
 | Regenerate menu | Rows with `slower / current / fastest` hints | Same, with the detail line | Aligned |
 
+## Third read: tool use and the agent sections
+
+The reference is now the whole catalogue (`elements-live-full.png`, 1440×13000);
+the first capture stopped around card 21.
+
+| Where | Live | Port | Status |
+|---|---|---|---|
+| Tool call | One invocation with its request and result behind a disclosure | `AssistantToolCallCard` | Aligned |
+| Tool timeline | `4 steps · 2 files changed`, verb rows with their target, then file chips with `+14 −3` | `AssistantToolTimeline` takes the same steps, stats and labels | Aligned |
+| Terminal block | Command, streamed lines, `exit 0`, the summary line | Same | Aligned |
+| Reviewable diff | `0 of 2 kept`, hunk, Discard / Keep | Same | Aligned |
+| File tree | `4 files changed +78 −9` over per-file counts | Same | Aligned |
+| Score breakdown | `4.1 / 5` with `approve`, weighted criteria and the note that pulled one down | `AssistantScoreBreakdown` has the verdict band and the weighted rows | Aligned |
+| Plan | `5 of 5` with a checklist and per-step states | `AssistantAgentPlan` | Aligned |
+| Agent status | Name, model tag, progress bar, done rows with their model | `AssistantAgentStatus` | Aligned |
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command
