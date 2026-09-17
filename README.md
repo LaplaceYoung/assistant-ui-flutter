@@ -1,10 +1,42 @@
-# assistant_ui
+# assistant-ui-flutter
 
-Flutter port of [assistant-ui](https://www.assistant-ui.com) — the components,
-the runtime, and the streaming protocol, rebuilt for Dart.
+[![Flutter](https://img.shields.io/badge/Flutter-3.47-02569B?logo=flutter)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-%5E3.9-0175C2?logo=dart)](https://dart.dev)
+[![tests](https://img.shields.io/badge/tests-394-brightgreen)](test/)
+[![elements](https://img.shields.io/badge/elements-119%2F125%20ported-blue)](docs/element-coverage.md)
+[![packages](https://img.shields.io/badge/upstream%20packages-23%20ported-blue)](docs/package-coverage.md)
+[![license](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
+
+**A Flutter port of [assistant-ui](https://www.assistant-ui.com).** The whole
+library — the component set, the runtime, the primitives and the model
+adapters — rebuilt as Dart/Flutter widgets, plus a one-to-one Flutter replica of
+the assistant-ui landing page.
+
+| | |
+|---|---|
+| Landing replica (live) | https://laplaceyoung.github.io/assistant-ui-flutter/ |
+| Repository | https://github.com/LaplaceYoung/assistant-ui-flutter |
+| Element coverage | [119 of 125 upstream elements ported](docs/element-coverage.md) |
+| Package coverage | [23 of 46 upstream packages ported, 1 partial, 22 n/a](docs/package-coverage.md) |
+| Landing parity | [mean 3.6% of pixels differ from the live page](docs/landing/parity/REPORT.md) |
 
 No React, no DOM, no web view: the same three layers, expressed as Flutter
 widgets.
+
+```yaml
+# pubspec.yaml — the package is consumed straight from this repository
+dependencies:
+  assistant_ui:
+    git:
+      url: https://github.com/LaplaceYoung/assistant-ui-flutter.git
+      path: .
+```
+
+```bash
+flutter run -d chrome example          # the gallery of every element family
+cd landing && flutter run -d chrome    # the landing replica
+flutter test                           # 394 tests
+```
 
 ```dart
 final runtime = LocalRuntime(adapter: MyChatModelAdapter());

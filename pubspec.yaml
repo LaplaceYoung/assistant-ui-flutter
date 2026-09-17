@@ -1,8 +1,11 @@
 name: assistant_ui
 description: >-
-  Flutter port of assistant-ui: unstyled primitives, a local runtime with
-  streaming, branching and tool calls, plus styled chat components.
+  Flutter port of assistant-ui: the component set, the unstyled primitives, a
+  local runtime with streaming, branching and tool calls, and the model
+  adapters (data stream, MCP, AG-UI, A2A, LangGraph, Google ADK, generative UI).
 version: 0.1.0
+repository: https://github.com/LaplaceYoung/assistant-ui-flutter
+issue_tracker: https://github.com/LaplaceYoung/assistant-ui-flutter/issues
 publish_to: none
 
 environment:
