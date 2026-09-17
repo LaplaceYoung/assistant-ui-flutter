@@ -103,6 +103,14 @@ reads as three missing elements when they are three ported ones.
 | Flow graph | `flow-graph` — labelled nodes over bezier edges | Aligned |
 | Diagram | `diagram` — zoom, reset and expand over a host figure | Aligned |
 
+## Sixth read: observability
+
+| Card in the catalogue | Port | Status |
+|---|---|---|
+| Trace waterfall | `trace-waterfall` — span bars by status, durations to the right, a running pulse | Aligned |
+| Cost meter | `cost-meter` — this run over the session, per-model token split and cost | Aligned |
+| Quota banner | `quota-banner` — what is left, the reset time, `47 of 50 used`, upgrade | Aligned |
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command
