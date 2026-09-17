@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'motion.dart';
 import 'surfaces.dart';
 import 'theme.dart';
 
@@ -63,16 +64,13 @@ class AssistantAgentPlan extends StatelessWidget {
             const SizedBox(height: 12),
             ClipRRect(
               borderRadius: BorderRadius.circular(999),
-              child: Container(
+              // `transition-[width] duration-500`: the fill eases to the new
+              // fraction instead of jumping.
+              child: AuiAnimatedProgressBar(
+                value: math.max(0, math.min(1, progress)),
                 height: 3,
-                color: auiFg(theme, 0.06),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: FractionallySizedBox(
-                    widthFactor: math.max(0, math.min(1, progress)),
-                    child: ColoredBox(color: auiFg(theme, 0.8)),
-                  ),
-                ),
+                track: auiFg(theme, 0.06),
+                color: auiFg(theme, 0.8),
               ),
             ),
             const SizedBox(height: 12),

@@ -39,7 +39,21 @@ cd /tmp/aui-upstream && git sparse-checkout set packages/ui/src/components/react
 
 | element | 动效 | 证据 |
 |---|---|---|
+| `agent-status` | 工作态圆点 `animate-pulse`（1400ms 往复）+ 标签 `fade-in blur-in-[2px] duration-300`（状态变化时重播） | `test/motion_test.dart` |
+| `agent-plan` | 进度条 `transition-[width] duration-500` 缓动到新比例 | `test/motion_test.dart` |
+| `approval-card` | 终态行 `fade-in animate-in duration-300`；按钮 `active:scale-[0.96]` + 150ms 颜色过渡（`AuiPillButton` 统一实现） | `test/motion_test.dart` |
+| `artifact-card` | 悬停上抬 1px（150ms）+ `active:scale-[0.98]`；角标箭头 150ms 淡入；word-count 行 `fade-in blur-in-[2px] duration-300` | `test/motion_test.dart` |
 | `tool-group` | 头部 chevron 200ms 旋转 | `test/tool_family_test.dart` |
 | `tool-timeline` | 折叠触发器 + 双标签切换；**CSS blur/逐行入场未做** | 待补 |
-| `approval-card` | 状态切换 | 待核对时长 |
 | `mermaid-diagram` | streaming 骨架 + 内置绘制 | `test/mermaid_renderer_test.dart` |
+
+## 共享动效原语（`components/motion.dart`）
+
+| 原语 | 覆盖的上游写法 |
+|---|---|
+| `AuiFadeInBlur` | `fade-in blur-in-[2px] animate-in duration-300`（含 `trigger` 重播与可选位移入场） |
+| `AuiPressable` | `active:scale-[0.96/0.98]` + `hover:-translate-y-px`，150ms |
+| `AuiAnimatedProgressBar` | `transition-[width] duration-500` |
+| `AuiHoverColor` | `transition-colors duration-150/200` |
+
+`AuiPillButton`（所有 pill 按钮共用）现在自带 150ms 颜色过渡 + 按压 0.96 缩放，因此 tool 错误重试/跳过、elicitation、对话框等元素一并获得同一套按压反馈。

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'motion.dart';
 import 'surfaces.dart';
 import 'theme.dart';
 
@@ -174,13 +175,17 @@ class _StatusLine extends StatelessWidget {
       ApprovalState.denied => 'Denied',
       _ => 'Finished with exit 0',
     };
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        leading,
-        const SizedBox(width: 8),
-        Text(label, style: style),
-      ],
+    return AuiFadeInBlur(
+      // `fade-in animate-in duration-300` as the state settles.
+      trigger: state,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          leading,
+          const SizedBox(width: 8),
+          Text(label, style: style),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'motion.dart';
 import 'surfaces.dart';
 import 'theme.dart';
 
@@ -64,14 +65,19 @@ class AssistantAgentStatus extends StatelessWidget {
                 const SizedBox(width: 10),
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 176),
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      height: 1.3,
-                      color: theme.foreground,
+                  child: AuiFadeInBlur(
+                    // `fade-in blur-in-[2px] animate-in duration-300` on the
+                    // label, replayed whenever the state changes.
+                    trigger: state,
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.3,
+                        color: theme.foreground,
+                      ),
                     ),
                   ),
                 ),

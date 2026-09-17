@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../primitives/message.dart' show AuiMessageHoverScope;
+import 'motion.dart';
 import 'surfaces.dart';
 import 'theme.dart';
 
@@ -71,7 +72,11 @@ class AssistantArtifactCard extends StatelessWidget {
                       ),
                     ),
                     if (generating)
-                      Row(
+                      // `fade-in blur-in-[2px] animate-in duration-300` when
+                      // the live word count takes over the meta line.
+                      AuiFadeInBlur(
+                        trigger: generating,
+                        child: Row(
                         children: <Widget>[
                           AuiShimmerLabel(
                             text: 'Writing',
@@ -99,6 +104,7 @@ class AssistantArtifactCard extends StatelessWidget {
                             ),
                           ),
                         ],
+                        ),
                       )
                     else
                       Text(
@@ -160,6 +166,7 @@ class _Hover extends StatefulWidget {
 
 class _HoverState extends State<_Hover> {
   bool _hovered = false;
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -172,14 +179,29 @@ class _HoverState extends State<_Hover> {
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
+        onTapDown: widget.onTap == null
+            ? null
+            : (_) => setState(() => _pressed = true),
+        onTapCancel: widget.onTap == null
+            ? null
+            : () => setState(() => _pressed = false),
+        onTapUp: widget.onTap == null
+            ? null
+            : (_) => setState(() => _pressed = false),
         onTap: widget.onTap,
-        // Upstream lifts the card a pixel on hover.
-        child: AnimatedContainer(
+        child: AnimatedScale(
+          // `active:scale-[0.98]`, same 150ms as the lift.
+          scale: _pressed ? 0.98 : 1,
           duration: const Duration(milliseconds: 150),
-          transform: Matrix4.translationValues(0, _hovered ? -1 : 0, 0),
-          decoration: auiPaper(theme, radius: 20),
-          padding: const EdgeInsets.all(14),
-          child: widget.child,
+          curve: Curves.easeOut,
+          // Upstream lifts the card a pixel on hover.
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            transform: Matrix4.translationValues(0, _hovered ? -1 : 0, 0),
+            decoration: auiPaper(theme, radius: 20),
+            padding: const EdgeInsets.all(14),
+            child: widget.child,
+          ),
         ),
       ),
     );

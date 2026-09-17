@@ -304,6 +304,7 @@ class AuiPillButton extends StatefulWidget {
 
 class _AuiPillButtonState extends State<AuiPillButton> {
   bool _hovered = false;
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -327,8 +328,16 @@ class _AuiPillButtonState extends State<AuiPillButton> {
         onExit: (_) => setState(() => _hovered = false),
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
+          onTapDown: enabled ? (_) => setState(() => _pressed = true) : null,
+          onTapCancel: enabled ? () => setState(() => _pressed = false) : null,
+          onTapUp: enabled ? (_) => setState(() => _pressed = false) : null,
           onTap: widget.onPressed,
-          child: AnimatedContainer(
+          child: AnimatedScale(
+            // `active:scale-[0.96]` over the same 150ms as the colours.
+            scale: _pressed ? 0.96 : 1,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             height: widget.height,
             padding: EdgeInsets.symmetric(horizontal: widget.padding),
@@ -362,6 +371,7 @@ class _AuiPillButtonState extends State<AuiPillButton> {
                   ),
                 ),
               ],
+            ),
             ),
           ),
         ),

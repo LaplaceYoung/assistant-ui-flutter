@@ -458,6 +458,11 @@ export 'src/protocol/data_stream_adapter.dart'
 export 'src/runtime/local_runtime.dart'
     show LocalRuntime, LocalRuntimeOptions;
 
+/// The motion primitives the elements share: entry (fade + blur), press
+/// feedback, hover colours and the animated progress bar.
+export 'src/components/motion.dart'
+    show AuiAnimatedProgressBar, AuiFadeInBlur, AuiHoverColor, AuiPressable;
+
 /// The web-preview element and its platform frame: chrome around an iframe on
 /// web, the host's own frame elsewhere.
 export 'src/components/web_preview.dart' show AssistantWebPreview;
