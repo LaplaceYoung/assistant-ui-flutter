@@ -12,7 +12,7 @@ hand when something moves; the two matrices under it are generated.
 | Runtime adapters | data stream v1, MCP, AG-UI, A2A, LangGraph, Google ADK, generative UI, o11y span tree, cloud | `test/{ag_ui,a2a,langgraph,adk,mcp_client,cloud}_test.dart`, each over a real in-process HTTP/SSE server |
 | Interaction motion | six families aligned to the upstream animation tokens, reduced motion throughout | `doc/motion-inventory.json`, `doc/MOTION_PLAN.md`, `test/motion_test.dart`, `doc/landing/parity/motion_frames.png` |
 | Landing page | a Flutter recreation — the original's structure, order and copy, drawn with this package's widgets and pointing at what the port ships | `doc/landing/parity/REPORT.md` (mean 3.6% of pixels differ from the live page), `tool/landing_parity.sh` |
-| Gates | package 445 tests, landing 6, both analyze clean | `flutter test`, `flutter analyze` |
+| Gates | package 452 tests, landing 23, both analyze clean | `flutter test`, `flutter analyze` |
 | CI | four jobs: package, example, web apps, deploy | `.github/workflows/ci.yml`, green on `04c0f7e` |
 | Release | publish-ready, zero validation warnings | `dart pub publish --dry-run`, `.github/workflows/publish.yml` |
 
@@ -25,6 +25,13 @@ dart run tool/sync_element_coverage.dart && dart run tool/sync_package_coverage.
 dart pub publish --dry-run
 tool/landing_parity.sh          # needs the network: compares against the live site
 ```
+
+## Known gaps
+
+`doc/GAPS.md` lists what is missing with a reason per line: the playground
+controls this port cannot honour yet, the four partial elements, and the
+verification that has not been done (no per-element visual diff, no pixel
+comparison of the playground).
 
 ## The four partial elements, and why
 
@@ -52,6 +59,11 @@ covered by `doc/element-coverage.md`.
 `doc/package-coverage.md`.
 
 ## Not claimed
+
+- - The playground is a recreation of upstream's **builder**, not of its React
+  implementation: the presets, the control groups, the viewport presets, the code
+  pane and the shareable diff-against-defaults URL follow it; the panel lists the
+  controls this port honours and leaves the rest to `doc/GAPS.md`.
 
 - The landing is **not** a pixel-for-pixel clone: it is a Flutter recreation that
   keeps the original's structure, order and copy. Where the original links to its
