@@ -60,7 +60,8 @@ cannot come back quietly.
   the landing page against the live one (mean 3.6% of pixels); the playground has
   behavioural tests and a screenshot check, not a pixel comparison.
 - **No per-element visual diff.** The 121 ported elements have unit and widget
-  tests and appear in the gallery; they have not each been compared against the
-  live site's rendering.
+  tests and appear in the gallery (archived under `doc/gallery/`, captured by
+  `example/tool/capture_gallery_test.dart --update-goldens`); they have not each
+  been compared against the live site's rendering.
 - **The live site's copy for the playground's own chrome** (its toolbar icons and
   labels) is matched in spirit, not transcribed.
