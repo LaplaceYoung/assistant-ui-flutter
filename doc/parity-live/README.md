@@ -49,6 +49,17 @@ Running that diff now prints nothing: the inventory is current. The catalogue's
 number spans its fourteen sections, including the three primitives it lists
 separately, so it is a different count, not a missing one.
 
+## Second read: the messages and composer cards
+
+| Where | Live | Port | Status |
+|---|---|---|---|
+| Stopped run | `stopped by you`, then **Continue** and **Discard** | Continue only, with no note | **Discard added** — the note, the pill and the discard action, so a half-written answer can be dropped |
+| Draft restore | The behaviour and a card that shows the restored draft as an underline diff | The behaviour is ported into the runtime (drafts survive a thread switch); the diff-underlined card is not | **Open** — the card is a view over a draft the runtime already keeps |
+| Feedback dialog | Reason chips, a note, `Send feedback` | Same | Aligned |
+| Timestamps | Day rules with times on hover | Same (`AssistantDaySeparator`) | Aligned |
+| Speaker identity | Avatars with the name, the model and per-turn durations | Same shape | Aligned |
+| Regenerate menu | Rows with `slower / current / fastest` hints | Same, with the detail line | Aligned |
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command

@@ -59,9 +59,24 @@ class AssistantActionBar extends StatelessWidget {
 /// [MessageStatusIncomplete] and no run is in flight; tapping it starts a run
 /// from that message.
 class AssistantContinueRun extends StatelessWidget {
-  const AssistantContinueRun({super.key, this.label = 'Continue'});
+  const AssistantContinueRun({
+    super.key,
+    this.label = 'Continue',
+    this.discardLabel = 'Discard',
+    this.stoppedLabel = 'stopped by you',
+    this.onDiscard,
+  });
 
   final String label;
+
+  /// The live element pairs Continue with a way to drop the half-written answer;
+  /// without [onDiscard] only Continue shows.
+  final String discardLabel;
+
+  /// The note before the buttons; null hides it.
+  final String? stoppedLabel;
+
+  final VoidCallback? onDiscard;
 
   @override
   Widget build(BuildContext context) {
@@ -77,15 +92,47 @@ class AssistantContinueRun extends StatelessWidget {
           builder: (BuildContext context, MessageState? message) {
             if (message == null) return const SizedBox.shrink();
             final AssistantRuntime runtime = AuiRuntimeProvider.of(context);
-            return AuiPillButton(
-              label: label,
-              icon: Icons.play_arrow,
-              spinnerSize: 12,
-              height: 28,
-              padding: 12,
-              onPressed: () => unawaited(
-                runtime.thread.startRun(parentId: message.message.id),
-              ),
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (stoppedLabel != null) ...<Widget>[
+                  Icon(
+                    Icons.stop_circle_outlined,
+                    size: 14,
+                    color: AssistantTheme.of(context).mutedForeground,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    stoppedLabel!,
+                    style: AssistantTheme.of(context)
+                        .small(context)
+                        .copyWith(
+                          color: AssistantTheme.of(context).mutedForeground,
+                        ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                AuiPillButton(
+                  label: label,
+                  icon: Icons.play_arrow,
+                  spinnerSize: 12,
+                  height: 28,
+                  padding: 12,
+                  onPressed: () => unawaited(
+                    runtime.thread.startRun(parentId: message.message.id),
+                  ),
+                ),
+                if (onDiscard != null) ...<Widget>[
+                  const SizedBox(width: 8),
+                  AuiPillButton(
+                    label: discardLabel,
+                    height: 28,
+                    padding: 12,
+                    variant: AuiPillButtonVariant.ghost,
+                    onPressed: onDiscard,
+                  ),
+                ],
+              ],
             );
           },
         ),

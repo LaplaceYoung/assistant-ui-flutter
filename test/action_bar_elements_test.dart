@@ -62,11 +62,22 @@ void main() {
         ],
       );
 
-      await tester.pumpWidget(_message(runtime, const AssistantContinueRun()));
+      int discards = 0;
+      await tester.pumpWidget(
+        _message(
+          runtime,
+          AssistantContinueRun(onDiscard: () => discards++),
+        ),
+      );
       await tester.pump();
       expect(find.text('Continue'), findsOneWidget);
       // The partial content stays on screen, as upstream keeps it.
       expect(find.text('Half an answer'), findsOneWidget);
+      // The live element labels the stop and pairs Continue with Discard.
+      expect(find.text('stopped by you'), findsOneWidget);
+      await tester.tap(find.text('Discard'));
+      await tester.pump();
+      expect(discards, 1);
 
       await tester.tap(find.text('Continue'));
       await tester.pump();
