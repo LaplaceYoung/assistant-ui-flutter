@@ -2708,9 +2708,11 @@ class _NavigationDemoState extends State<NavigationDemo> {
             _Section(
               title: 'File tree',
               detail: 'folder and file rows with per-file diff counts',
-              child: const SizedBox(
+              child: SizedBox(
                 height: 260,
                 child: AssistantFileTree(
+                selectedPath: 'lib/src/runtime.dart',
+                onSelect: (String path) {},
                 visibleCount: 6,
                 totalAdditions: 17,
                 totalDeletions: 4,

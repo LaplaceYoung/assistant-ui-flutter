@@ -591,4 +591,44 @@ void main() {
     await tester.pump();
     expect(calls, <String>['copy', 'close']);
   });
+
+  testWidgets('the file tree reports the file picked', (
+    WidgetTester tester,
+  ) async {
+    final List<String> picks = <String>[];
+    await pump(
+      tester,
+      SizedBox(
+        height: 240,
+        child: AssistantFileTree(
+          visibleCount: 3,
+          totalAdditions: 5,
+          totalDeletions: 1,
+          selectedPath: 'lib/src/runtime.dart',
+          onSelect: picks.add,
+          nodes: const <FileTreeNode>[
+            FileTreeNode(path: 'lib', name: 'lib', depth: 0, isFolder: true),
+            FileTreeNode(
+              path: 'lib/src/runtime.dart',
+              name: 'runtime.dart',
+              depth: 1,
+              additions: 4,
+              deletions: 1,
+            ),
+            FileTreeNode(
+              path: 'README.md',
+              name: 'README.md',
+              depth: 0,
+              additions: 1,
+            ),
+          ],
+        ),
+      ),
+    );
+    expect(find.text('runtime.dart'), findsOneWidget);
+
+    await tester.tap(find.text('README.md'));
+    await tester.pump();
+    expect(picks, <String>['README.md']);
+  });
 }

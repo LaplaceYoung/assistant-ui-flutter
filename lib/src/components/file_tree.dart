@@ -44,6 +44,8 @@ class AssistantFileTree extends StatelessWidget {
     required this.visibleCount,
     required this.totalAdditions,
     required this.totalDeletions,
+    this.selectedPath,
+    this.onSelect,
   });
 
   final List<FileTreeNode> nodes;
@@ -53,6 +55,12 @@ class AssistantFileTree extends StatelessWidget {
 
   final int totalAdditions;
   final int totalDeletions;
+
+  /// The row shown as picked.
+  final String? selectedPath;
+
+  /// Reports a pick; the row is a file the reader is looking at.
+  final ValueChanged<String>? onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +115,8 @@ class AssistantFileTree extends StatelessWidget {
               const SizedBox(height: 8),
               for (final FileTreeNode node in nodes.take(visibleCount))
                 _Row(
+                  selected: node.path == selectedPath,
+                  onSelect: onSelect,
                   node: node,
                   green: green,
                   red: red,
@@ -120,11 +130,19 @@ class AssistantFileTree extends StatelessWidget {
 }
 
 class _Row extends StatefulWidget {
-  const _Row({required this.node, required this.green, required this.red});
+  const _Row({
+    required this.node,
+    required this.green,
+    required this.red,
+    required this.selected,
+    this.onSelect,
+  });
 
   final FileTreeNode node;
   final Color green;
   final Color red;
+  final bool selected;
+  final ValueChanged<String>? onSelect;
 
   @override
   State<_Row> createState() => _RowState();
@@ -138,11 +156,21 @@ class _RowState extends State<_Row> {
     final AssistantTheme theme = AssistantTheme.of(context);
     final FileTreeNode node = widget.node;
     return MouseRegion(
+      cursor: widget.onSelect == null
+          ? MouseCursor.defer
+          : SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
-      child: Container(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: widget.onSelect == null
+            ? null
+            : () => widget.onSelect!(widget.node.path),
+        child: Container(
         decoration: BoxDecoration(
-          color: _hovered ? auiFg(theme, 0.03) : null,
+          color: widget.selected
+              ? auiFg(theme, 0.08)
+              : (_hovered ? auiFg(theme, 0.03) : null),
           borderRadius: BorderRadius.circular(8),
         ),
         padding: EdgeInsets.only(
@@ -212,6 +240,7 @@ class _RowState extends State<_Row> {
                 ),
             ],
           ],
+        ),
         ),
       ),
     );
