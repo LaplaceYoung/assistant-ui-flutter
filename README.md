@@ -411,7 +411,8 @@ heatmaps, confidence, score, chart, table, comparison, recommendation,
 connection, ticker, spec sheet, timeline, todos, flow graph). Each vendor clone was opened through `?page=chatgpt|claude|gemini|grok`
 and checked against its palette table in both the empty and conversation states.
 
-Coverage against the upstream catalogs lives in
+The state of the port, with the command that proves each line, is in
+[`doc/COMPLETENESS.md`](doc/COMPLETENESS.md). Coverage against the upstream catalogs lives in
 [`doc/element-coverage.md`](doc/element-coverage.md) (125 elements, generated
 by `dart run tool/sync_element_coverage.dart`) and
 [`doc/package-coverage.md`](doc/package-coverage.md) (46 packages, generated
