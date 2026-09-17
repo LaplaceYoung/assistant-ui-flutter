@@ -2553,8 +2553,18 @@ class _MessagesDemoState extends State<MessagesDemo> {
 /// Finding things and reading code: conversation and thread search, the artifact
 /// card, a unified diff, a diff accepted hunk by hunk, a file tree with counts, a
 /// runnable snippet, the turn rail and the icon button.
-class NavigationDemo extends StatelessWidget {
+class NavigationDemo extends StatefulWidget {
   const NavigationDemo({super.key});
+
+  @override
+  State<NavigationDemo> createState() => _NavigationDemoState();
+}
+
+class _NavigationDemoState extends State<NavigationDemo> {
+  String _query = 'settle';
+  int _step = 1;
+  String _thread = 't2';
+  String _turn = 'c2';
 
   @override
   Widget build(BuildContext context) {
@@ -2572,8 +2582,12 @@ class NavigationDemo extends StatelessWidget {
               child: SizedBox(
                 height: 260,
                 child: AssistantConversationSearch(
-                query: 'settle',
-                activeIndex: 1,
+                query: _query,
+                activeIndex: _step,
+                onQueryChange: (String value) =>
+                    setState(() => _query = value),
+                onStep: (int delta) =>
+                    setState(() => _step = (_step + delta).clamp(0, 1)),
                 hits: const <SearchHit>[
                   SearchHit(
                     id: 'h1',
@@ -2599,7 +2613,9 @@ class NavigationDemo extends StatelessWidget {
               child: SizedBox(
                 height: 280,
                 child: AssistantThreadSearch(
-                activeId: 't2',
+                activeId: _thread,
+                onSelect: (String id) => setState(() => _thread = id),
+                onQueryChange: (String value) {},
                 threads: const <SearchableThread>[
                   SearchableThread(
                     id: 't1',
@@ -2755,7 +2771,8 @@ class NavigationDemo extends StatelessWidget {
               child: SizedBox(
                 height: 240,
                 child: AssistantConversationMap(
-                activeId: 'c2',
+                activeId: _turn,
+                onSelect: (String id) => setState(() => _turn = id),
                 visibleIds: const <String>['c1', 'c2', 'c3'],
                 entries: const <ConversationMapEntry>[
                   ConversationMapEntry(id: 'c1', title: 'Streaming notes'),
@@ -3199,6 +3216,8 @@ class _SurfacesDemoState extends State<SurfacesDemo> {
               detail: 'searchable saved prompts with the variables they take',
               child: AssistantPromptLibrary(
                 selectedId: 'p2',
+                onSelect: (String id) {},
+                onQueryChange: (String value) {},
                 prompts: const <SavedPrompt>[
                   SavedPrompt(
                     id: 'p1',

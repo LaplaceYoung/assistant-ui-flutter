@@ -171,4 +171,78 @@ void main() {
     await tester.pump();
     expect(runs, 1);
   });
+
+  testWidgets('the thread search reports the thread picked', (
+    WidgetTester tester,
+  ) async {
+    String? picked;
+    await pump(
+      tester,
+      AssistantThreadSearch(
+        activeId: 't1',
+        onSelect: (String id) => picked = id,
+        onQueryChange: (_) {},
+        threads: const <SearchableThread>[
+          SearchableThread(
+            id: 't1',
+            title: 'Streaming notes',
+            group: 'Today',
+            preview: 'Parts arrive cumulatively…',
+          ),
+          SearchableThread(
+            id: 't2',
+            title: 'Tool continuations',
+            group: 'Today',
+            preview: 'A tool result re-enters the model…',
+          ),
+        ],
+      ),
+    );
+    await tester.tap(find.text('Tool continuations'));
+    await tester.pump();
+    expect(picked, 't2');
+  });
+
+  testWidgets('the map rail reports the turn picked', (WidgetTester tester) async {
+    String? picked;
+    await pump(
+      tester,
+      SizedBox(
+        height: 240,
+        child: AssistantConversationMap(
+          activeId: 'c1',
+          onSelect: (String id) => picked = id,
+          visibleIds: const <String>['c1', 'c2'],
+          entries: const <ConversationMapEntry>[
+            ConversationMapEntry(id: 'c1', title: 'Streaming notes'),
+            ConversationMapEntry(id: 'c2', title: 'Tool continuations'),
+          ],
+        ),
+      ),
+    );
+    await tester.tap(find.byType(AssistantConversationMap));
+    await tester.pump();
+    expect(picked, isNotNull);
+  });
+
+  testWidgets('the prompt library reports the prompt picked', (
+    WidgetTester tester,
+  ) async {
+    String? picked;
+    await pump(
+      tester,
+      AssistantPromptLibrary(
+        selectedId: 'p1',
+        onSelect: (String id) => picked = id,
+        onQueryChange: (_) {},
+        prompts: const <SavedPrompt>[
+          SavedPrompt(id: 'p1', name: 'Review the diff', body: 'Review {diff}'),
+          SavedPrompt(id: 'p2', name: 'Summarize', body: 'Summarize {count}'),
+        ],
+      ),
+    );
+    await tester.tap(find.text('Summarize'));
+    await tester.pump();
+    expect(picked, 'p2');
+  });
 }
