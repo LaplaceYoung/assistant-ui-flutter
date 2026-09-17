@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'flow_expand.dart';
+import 'mermaid_renderer.dart';
 import 'theme.dart';
 
 /// A diagram with a skeleton while its code streams, a code fallback when it
@@ -23,7 +24,8 @@ class AssistantMermaidDiagram extends StatelessWidget {
   /// The Mermaid source; shown verbatim in the fallback.
   final String code;
 
-  /// The rendered diagram.
+  /// The rendered diagram. When null the built-in flowchart renderer draws the
+  /// source if it is a `graph` / `flowchart` this renderer understands.
   final Widget? diagram;
 
   /// Replaces the diagram with the skeleton while the code streams in.
@@ -34,18 +36,28 @@ class AssistantMermaidDiagram extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (streaming) return const AssistantMermaidSkeleton();
-    if (diagram == null) return _Fallback(code: code);
-    final Widget body = Container(
+    Widget? body = diagram;
+    if (body == null) {
+      final MermaidFlowchart? chart = MermaidFlowchart.parse(code);
+      if (chart != null) {
+        body = Padding(
+          padding: const EdgeInsets.all(12),
+          child: AssistantMermaidFlowchart(chart: chart),
+        );
+      }
+    }
+    if (body == null) return _Fallback(code: code);
+    final Widget framed = Container(
       color: theme(context),
       padding: const EdgeInsets.all(8),
       alignment: Alignment.center,
-      child: diagram,
+      child: body,
     );
-    if (!zoomable) return body;
+    if (!zoomable) return framed;
     // The expand surface is shared with the flow element.
     return AssistantFlowExpand(
       label: 'Expand diagram',
-      child: body,
+      child: framed,
     );
   }
 

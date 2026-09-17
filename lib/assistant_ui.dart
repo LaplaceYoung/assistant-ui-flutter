@@ -458,6 +458,17 @@ export 'src/protocol/data_stream_adapter.dart'
 export 'src/runtime/local_runtime.dart'
     show LocalRuntime, LocalRuntimeOptions;
 
+/// The Mermaid flowchart subset: parsing and a painter, so a ```mermaid fence
+/// renders without the JavaScript engine for the common shapes.
+export 'src/components/mermaid_renderer.dart'
+    show
+        AssistantMermaidFlowchart,
+        MermaidDirection,
+        MermaidEdge,
+        MermaidFlowchart,
+        MermaidNode,
+        MermaidShape;
+
 /// The span primitives: name, type badge, status, collapse, indent, children
 /// and the timeline bar — `react-o11y`'s primitive family.
 export 'src/components/span_primitives.dart'

@@ -112,6 +112,11 @@ AuiRuntimeProvider(
   confirmation, an auth request or an interrupt arrives. `adkConfirmationReply`
   builds the message that resumes the run, and `projectAdkToolConfirmations`
   reads which gates a transcript has open or answered.
+- **Mermaid** — a flowchart renderer in Dart: `graph` / `flowchart` in
+  TD/TB/BT/LR, node shapes (box, rounded, stadium, decision), chains and
+  labelled edges are parsed into a layered layout and painted, so a ```mermaid
+  fence renders without the JavaScript engine. Diagram types outside the subset
+  fall back to the source, and a host drawing overrides the built-in one.
 - **Generative UI** — the model-emitted tree (`$type` discriminator, `$key` /
   `$action` / `$status` reserved, children parsed recursively, depth-bounded at
   64), the "view source" serializer with upstream's escaping and pretty-print

@@ -380,9 +380,13 @@ const Map<String, Entry> _entries = <String, Entry>{
   'web-preview': Entry('n/a', note: 'sandboxed iframe; Flutter has no equivalent surface'),
   'shiki-highlighter': Entry('n/a', note: 'Shiki is a JS tokenizer; Dart port would use a regex highlighter'),
 
-  'mermaid-diagram': Entry('partial',
-      dart: 'components/mermaid_diagram.dart',
-      note: 'the frame is ported (skeleton, code fallback, the shared zoom surface) and markdown fences route into it; Mermaid itself is a JS engine, so the drawing stays host-supplied'),
+  'mermaid-diagram': Entry('ported',
+      dart: 'components/mermaid_diagram.dart, components/mermaid_renderer.dart',
+      note: 'frame (skeleton, code fallback, shared zoom surface) plus a built-in '
+          'flowchart renderer: graph/flowchart in TD/TB/BT/LR, node shapes, chains '
+          'and labelled edges are parsed and painted in Dart, so a fence renders '
+          'with no host engine; other diagram types (sequence, class, state, gantt) '
+          'still fall back to the source, and a host drawing overrides the built-in one'),
   'math-block': Entry('ported',
       dart: 'components/math_block.dart',
       note: 'revealed derivation steps plus Frac / Sup / Sub helpers, and display math in markdown falls back to the styled TeX source when the host has no typesetter'),
