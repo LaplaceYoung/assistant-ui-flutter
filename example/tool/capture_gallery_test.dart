@@ -6,7 +6,6 @@
 // Kept out of `test/` on purpose: goldens are font-sensitive, and the CI machine
 // is not the machine these were captured on, so they are evidence, not a gate.
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:assistant_ui_example/main.dart';
 import 'package:flutter/material.dart';
