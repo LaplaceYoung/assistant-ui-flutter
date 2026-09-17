@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'math_renderer.dart';
 import 'mermaid_diagram.dart';
 import 'syntax_highlighter.dart';
 import 'theme.dart';
@@ -39,7 +40,8 @@ class AssistantMarkdown extends StatelessWidget {
   /// Renders `$$…$$`; without it the block shows its TeX source in the math
   /// element's serif style. Inline `$…$` always uses that styled source — the
   /// inline parser runs outside the tree, so a host that wants inline math
-  /// rendered calls `parseInline(..., mathRenderer:)` itself.
+  /// rendered calls `parseInline(..., mathRenderer:)` itself. Without a host
+  /// renderer the built-in typesetter draws the expression.
   final Widget Function(BuildContext context, String tex, bool display)?
       mathRenderer;
 
@@ -85,9 +87,14 @@ class AssistantMarkdown extends StatelessWidget {
         continue;
       }
       if (block is _MathBlock) {
+        final String tex = block.tex;
         children.add(
-          mathRenderer?.call(context, block.tex, true) ??
-              _MathFallback(tex: block.tex, theme: theme, display: true),
+          // A host renderer wins; otherwise the built-in typesetter draws it,
+          // and an empty expression falls back to the styled source.
+          mathRenderer?.call(context, tex, true) ??
+              (tex.trim().isEmpty
+                  ? _MathFallback(tex: tex, theme: theme, display: true)
+                  : AssistantMath(tex, display: true)),
         );
         continue;
       }
@@ -748,8 +755,12 @@ List<InlineSpan> parseInline(
         spans.add(
           WidgetSpan(
             alignment: PlaceholderAlignment.middle,
+            // Inline math uses the host renderer when there is one and the
+            // built-in typesetter otherwise.
             child: mathRenderer?.call(candidate, false) ??
-                _MathFallback(tex: candidate, theme: theme, display: false),
+                (candidate.trim().isEmpty
+                    ? _MathFallback(tex: candidate, theme: theme, display: false)
+                    : AssistantMath(candidate, size: 15)),
           ),
         );
         i = end + 1;

@@ -458,6 +458,22 @@ export 'src/protocol/data_stream_adapter.dart'
 export 'src/runtime/local_runtime.dart'
     show LocalRuntime, LocalRuntimeOptions;
 
+/// The built-in math typesetter: TeX-ish expressions rendered as Flutter
+/// widgets, so `$…$` and `$$…$$` render without a host typesetter.
+export 'src/components/math_renderer.dart'
+    show
+        AssistantMath,
+        AssistantMathDisplay,
+        MathFraction,
+        MathNode,
+        MathNodeView,
+        MathRadical,
+        MathRow,
+        MathScript,
+        MathText,
+        parseMath,
+        typesetStep;
+
 /// The Mermaid flowchart subset: parsing and a painter, so a ```mermaid fence
 /// renders without the JavaScript engine for the common shapes.
 export 'src/components/mermaid_renderer.dart'

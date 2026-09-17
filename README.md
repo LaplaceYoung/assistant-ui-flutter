@@ -112,6 +112,14 @@ AuiRuntimeProvider(
   confirmation, an auth request or an interrupt arrives. `adkConfirmationReply`
   builds the message that resumes the run, and `projectAdkToolConfirmations`
   reads which gates a transcript has open or answered.
+- **Math** — a typesetter in Dart: `$…$` and `$$…$$` become widgets without a
+  host renderer (fractions with a rule, radicals with an overline, superscripts
+  and subscripts hung off the base axis, the Greek/operator symbol table, and
+  verbatim `\text{}`). A host renderer still overrides it.
+- **Math** — a typesetter in Dart: inline and display math become widgets
+  without a host renderer (fractions with a rule, radicals with an overline,
+  superscripts and subscripts hung off the base axis, the Greek and operator
+  symbol table, verbatim `\text{}`). A host renderer still overrides it.
 - **Mermaid** — a flowchart renderer in Dart: `graph` / `flowchart` in
   TD/TB/BT/LR, node shapes (box, rounded, stadium, decision), chains and
   labelled edges are parsed into a layered layout and painted, so a ```mermaid

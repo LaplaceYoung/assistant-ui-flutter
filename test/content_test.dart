@@ -190,22 +190,28 @@ void main() {
       expect(find.text(r'MATH(\pi r^2)'), findsOneWidget);
     });
 
-    testWidgets('without a renderer math shows its TeX source', (
+    testWidgets('without a renderer math is typeset by the built-in one', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(_wrap(
         const AssistantMarkdown(text: '\$\$a^2 + b^2 = c^2\$\$'),
       ));
-      expect(find.text('a^2 + b^2 = c^2'), findsOneWidget);
+      // The expression becomes widgets, so the TeX source is not what shows.
+      expect(find.byType(AssistantMath), findsOneWidget);
+      expect(find.text('a^2 + b^2 = c^2'), findsNothing);
+      expect(find.text('a'), findsOneWidget);
     });
 
-    testWidgets('inline math keeps the styled source', (
+    testWidgets('inline math is typeset too', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(_wrap(
         const AssistantMarkdown(text: 'Euler: \$e^{i\\pi} + 1 = 0\$ it is.'),
       ));
-      expect(find.textContaining('e^{i'), findsOneWidget);
+      expect(find.byType(AssistantMath), findsOneWidget);
+      expect(find.textContaining('e^{i'), findsNothing);
+      // The exponent is its own row: `i` and the π symbol inside it.
+      expect(find.text('π'), findsOneWidget);
     });
 
     testWidgets('a mermaid fence goes to the mermaid element', (
