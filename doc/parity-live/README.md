@@ -150,6 +150,8 @@ reads as three missing elements when they are three ported ones.
 |---|---|---|
 | Thread (AUI) | Messages, composer, auto-scroll and accessibility in one container | `AssistantThread` | Aligned |
 | Assistant modal (AUI) | The floating bubble, a thread list, a resizable window | `AssistantModal` | Aligned |
+| Assistant sidebar (AUI) | `New Thread`, `Search threads`, the active row, the product header and its source link | `AssistantThreadListSidebar` | Aligned |
+| Thread list (AUI) | The sidebar beside the thread: search, active selection, thread actions | `AssistantThreadList` with `AssistantShell` | Aligned |
 
 The connected block is the composed elements — the ones the port's styled layer
 builds on its primitives — so the comparison is between two assemblies of the same
