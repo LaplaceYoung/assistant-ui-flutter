@@ -94,6 +94,8 @@ class ThreadState {
     this.speakingMessageId,
     this.contextUsage = ContextUsage.empty,
     this.suggestions = const <ThreadSuggestion>[],
+    this.model,
+    this.effort,
   });
 
   final List<ThreadMessage> messages;
@@ -105,6 +107,12 @@ class ThreadState {
 
   /// Context-window usage for the thread, when the host reports one.
   final ContextUsage contextUsage;
+
+  /// The model the next run will use, when one is picked.
+  final String? model;
+
+  /// Its reasoning effort, when the model takes one.
+  final String? effort;
 
   /// Follow-up prompts the host put on offer; the thread clears them when a
   /// run starts again.

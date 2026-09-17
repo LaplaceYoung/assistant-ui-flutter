@@ -7,9 +7,17 @@ class ModelContext {
   const ModelContext({
     this.systemPrompt,
     this.tools = const <Map<String, Object?>>[],
+    this.model,
+    this.effort,
   });
 
   final String? systemPrompt;
+
+  /// The model the run should use, when the host picked one.
+  final String? model;
+
+  /// Its reasoning effort (`low` / `medium` / `high`), when the model takes one.
+  final String? effort;
 
   /// JSON Schema descriptions of the available tools, ready to be sent to the
   /// backend (`[{name, description, parameters}, ...]`).

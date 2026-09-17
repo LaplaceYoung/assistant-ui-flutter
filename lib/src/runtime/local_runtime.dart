@@ -22,6 +22,8 @@ class LocalRuntimeOptions {
     this.contextWindowTokens = 128000,
     this.tokenCounter,
     this.runOnStart = false,
+    this.model,
+    this.effort,
   });
 
   /// Tools the runtime executes itself, and whose schemas it hands to the
@@ -54,6 +56,12 @@ class LocalRuntimeOptions {
   /// Starts a run on construction, for a thread seeded with an unanswered
   /// user message.
   final bool runOnStart;
+
+  /// The model the app starts on, before the host picks one.
+  final String? model;
+
+  /// Its starting reasoning effort.
+  final String? effort;
 }
 
 /// The default runtime: owns the thread, the composer, and the run lifecycle,
@@ -159,8 +167,42 @@ class LocalRuntime extends AssistantRuntime {
 
   Toolkit get tools => options.tools;
 
+  /// The model a run should use: the host's pick, else the option's seed.
+  String? get model => _modelSet ? _model : options.model;
+  String? _model;
+
+  /// The reasoning effort the model runs at, when it takes one.
+  String? get effort => _effortSet ? _effort : options.effort;
+  String? _effort;
+
+  // `setModel(null)` clears the pick rather than falling back to the seed, so
+  // the two have to be told apart.
+  bool _modelSet = false;
+  bool _effortSet = false;
+
+  /// Picks the model; the next run carries it in [ModelContext]. Passing null
+  /// clears the pick.
+  void setModel(String? id) {
+    if (_modelSet && id == _model) return;
+    _model = id;
+    _modelSet = true;
+    _emit();
+    notifyListeners();
+  }
+
+  /// Picks the reasoning effort for [model]. Passing null clears the pick.
+  void setEffort(String? id) {
+    if (_effortSet && id == _effort) return;
+    _effort = id;
+    _effortSet = true;
+    _emit();
+    notifyListeners();
+  }
+
   ModelContext get modelContext => ModelContext(
         systemPrompt: options.systemPrompt,
+        model: model,
+        effort: effort,
         tools: <Map<String, Object?>>[
           for (final MapEntry<String, ToolDefinition> entry
               in options.tools.entries)
@@ -203,6 +245,8 @@ class LocalRuntime extends AssistantRuntime {
       capabilities: _capabilities,
       speakingMessageId: _speakingMessageId,
       contextUsage: _contextUsage(),
+      model: model,
+      effort: effort,
       suggestions: List<ThreadSuggestion>.unmodifiable(_suggestions),
     );
     _threadsState = ThreadsState(
