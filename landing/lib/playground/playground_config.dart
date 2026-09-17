@@ -47,6 +47,8 @@ class PlaygroundConfig {
     this.composer = true,
     this.groupToolCalls = false,
     this.reasoning = false,
+    this.temperature,
+    this.maxTokens,
   });
 
   final PlaygroundTheme theme;
@@ -66,6 +68,10 @@ class PlaygroundConfig {
   /// off by default there too.
   final bool reasoning;
 
+  /// Upstream's `callSettings`. Null means the backend decides.
+  final double? temperature;
+  final int? maxTokens;
+
   static const PlaygroundConfig defaults = PlaygroundConfig();
 
   PlaygroundConfig copyWith({
@@ -82,6 +88,10 @@ class PlaygroundConfig {
     bool? composer,
     bool? groupToolCalls,
     bool? reasoning,
+    double? temperature,
+    int? maxTokens,
+    bool clearTemperature = false,
+    bool clearMaxTokens = false,
   }) =>
       PlaygroundConfig(
         theme: theme ?? this.theme,
@@ -97,6 +107,8 @@ class PlaygroundConfig {
         composer: composer ?? this.composer,
         groupToolCalls: groupToolCalls ?? this.groupToolCalls,
         reasoning: reasoning ?? this.reasoning,
+        temperature: clearTemperature ? null : temperature ?? this.temperature,
+        maxTokens: clearMaxTokens ? null : maxTokens ?? this.maxTokens,
       );
 
   /// The radius the bubbles, the composer and the cards take.
@@ -146,6 +158,12 @@ class PlaygroundConfig {
     if (reasoning != defaults.reasoning) {
       out['reasoning'] = reasoning ? '1' : '0';
     }
+    if (temperature != defaults.temperature) {
+      out['temperature'] = '$temperature';
+    }
+    if (maxTokens != defaults.maxTokens) {
+      out['maxTokens'] = '$maxTokens';
+    }
     return out;
   }
 
@@ -174,6 +192,8 @@ class PlaygroundConfig {
       groupToolCalls:
           query.containsKey('groupTools') ? patch.groupToolCalls : null,
       reasoning: query.containsKey('reasoning') ? patch.reasoning : null,
+      temperature: query.containsKey('temperature') ? patch.temperature : null,
+      maxTokens: query.containsKey('maxTokens') ? patch.maxTokens : null,
     );
   }
 
@@ -212,6 +232,8 @@ class PlaygroundConfig {
       composer: flag('composer'),
       groupToolCalls: flag('groupTools'),
       reasoning: flag('reasoning'),
+      temperature: number('temperature'),
+      maxTokens: number('maxTokens')?.round(),
     );
   }
 }
@@ -366,7 +388,19 @@ String playgroundSnippet(PlaygroundConfig config) {
   final String radius = config.cornerRadius % 1 == 0
       ? config.cornerRadius.round().toString()
       : config.cornerRadius.toStringAsFixed(1);
+  final List<String> settings = <String>[
+    if (config.maxTokens != null) 'maxTokens: ${config.maxTokens},',
+    if (config.temperature != null) 'temperature: ${config.temperature},',
+  ];
   return <String>[
+    'LocalRuntime(',
+    '  adapter: yourAdapter,',
+    '  options: LocalRuntimeOptions(',
+    if (settings.isEmpty) '    // backend defaults',
+    for (final String setting in settings) '    $setting',
+    '  ),',
+    ');',
+    '',
     'AssistantTheme(',
     '  brightness: Brightness.${config.theme.name},',
     '  primary: const Color(0x${config.swatch.light.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}),',

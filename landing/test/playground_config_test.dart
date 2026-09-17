@@ -80,6 +80,31 @@ void main() {
     );
   });
 
+  test('the run settings travel in the link and in the snippet', () {
+    final PlaygroundConfig tuned = PlaygroundConfig.defaults.copyWith(
+      temperature: 0.7,
+      maxTokens: 2048,
+    );
+    expect(tuned.toQuery(), <String, String>{
+      'temperature': '0.7',
+      'maxTokens': '2048',
+    });
+    final PlaygroundConfig restored =
+        PlaygroundConfig.fromQuery(tuned.toQuery());
+    expect(restored.temperature, 0.7);
+    expect(restored.maxTokens, 2048);
+
+    // Back to the backend's own choice.
+    final PlaygroundConfig cleared = tuned.copyWith(
+      clearTemperature: true,
+      clearMaxTokens: true,
+    );
+    expect(cleared.toQuery(), isEmpty);
+    expect(playgroundSnippet(cleared), contains('// backend defaults'));
+    expect(playgroundSnippet(tuned), contains('temperature: 0.7'));
+    expect(playgroundSnippet(tuned), contains('maxTokens: 2048'));
+  });
+
   test('the styles resolve to the values the widgets take', () {
     expect(
       PlaygroundConfig.defaults.copyWith(radius: PlaygroundRadius.none).cornerRadius,

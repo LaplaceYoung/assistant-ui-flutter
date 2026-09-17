@@ -24,6 +24,10 @@ class LocalRuntimeOptions {
     this.runOnStart = false,
     this.model,
     this.effort,
+    this.temperature,
+    this.maxTokens,
+    this.topP,
+    this.seed,
   });
 
   /// Tools the runtime executes itself, and whose schemas it hands to the
@@ -62,6 +66,12 @@ class LocalRuntimeOptions {
 
   /// Its starting reasoning effort.
   final String? effort;
+
+  /// Starting call settings; null leaves the choice to the backend.
+  final double? temperature;
+  final int? maxTokens;
+  final double? topP;
+  final int? seed;
 }
 
 /// The default runtime: owns the thread, the composer, and the run lifecycle,
@@ -93,6 +103,42 @@ class LocalRuntime extends AssistantRuntime {
     _model = id;
     _modelSet = true;
     // The state is a snapshot, so it has to be rebuilt for the pick to show.
+    _emit();
+    notifyListeners();
+  }
+
+  /// The call settings the next run carries; null means "let the backend
+  /// decide", which is what upstream's absent `callSettings` fields mean.
+  @override
+  double? get temperature => _temperatureSet ? _temperature : options.temperature;
+  @override
+  int? get maxTokens => _maxTokensSet ? _maxTokens : options.maxTokens;
+  // Seeds today; a host that needs to change them mid-thread gets a setter the
+  // way temperature has one.
+  @override
+  double? get topP => options.topP;
+  @override
+  int? get seed => options.seed;
+
+  double? _temperature;
+  int? _maxTokens;
+  bool _temperatureSet = false;
+  bool _maxTokensSet = false;
+
+  /// Sets the sampling temperature for the next run; null clears it.
+  void setTemperature(double? value) {
+    if (_temperatureSet && value == _temperature) return;
+    _temperature = value;
+    _temperatureSet = true;
+    _emit();
+    notifyListeners();
+  }
+
+  /// Caps the tokens the next run may produce; null clears the cap.
+  void setMaxTokens(int? value) {
+    if (_maxTokensSet && value == _maxTokens) return;
+    _maxTokens = value;
+    _maxTokensSet = true;
     _emit();
     notifyListeners();
   }
@@ -221,6 +267,10 @@ class LocalRuntime extends AssistantRuntime {
             _systemPromptSet ? _systemPrompt : options.systemPrompt,
         model: model,
         effort: effort,
+        temperature: temperature,
+        maxTokens: maxTokens,
+        topP: topP,
+        seed: seed,
         tools: <Map<String, Object?>>[
           for (final MapEntry<String, ToolDefinition> entry
               in options.tools.entries)

@@ -506,6 +506,18 @@ abstract class AssistantRuntime extends ChangeNotifier {
   /// Picks the reasoning effort. Ignored where the model takes none.
   void setEffort(String? id) {}
 
+  /// The sampling temperature the next run carries, when one is set.
+  double? get temperature => null;
+
+  /// Upper bound on the tokens the next run may produce.
+  int? get maxTokens => null;
+
+  /// Nucleus sampling cutoff.
+  double? get topP => null;
+
+  /// Seed for reproducible sampling.
+  int? get seed => null;
+
   ThreadRuntimeApi get thread;
   ComposerRuntimeApi get composer;
 

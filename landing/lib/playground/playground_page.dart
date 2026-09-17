@@ -591,6 +591,53 @@ class _SidePane extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
+          _SectionTitle('RUN SETTINGS', colors: colors),
+          const SizedBox(height: 4),
+          Text(
+            'Upstream keeps these in the run context (`callSettings`). The '
+            'backend decides when unset.',
+            style: LandingText.small(context).copyWith(
+              color: colors.mutedForeground,
+              fontSize: 11,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _Row(label: 'Temperature', colors: colors),
+          _Segmented<double?>(
+            colors: colors,
+            value: config.temperature,
+            options: const <_Seg<double?>>[
+              _Seg<double?>(null, 'Backend'),
+              _Seg<double?>(0.2, '0.2'),
+              _Seg<double?>(0.7, '0.7'),
+              _Seg<double?>(1.0, '1.0'),
+            ],
+            onChanged: (double? v) {
+              onChanged(config.copyWith(
+                temperature: v,
+                clearTemperature: v == null,
+              ));
+              runtime.setTemperature(v);
+            },
+          ),
+          const SizedBox(height: 12),
+          _Row(label: 'Max tokens', colors: colors),
+          _Segmented<int?>(
+            colors: colors,
+            value: config.maxTokens,
+            options: const <_Seg<int?>>[
+              _Seg<int?>(null, 'Backend'),
+              _Seg<int?>(512, '512'),
+              _Seg<int?>(2048, '2048'),
+              _Seg<int?>(8192, '8192'),
+            ],
+            onChanged: (int? v) {
+              onChanged(config.copyWith(maxTokens: v, clearMaxTokens: v == null));
+              runtime.setMaxTokens(v);
+            },
+          ),
+          const SizedBox(height: 18),
           _SectionTitle('STYLES', colors: colors),
           const SizedBox(height: 10),
           _Row(label: 'Theme', colors: colors),

@@ -2,16 +2,33 @@ import 'abort.dart';
 import 'message.dart';
 import 'message_part.dart';
 
-/// System prompt plus the tool schemas the app exposes to the model.
+/// System prompt, the tool schemas the app exposes, and the call settings for
+/// the run — upstream's `ModelContext`, whose `callSettings` carry these.
 class ModelContext {
   const ModelContext({
     this.systemPrompt,
     this.tools = const <Map<String, Object?>>[],
     this.model,
     this.effort,
+    this.temperature,
+    this.maxTokens,
+    this.topP,
+    this.seed,
   });
 
   final String? systemPrompt;
+
+  /// Sampling temperature, when the host set one.
+  final double? temperature;
+
+  /// Upper bound on the tokens this run may produce.
+  final int? maxTokens;
+
+  /// Nucleus sampling cutoff.
+  final double? topP;
+
+  /// Seed for reproducible sampling, where the backend honours it.
+  final int? seed;
 
   /// The model the run should use, when the host picked one.
   final String? model;
