@@ -2872,6 +2872,11 @@ class RenderingDemo extends StatelessWidget {
               ),
             ),
             _Section(
+              title: 'Context display',
+              detail: 'the same usage as a ring, a bar and written out',
+              child: const _ContextDisplays(),
+            ),
+            _Section(
               title: 'Syntax highlighter',
               detail: 'the Dart tokenizer behind every fenced block',
               child: const AssistantSyntaxHighlighter(
@@ -3360,6 +3365,50 @@ class _StoppedRunSampleState extends State<_StoppedRunSample> {
               ],
             ),
           ),
+        ),
+      );
+}
+
+/// The three presentations the live context card offers, over one runtime so the
+/// numbers agree.
+class _ContextDisplays extends StatefulWidget {
+  const _ContextDisplays();
+
+  @override
+  State<_ContextDisplays> createState() => _ContextDisplaysState();
+}
+
+class _ContextDisplaysState extends State<_ContextDisplays> {
+  late final LocalRuntime _runtime = LocalRuntime(
+    adapter: _NullAdapter(),
+    initialMessages: <ThreadMessage>[
+      ThreadMessage.single(
+        id: 'ctx',
+        role: MessageRole.user,
+        createdAt: DateTime(2026, 1, 1),
+        content: const <MessagePart>[TextPart('a prompt long enough to count')],
+      ),
+    ],
+  );
+
+  @override
+  void dispose() {
+    _runtime.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AuiRuntimeProvider(
+        runtime: _runtime,
+        child: const Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            AssistantContextRing(showLabel: true),
+            SizedBox(width: 24),
+            AssistantContextBar(),
+            SizedBox(width: 24),
+            AssistantContextText(),
+          ],
         ),
       );
 }

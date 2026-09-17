@@ -149,4 +149,36 @@ void main() {
     expect(find.text('Thread list'), findsOneWidget);
     expect(find.text('Sidebar'), findsOneWidget);
   });
+
+  testWidgets('the rendering page shows the three context presentations', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 4000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: const Scaffold(body: RenderingDemo()),
+      ),
+    );
+    await tester.pump();
+
+    // The page is a lazy list; the context section sits below the fold, so the
+    // page's own scrollable is driven to it.
+    await tester.scrollUntilVisible(
+      find.byType(AssistantContextText),
+      500,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const ValueKey<String>('rendering-page')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await tester.pump();
+    expect(find.byType(AssistantContextRing), findsOneWidget);
+    expect(find.byType(AssistantContextBar), findsOneWidget);
+    expect(find.byType(AssistantContextText), findsOneWidget);
+  });
 }
