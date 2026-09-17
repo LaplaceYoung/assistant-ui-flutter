@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:assistant_ui_landing/playground/playground_config.dart';
 import 'package:assistant_ui_landing/playground/playground_page.dart';
+import 'package:assistant_ui_landing/playground/playground_state.dart';
 
 /// The playground as the live one is shaped: a preset list, a live preview, the
 /// component and style controls, and the code they add up to.
@@ -9,7 +11,15 @@ void main() {
     tester.view.physicalSize = const Size(1400, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(const MaterialApp(home: PlaygroundPage()));
+    // The app provides the scope; the page publishes what it edits into it.
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PlaygroundScope(
+          controller: ValueNotifier<PlaygroundConfig>(PlaygroundConfig.defaults),
+          child: const PlaygroundPage(),
+        ),
+      ),
+    );
     await tester.pump();
   }
 
@@ -94,7 +104,12 @@ void main() {
     // What the Share button produces for the Copilot preset, minus the colours
     // the preset already carries.
     await tester.pumpWidget(
-      const MaterialApp(home: PlaygroundPage()),
+      MaterialApp(
+        home: PlaygroundScope(
+          controller: ValueNotifier<PlaygroundConfig>(PlaygroundConfig.defaults),
+          child: const PlaygroundPage(),
+        ),
+      ),
     );
     await tester.pump();
     await tester.tap(find.text('Copilot'));

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import '../landing_theme.dart';
 import 'playground_config.dart';
+import 'playground_state.dart';
 
 /// The builder playground, in the shape of the live one: presets on the left,
 /// the preview in the middle under a viewport preset, the component and style
@@ -60,6 +61,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
 
   void _update(PlaygroundConfig next) {
     setState(() => _config = next);
+    // The landing's demo panel renders under the same configuration.
+    PlaygroundScope.controllerOf(context).value = next;
     _applySuggestions();
   }
 
@@ -68,6 +71,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       _presetId = preset.id;
       _config = preset.config;
     });
+    PlaygroundScope.controllerOf(context).value = preset.config;
     _applySuggestions();
   }
 
@@ -266,16 +270,7 @@ class _Preview extends StatelessWidget {
   Widget build(BuildContext context) {
     final LandingColors colors = LandingColors.of(context);
     final bool dark = config.theme == PlaygroundTheme.dark;
-    final Color accent =
-        dark ? config.swatch.dark : config.swatch.light;
-    final AssistantTheme base =
-        dark ? AssistantTheme.dark : AssistantTheme.light;
-    final AssistantTheme theme = base.copyWith(
-      primary: accent,
-      bubbleRadius: config.cornerRadius,
-      composerRadius: config.cornerRadius,
-      cardRadius: config.cornerRadius,
-    );
+    final AssistantTheme theme = themeFor(config);
     return Container(
       color: dark ? const Color(0xFF161616) : colors.background,
       alignment: Alignment.topCenter,

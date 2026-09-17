@@ -2,6 +2,7 @@ import 'package:assistant_ui/assistant_ui.dart';
 import 'package:flutter/material.dart';
 
 import '../landing_theme.dart';
+import '../playground/playground_state.dart';
 import '../widgets.dart';
 
 /// The interactive demo on the landing page: a real thread rendered with this
@@ -50,33 +51,43 @@ class _DemoPanelState extends State<DemoPanel> {
           border: Border.all(color: colors.border),
         ),
         clipBehavior: Clip.antiAlias,
-        child: AuiRuntimeProvider(
+        child: AnimatedBuilder(
+          animation: PlaygroundScope.controllerOf(context),
+          builder: (BuildContext context, Widget? _) =>
+              AssistantThemeProvider(
+            theme: themeWithType(
+              themeFor(PlaygroundScope.of(context)),
+              PlaygroundScope.of(context),
+            ),
+            child: AuiRuntimeProvider(
           runtime: _runtime,
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) => Row(
-            children: <Widget>[
-              if (constraints.maxWidth >= 700) _ThreadRail(colors: colors),
-              Expanded(
-                child: Column(
-                  children: <Widget>[
-                    _ChatHeader(colors: colors),
-                    Expanded(
-                      child: AuiStateBuilder<bool>(
-                        selector: (AuiState state) => state.thread.isEmpty,
-                        builder: (BuildContext context, bool isEmpty) => isEmpty
-                            ? _EmptyState(
-                                colors: colors,
-                                suggestions: _suggestions,
-                                onPick: _submit,
-                              )
-                            : _Conversation(colors: colors),
+              children: <Widget>[
+                if (constraints.maxWidth >= 700) _ThreadRail(colors: colors),
+                Expanded(
+                  child: Column(
+                    children: <Widget>[
+                      _ChatHeader(colors: colors),
+                      Expanded(
+                        child: AuiStateBuilder<bool>(
+                          selector: (AuiState state) => state.thread.isEmpty,
+                          builder: (BuildContext context, bool isEmpty) => isEmpty
+                              ? _EmptyState(
+                                  colors: colors,
+                                  suggestions: _suggestions,
+                                  onPick: _submit,
+                                )
+                              : _Conversation(colors: colors),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+            ),
           ),
         ),
       ),

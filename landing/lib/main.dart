@@ -10,7 +10,9 @@ import 'sections/installs.dart';
 import 'sections/primitives_section.dart';
 import 'sections/runtime_handles.dart';
 import 'sections/site_footer.dart';
+import 'playground/playground_config.dart';
 import 'playground/playground_page.dart';
+import 'playground/playground_state.dart';
 import 'sections/top_nav.dart';
 import 'sections/trusted_by.dart';
 
@@ -32,6 +34,15 @@ class _LandingAppState extends State<LandingApp> {
   ThemeMode _mode = Uri.base.queryParameters['theme'] == 'light'
       ? ThemeMode.light
       : ThemeMode.dark;
+
+  /// The one configuration the site renders under: the same query keys the
+  /// playground shares with, so a link restyles the demo panel here too.
+  final ValueNotifier<PlaygroundConfig> _playground = ValueNotifier<PlaygroundConfig>(
+    PlaygroundConfig.applyQuery(
+      PlaygroundConfig.defaults,
+      Uri.base.queryParameters,
+    ),
+  );
 
   /// The open nav panel: a pinned header paints its own sections over a
   /// dropdown it overflows, so the panel is lifted above the scroll view.
@@ -63,6 +74,7 @@ class _LandingAppState extends State<LandingApp> {
   @override
   void dispose() {
     _menuClose?.cancel();
+    _playground.dispose();
     super.dispose();
   }
 
@@ -86,9 +98,11 @@ class _LandingAppState extends State<LandingApp> {
       themeMode: _mode,
       // `?page=playground` opens the customisable playground instead of the
       // landing page; it lives in the same app so Pages serves it too.
-      home: Uri.base.queryParameters['page'] == 'playground'
-          ? const PlaygroundPage()
-          : Builder(
+      home: PlaygroundScope(
+        controller: _playground,
+        child: Uri.base.queryParameters['page'] == 'playground'
+            ? const PlaygroundPage()
+            : Builder(
         builder: (BuildContext context) {
           final LandingColors colors = _mode == ThemeMode.dark
               ? LandingColors.dark
@@ -148,6 +162,7 @@ class _LandingAppState extends State<LandingApp> {
           ),
           );
         },
+        ),
       ),
     );
   }
