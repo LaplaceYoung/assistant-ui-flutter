@@ -63,4 +63,26 @@ void main() {
     await tester.pump();
     expect(find.textContaining('model: gpt-5.6-luna'), findsOneWidget);
   });
+
+  testWidgets('the messages page opens on the pieces a message carries', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: const Scaffold(body: MessagesDemo()),
+      ),
+    );
+    await tester.pump();
+
+    // The page is a lazy list, so this asserts the sections a reader sees on
+    // arrival; each piece further down carries its own tests in the package.
+    expect(find.byType(AssistantInlineCitation), findsOneWidget);
+    expect(find.byType(AssistantRetrievalChunks), findsOneWidget);
+    expect(find.text('Inline citation'), findsOneWidget);
+    expect(find.text('Retrieval chunks'), findsOneWidget);
+  });
 }

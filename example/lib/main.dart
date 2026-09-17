@@ -94,6 +94,10 @@ class _ExampleAppState extends State<ExampleApp> {
                         value: 'pieces',
                         child: Text('Pickers and pieces'),
                       ),
+                      PopupMenuItem<String>(
+                        value: 'messages',
+                        child: Text('Message pieces'),
+                      ),
                       PopupMenuItem<String>(value: 'tools', child: Text('Tools')),
                       PopupMenuItem<String>(value: 'agents', child: Text('Agents')),
                       PopupMenuItem<String>(
@@ -259,6 +263,8 @@ class _ThreadHost extends StatelessWidget {
         return const StatesDemo();
       case 'pieces':
         return const PiecesDemo();
+      case 'messages':
+        return const MessagesDemo();
       default:
         return const AssistantThread(
           turnAnchor: AuiTurnAnchor.top,
@@ -2287,6 +2293,239 @@ class _PiecesDemoState extends State<PiecesDemo> {
               style: theme.small(context).copyWith(color: theme.mutedForeground),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The pieces that sit inside or beside a message: citations, retrieved
+/// passages, a policy refusal, a quota banner, the day rule, speaker badges,
+/// streamed terminal output and a worked derivation.
+class MessagesDemo extends StatefulWidget {
+  const MessagesDemo({super.key});
+
+  @override
+  State<MessagesDemo> createState() => _MessagesDemoState();
+}
+
+class _MessagesDemoState extends State<MessagesDemo> {
+  // Some pieces read the runtime (citations resolve sources from the message in
+  // scope), so the page provides one; it never runs.
+  late final LocalRuntime _runtime = LocalRuntime(adapter: _NullAdapter());
+
+  @override
+  void dispose() {
+    _runtime.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    return AuiRuntimeProvider(
+      runtime: _runtime,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 900),
+          child: ListView(
+            key: const ValueKey<String>('messages-page'),
+            padding: const EdgeInsets.all(24),
+            children: <Widget>[
+              _Section(
+                title: 'Inline citation',
+              detail: 'numbered chips that preview their source',
+              child: AssistantInlineCitation(
+                segments: const <String>[
+                  'The runtime streams a run in parts',
+                  'and settles once its tools are done',
+                ],
+                sources: const <SourceRef>[
+                  SourceRef(
+                    domain: 'assistant-ui.com',
+                    title: 'Runtimes',
+                    snippet: 'A runtime owns the thread and the run lifecycle.',
+                  ),
+                  SourceRef(
+                    domain: 'assistant-ui.com',
+                    title: 'Tools',
+                    snippet: 'Tool results continue the same run.',
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Retrieval chunks',
+              detail: 'the query, the passages, their locator and score',
+              child: const AssistantRetrievalChunks(
+                query: 'how does the run settle',
+                visibleCount: 2,
+                chunks: <RetrievalChunk>[
+                  RetrievalChunk(
+                    id: 'c1',
+                    source: 'runtimes.md',
+                    locator: 'l. 42',
+                    score: 0.87,
+                    text: 'The thread settles when the run finished and the tool '
+                        'continuations it triggered are done.',
+                  ),
+                  RetrievalChunk(
+                    id: 'c2',
+                    source: 'tools.md',
+                    locator: 'l. 18',
+                    score: 0.61,
+                    text: 'A tool result re-enters the model with the same '
+                        'context.',
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Guardrail notice',
+              detail: 'policy id, the refusal, and what to try instead',
+              child: AssistantGuardrailNotice(
+                title: 'That request was refused',
+                explanation: 'The policy blocks requests that ask for credentials.',
+                policy: 'pol_8f21',
+                alternatives: const <String>[
+                  'Ask about the schema instead',
+                  'Request a redacted sample',
+                ],
+                onPick: (_) {},
+              ),
+            ),
+            _Section(
+              title: 'Quota banner',
+              detail: 'what is left, amber from 90%, upgrade action',
+              child: Column(
+                children: <Widget>[
+                  AssistantQuotaBanner(
+                    used: 120,
+                    limit: 1000,
+                    unit: 'runs',
+                    resetsIn: '3 days',
+                    upgradeLabel: 'Upgrade',
+                    onUpgrade: () {},
+                  ),
+                  const SizedBox(height: 12),
+                  AssistantQuotaBanner(
+                    used: 970,
+                    limit: 1000,
+                    unit: 'runs',
+                    resetsIn: '6 hours',
+                    upgradeLabel: 'Upgrade',
+                    onUpgrade: () {},
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Day separator',
+              detail: 'rules the day changes, times on hover',
+              child: const AssistantDaySeparator(
+                messages: <DatedMessage>[
+                  DatedMessage(
+                    id: 'd1',
+                    day: 'Yesterday',
+                    time: '09:14',
+                    role: 'user',
+                    text: 'First question of the day',
+                  ),
+                  DatedMessage(
+                    id: 'd2',
+                    day: 'Today',
+                    time: '08:02',
+                    role: 'assistant',
+                    text: 'The next morning',
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Speaker identity',
+              detail: 'per-turn badges tinted by kind',
+              child: const AssistantSpeakerIdentity(
+                turns: <SpeakerTurn>[
+                  SpeakerTurn(
+                    id: 's1',
+                    kind: SpeakerKind.user,
+                    name: 'You',
+                    text: 'Summarize the run.',
+                  ),
+                  SpeakerTurn(
+                    id: 's2',
+                    kind: SpeakerKind.agent,
+                    name: 'Planner',
+                    text: 'Reading three files, then answering.',
+                    detail: '1.2s',
+                  ),
+                  SpeakerTurn(
+                    id: 's3',
+                    kind: SpeakerKind.tool,
+                    name: 'search_docs',
+                    text: 'Three hits.',
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Terminal block',
+              detail: 'streamed command output with the exit state',
+              child: Column(
+                children: <Widget>[
+                  const AssistantTerminalBlock(
+                    command: 'flutter test test/run_test.dart',
+                    lines: <String>[
+                      '00:01 +12: loading run_test.dart',
+                      '00:02 +12: streaming settles the run',
+                    ],
+                    visibleCount: 2,
+                  ),
+                  const SizedBox(height: 12),
+                  const AssistantTerminalBlock(
+                    command: 'dart run tool/audit_elements.dart',
+                    lines: <String>['wrote doc/element-audit.md'],
+                    visibleCount: 1,
+                    done: true,
+                    variant: TerminalVariant.ink,
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Math block',
+              detail: 'revealed derivation steps with the fraction helpers',
+              // `expression` is a widget: the Frac / Sup / Sub helpers are how a
+              // real derivation is written.
+              child: AssistantMathBlock(
+                label: 'Where the ratio comes from',
+                visibleSteps: 2,
+                steps: <MathStep>[
+                  MathStep(
+                    expression: const Text('ratio = used / max'),
+                    note: 'both counts come from the backend',
+                  ),
+                  MathStep(
+                    expression: const AuiFrac(
+                      over: Text('used'),
+                      under: Text('max'),
+                    ),
+                    note: 'the same relation, written out',
+                  ),
+                  MathStep(
+                    expression: const Text('isNearLimit = ratio >= 0.8'),
+                  ),
+                ],
+              ),
+            ),
+              Text(
+                'Each piece is the shipped widget with the props a host would '
+                'pass.',
+                style:
+                    theme.small(context).copyWith(color: theme.mutedForeground),
+              ),
+            ],
+          ),
         ),
       ),
     );
