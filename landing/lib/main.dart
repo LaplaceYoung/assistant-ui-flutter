@@ -10,6 +10,7 @@ import 'sections/installs.dart';
 import 'sections/primitives_section.dart';
 import 'sections/runtime_handles.dart';
 import 'sections/site_footer.dart';
+import 'playground/playground_page.dart';
 import 'sections/top_nav.dart';
 import 'sections/trusted_by.dart';
 
@@ -83,7 +84,11 @@ class _LandingAppState extends State<LandingApp> {
         fontFamily: LandingText.sans,
       ),
       themeMode: _mode,
-      home: Builder(
+      // `?page=playground` opens the customisable playground instead of the
+      // landing page; it lives in the same app so Pages serves it too.
+      home: Uri.base.queryParameters['page'] == 'playground'
+          ? const PlaygroundPage()
+          : Builder(
         builder: (BuildContext context) {
           final LandingColors colors = _mode == ThemeMode.dark
               ? LandingColors.dark

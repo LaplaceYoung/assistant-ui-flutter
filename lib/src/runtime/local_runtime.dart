@@ -97,6 +97,17 @@ class LocalRuntime extends AssistantRuntime {
     notifyListeners();
   }
 
+  /// Replaces the system prompt the next run carries. Null clears it.
+  void setSystemPrompt(String? prompt) {
+    _systemPrompt = prompt;
+    _systemPromptSet = true;
+    _emit();
+    notifyListeners();
+  }
+
+  String? _systemPrompt;
+  bool _systemPromptSet = false;
+
   /// Picks the reasoning effort for [model]. Passing null clears the pick.
   @override
   void setEffort(String? id) {
@@ -206,7 +217,8 @@ class LocalRuntime extends AssistantRuntime {
 
 
   ModelContext get modelContext => ModelContext(
-        systemPrompt: options.systemPrompt,
+        systemPrompt:
+            _systemPromptSet ? _systemPrompt : options.systemPrompt,
         model: model,
         effort: effort,
         tools: <Map<String, Object?>>[

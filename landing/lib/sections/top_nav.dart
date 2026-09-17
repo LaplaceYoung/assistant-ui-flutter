@@ -36,8 +36,8 @@ class TopNav extends StatefulWidget {
 /// The nav's menus point at what this repository actually ships: the gallery
 /// (the example app, deployed next to the landing), the element and package
 /// coverage matrices, the motion plan and the parity report. Upstream's own
-/// pages (docs, Playground, careers, …) are not replicated here, so linking
-/// them would be a dead end.
+/// pages (docs, careers, …) are not replicated here, so linking them would be a
+/// dead end.
 const Map<String, List<(String?, List<NavEntry>)>> kNavMenus =
     <String, List<(String?, List<NavEntry>)>>{
   'Products': <(String?, List<NavEntry>)>[
@@ -45,6 +45,7 @@ const Map<String, List<(String?, List<NavEntry>)>> kNavMenus =
         'This repository',
         <NavEntry>[
           NavEntry('Gallery', 'Every element family, running', 'https://laplaceyoung.github.io/assistant-ui-flutter/gallery/'),
+          NavEntry('Playground', 'Presets, a live preview, generated code', 'https://laplaceyoung.github.io/assistant-ui-flutter/?page=playground'),
           NavEntry('Landing replica', 'This page, rebuilt in Flutter', 'https://laplaceyoung.github.io/assistant-ui-flutter/'),
           NavEntry('Source', 'The package on GitHub', 'https://github.com/LaplaceYoung/assistant-ui-flutter'),
           NavEntry('pub.dev', 'assistant_ui — not published yet', 'https://github.com/LaplaceYoung/assistant-ui-flutter#readme'),
