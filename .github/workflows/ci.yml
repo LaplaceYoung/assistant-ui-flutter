@@ -22,7 +22,9 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: flutter analyze
+      # Scope the analysis to this package: `landing/` is its own package and
+      # is analyzed in the landing job, where its dependencies are resolved.
+      - run: flutter analyze lib test example tool
       - run: flutter test --reporter expanded
       - name: Regenerate the coverage matrices
         run: |
