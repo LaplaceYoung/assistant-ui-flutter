@@ -127,6 +127,14 @@ reads as three missing elements when they are three ported ones.
 | Voice conversation | Orb, caption (`Listening · Listening for you`), `you` / `ai` transcript rows, mic, the red end button | `AssistantVoiceConversation` takes the mode, the amplitude, the transcript and the three controls | Aligned |
 | Read aloud | The answer with the spoken words lit, pause, progress, `0:00 / 0:05`, speed, volume | `AssistantReadAloud` reads the same values | Aligned |
 
+## Ninth read: the thread
+
+| Card in the catalogue | Port | Status |
+|---|---|---|
+| Chat panel | The whole family working together | Aligned (the port's chat panel draws the same) |
+| Empty state | `What are we building?`, three prompt pills, the composer centred | `AssistantEmptyState` takes the greeting, the suggestions and the composer | Aligned |
+| Scroll anchor | Pinning pauses while tokens arrive; a jump pill appears once content lands out of view | `AssistantThread(showScrollToLatest:)` over the scroll-to-bottom primitive | Aligned |
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command
