@@ -11,7 +11,7 @@ hand when something moves; the two matrices under it are generated.
 | Upstream packages | **23 of 46 ported**, 1 partial, 22 n/a | `doc/package-coverage.md` (`dart run tool/sync_package_coverage.dart`) |
 | Runtime adapters | data stream v1, MCP, AG-UI, A2A, LangGraph, Google ADK, generative UI, o11y span tree, cloud | `test/{ag_ui,a2a,langgraph,adk,mcp_client,cloud}_test.dart`, each over a real in-process HTTP/SSE server |
 | Interaction motion | six families aligned to the upstream animation tokens, reduced motion throughout | `doc/motion-inventory.json`, `doc/MOTION_PLAN.md`, `test/motion_test.dart`, `doc/landing/parity/motion_frames.png` |
-| Landing replica | every section, deployed, measured against the live page | `doc/landing/parity/REPORT.md` (mean 3.6% of pixels differ), `tool/landing_parity.sh` |
+| Landing page | a Flutter recreation — the original's structure, order and copy, drawn with this package's widgets and pointing at what the port ships | `doc/landing/parity/REPORT.md` (mean 3.6% of pixels differ from the live page), `tool/landing_parity.sh` |
 | Gates | package 445 tests, landing 6, both analyze clean | `flutter test`, `flutter analyze` |
 | CI | four jobs: package, example, web apps, deploy | `.github/workflows/ci.yml`, green on `04c0f7e` |
 | Release | publish-ready, zero validation warnings | `dart pub publish --dry-run`, `.github/workflows/publish.yml` |
@@ -53,6 +53,11 @@ covered by `doc/element-coverage.md`.
 
 ## Not claimed
 
+- The landing is **not** a pixel-for-pixel clone: it is a Flutter recreation that
+  keeps the original's structure, order and copy. Where the original links to its
+  own docs, Playground, careers and so on, this page links to what the port
+  actually ships. The 3.6% pixel difference is measured and reported, not hidden,
+  but matching the original down to the pixel is not the goal.
 - The motion work is class-level (durations, curves, offsets) plus behaviour
   assertions and phase-level browser frames. It is **not** a frame-by-frame diff
   against the live site; `doc/MOTION_PLAN.md` states this.

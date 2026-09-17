@@ -9,8 +9,9 @@
 
 **A Flutter port of [assistant-ui](https://www.assistant-ui.com).** The whole
 library — the component set, the runtime, the primitives and the model
-adapters — rebuilt as Dart/Flutter widgets, plus a one-to-one Flutter replica of
-the assistant-ui landing page.
+adapters — rebuilt as Dart/Flutter widgets, plus a Flutter recreation of the
+assistant-ui landing page that keeps the page's structure and copy while showing
+what the Flutter port can do.
 
 | | |
 |---|---|
@@ -422,7 +423,10 @@ by `dart run tool/sync_package_coverage.dart`); the wave plan is in
 ## Landing page replica
 
 `landing/` is a standalone Flutter web app that reproduces
-[the landing page](https://www.assistant-ui.com/) one-to-one: the pinned nav
+[the landing page](https://www.assistant-ui.com/) in Flutter — the structure, the
+copy and the section order are the original's, the components underneath are this
+package's, and the page points at what the port actually ships (the gallery, the
+coverage matrices, the parity report) rather than at upstream's docs: the pinned nav
 with its hover dropdowns, the 72px hero, the interactive demo (built on this
 package), `What you install` with the five runtime tabs, `What the runtime
 handles` with a live element per act, `The primitives` with the interactive

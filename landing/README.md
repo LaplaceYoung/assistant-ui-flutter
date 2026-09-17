@@ -1,7 +1,13 @@
 # assistant_ui_landing
 
-A one-to-one Flutter replica of the [assistant-ui landing page](https://www.assistant-ui.com/),
+A Flutter recreation of the [assistant-ui landing page](https://www.assistant-ui.com/),
 built with the `assistant_ui` package in this repo.
+
+It follows the original's structure, order and copy — it is not a pixel clone,
+and it is deliberately Flutter: the sections are this package's widgets, the
+demo panel runs this package's runtime, and the nav points at what the port
+ships (the gallery, the coverage matrices, the parity report) instead of
+upstream's documentation.
 
 ```bash
 flutter run -d chrome          # or: flutter build web --release
