@@ -32,13 +32,14 @@ tool/landing_parity.sh          # needs the network: compares against the live s
 
 ## Known gaps
 
-The design pass: six bands of the live catalogue have been read against the port
-— reasoning, messages, tool use, agents, knowledge, structured output,
-observability — with five differences found and fixed (the effort picker's fourth
-level, the streaming tint, the loader's matrix, the stopped run's discard, and a
-coverage count that turned out not to be a gap). What is left is written down in
-`doc/parity-live/README.md`: the catalogue's voice, thread, connected, renderer,
-primitive and generative sections.
+The design pass is complete: all fourteen sections of the live catalogue —
+144 cards — have been read against the port, ten in a tall-window capture and the
+tail in a scrolling one (`tool/capture_live_catalogue.mjs`). Six differences were
+found and fixed (the effort picker's fourth level, streaming text's tint, the
+loader's matrix, the stopped run's discard, the draft-restore card, the context
+display's text form), and one claim — that the inventory was behind — was
+disproved by `diff` rather than acted on. Nothing from the catalogue is open;
+`doc/parity-live/README.md` carries the per-section table.
 
 `doc/element-audit.md` is the mechanical pass over the ported elements — file,
 test, reachable surface; its "no surface" list is the work queue, and the states

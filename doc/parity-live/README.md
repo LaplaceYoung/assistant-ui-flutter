@@ -179,13 +179,20 @@ are still unread.
 | Directive text | Mention directives rendered into inline runtime-aware chips | `AssistantDirectiveText` | Aligned |
 | Markdown text | Headings, lists, links, tables and code blocks | `AssistantMarkdown` | Aligned |
 
-## What the capture cannot reach
+## The tail, read with a scrolling capture
 
-The catalogue renders its later sections lazily, so a tall-window capture stops
-around `Markdown text` — the rest of the renderer cards and the primitive and
-generative sections never lay out. Reading them needs a scroll-capable capture
-(the parity tool already scrolls over CDP for the landing); until then those three
-blocks are unread, and they are the only part of the catalogue left.
+A tall window stopped around `Markdown text` because the catalogue lays its later
+sections out lazily. `tool/capture_live_catalogue.mjs` scrolls the page over CDP
+and shoots frames (`doc/parity-live/deep/*.png`), which reaches the end:
+
+| Section | What the cards are | Port | Status |
+|---|---|---|---|
+| Renderers | Markdown, syntax highlighting, Mermaid, math, code blocks | `AssistantMarkdown`, `AssistantSyntaxHighlighter`, `AssistantMermaidDiagram`, `AssistantMath`, `AssistantCodeBlock` | Aligned |
+| Primitives | The pieces the styled layer builds on | The port's `primitives/` layer | Aligned |
+| Generative | A heat graph, then eighteen **Card** and **Form** model samples (a stay card, a booking form, an order tracker, a flight tracker, a portfolio, an event card, a channel message, a receipt, a two-series chart, a player card, a session card, a confirm dialog, a line chart, a task form, a plan form …) | `generative-ui`'s registry with its Card/Form models renders them; the samples themselves are not separate elements upstream | Aligned by construction |
+| Heat graph | Month labels, day labels, legend, per-cell tooltips | `heat-graph` | Aligned |
+
+With that, all fourteen sections of the catalogue have been read against the port.
 
 ## Method
 
