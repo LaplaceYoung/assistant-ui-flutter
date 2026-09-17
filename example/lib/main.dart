@@ -86,6 +86,17 @@ class _ExampleAppState extends State<ExampleApp> {
                         value: 'composer',
                         child: Text('Composer triggers'),
                       ),
+                      PopupMenuItem<String>(
+                        value: 'states',
+                        child: Text('States and indicators'),
+                      ),
+                      PopupMenuItem<String>(value: 'tools', child: Text('Tools')),
+                      PopupMenuItem<String>(value: 'agents', child: Text('Agents')),
+                      PopupMenuItem<String>(
+                        value: 'observability',
+                        child: Text('Observability'),
+                      ),
+                      PopupMenuItem<String>(value: 'motion', child: Text('Motion')),
                     ],
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -240,6 +251,8 @@ class _ThreadHost extends StatelessWidget {
         return const _ObservabilityDemo();
       case 'motion':
         return const _MotionDemo();
+      case 'states':
+        return const _StatesDemo();
       default:
         return const AssistantThread(
           turnAnchor: AuiTurnAnchor.top,
@@ -1911,6 +1924,202 @@ class _MotionDemoState extends State<_MotionDemo> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The states a thread moves through, side by side: the empty state, the
+/// loading and typing indicators, a failed run, the follow-up chips and the
+/// timing readout. Each is the shipped widget, not a copy.
+class _StatesDemo extends StatefulWidget {
+  const _StatesDemo();
+
+  @override
+  State<_StatesDemo> createState() => _StatesDemoState();
+}
+
+class _StatesDemoState extends State<_StatesDemo> {
+  late final LocalRuntime _runtime = LocalRuntime(
+    adapter: _NullAdapter(),
+    initialMessages: <ThreadMessage>[
+      ThreadMessage.single(
+        id: 'timed',
+        role: MessageRole.assistant,
+        createdAt: DateTime(2026, 1, 1),
+        content: const <MessagePart>[TextPart('A finished answer.')],
+        metadata: const MessageMetadata(
+          timing: MessageTiming(
+            totalStreamTime: 1400,
+            firstTokenTime: 180,
+            tokenCount: 96,
+            tokensPerSecond: 68.5,
+            totalChunks: 24,
+          ),
+        ),
+      ),
+    ],
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _runtime.thread.setSuggestions(const <ThreadSuggestion>[
+      ThreadSuggestion(prompt: 'Summarize this thread'),
+      ThreadSuggestion(prompt: 'Show me the code'),
+      ThreadSuggestion(prompt: 'Try a different model'),
+      ThreadSuggestion(prompt: 'Explain the last step'),
+    ]);
+  }
+
+  @override
+  void dispose() {
+    _runtime.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    return AuiRuntimeProvider(
+      runtime: _runtime,
+      // A bounded width around the list: a vertical list hands its children a
+      // tight cross-axis width, so the cards fill the column.
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 900),
+          child: ListView(
+            padding: const EdgeInsets.all(24),
+            children: <Widget>[
+          _Section(
+            title: 'Empty state',
+            detail: 'greeting, prompt pills and the stand-in composer',
+            child: AssistantEmptyState(
+              greeting: 'How can I help you today?',
+              suggestions: const <String>['Weather in Tokyo', 'Draft a plan'],
+              onSuggestion: (_) {},
+              composerPlaceholder: 'Ask anything…',
+              onSend: () {},
+            ),
+          ),
+          _Section(
+            title: 'Loading state',
+            detail: 'the shimmering grid while a run warms up',
+            child: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: AssistantLoadingState(),
+            ),
+          ),
+          _Section(
+            title: 'Typing indicator',
+            detail: 'the three-dot wave',
+            child: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: AssistantTypingIndicator(),
+            ),
+          ),
+          _Section(
+            title: 'Error state',
+            detail: 'a failed run with a retry, and the retrying line',
+            child: Column(
+              children: <Widget>[
+                AssistantErrorState(
+                  title: 'The run failed',
+                  detail: 'Upstream returned 503 after 1.2s.',
+                  onRetry: () {},
+                ),
+                const SizedBox(height: 12),
+                const AssistantErrorState(
+                  title: 'Still failing',
+                  detail: 'Trying again in a moment.',
+                  retrying: true,
+                ),
+              ],
+            ),
+          ),
+          _Section(
+            title: 'Follow-up suggestions',
+            detail: 'chips read from the thread state, with edge fades',
+            child: AssistantFollowUpSuggestions(
+              key: const ValueKey<String>('follow-ups'),
+            ),
+          ),
+          _Section(
+            title: 'Message timing',
+            detail: 'the readout under a finished answer',
+            child: AuiMessage(
+              message: _runtime.state.thread.messages.first,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: AssistantMessageTiming(),
+              ),
+            ),
+          ),
+              Text(
+                'Each widget above is the one the package ships, rendered '
+                'outside a run so the states can be compared side by side.',
+                style:
+                    theme.small(context).copyWith(color: theme.mutedForeground),
+              ),
+              ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Section extends StatelessWidget {
+  const _Section({
+    required this.title,
+    required this.detail,
+    required this.child,
+  });
+
+  final String title;
+  final String detail;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            title,
+            style: theme.body(context).copyWith(fontWeight: FontWeight.w600),
+          ),
+          Text(
+            detail,
+            style: theme.small(context).copyWith(color: theme.mutedForeground),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: theme.muted,
+                borderRadius: BorderRadius.circular(theme.cardRadius),
+                border: Border.all(color: theme.border),
+              ),
+              child: Padding(padding: const EdgeInsets.all(12), child: child),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The states page never sends, so the adapter answers nothing.
+class _NullAdapter implements ChatModelAdapter {
+  @override
+  Stream<ChatModelRunResult> run(ChatModelRunContext context) async* {
+    yield const ChatModelRunResult(
+      content: <MessagePart>[],
+      status: MessageStatusComplete(),
     );
   }
 }

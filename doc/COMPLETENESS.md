@@ -11,6 +11,7 @@ hand when something moves; the two matrices under it are generated.
 | Upstream packages | **23 of 46 ported**, 1 partial, 22 n/a | `doc/package-coverage.md` (`dart run tool/sync_package_coverage.dart`) |
 | Runtime adapters | data stream v1, MCP, AG-UI, A2A, LangGraph, Google ADK, generative UI, o11y span tree, cloud | `test/{ag_ui,a2a,langgraph,adk,mcp_client,cloud}_test.dart`, each over a real in-process HTTP/SSE server |
 | Interaction motion | six families aligned to the upstream animation tokens, reduced motion throughout | `doc/motion-inventory.json`, `doc/MOTION_PLAN.md`, `test/motion_test.dart`, `doc/landing/parity/motion_frames.png` |
+| Element audit | 125 checked: 0 with no widget behind them, 3 with no test naming them, 46 no surface renders | `dart run tool/audit_elements.dart` → `doc/element-audit.md` |
 | Landing page | a Flutter recreation — the original's structure, order and copy, drawn with this package's widgets and pointing at what the port ships | `doc/landing/parity/REPORT.md` (mean 3.6% of pixels differ from the live page), `tool/landing_parity.sh` |
 | Gates | package 452 tests, landing 23, both analyze clean | `flutter test`, `flutter analyze` |
 | CI | four jobs: package, example, web apps, deploy | `.github/workflows/ci.yml`, green on `04c0f7e` |
@@ -30,7 +31,9 @@ tool/landing_parity.sh          # needs the network: compares against the live s
 ## Known gaps
 
 `doc/element-audit.md` is the mechanical pass over the ported elements — file,
-test, reachable surface — and `doc/GAPS.md` lists what is missing with a reason per line: the playground
+test, reachable surface; its "no surface" list is the work queue, and the states
+page in the example closed the first six entries. `doc/GAPS.md` lists what is
+missing with a reason per line: the playground
 controls this port cannot honour yet, the four partial elements, and the
 verification that has not been done (no per-element visual diff, no pixel
 comparison of the playground).

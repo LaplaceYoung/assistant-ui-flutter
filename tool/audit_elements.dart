@@ -54,15 +54,18 @@ void main() {
       noWidget.add(row.element);
       continue;
     }
-    final File file = File('lib/src/$path');
-    if (!file.existsSync()) {
-      noWidget.add(row.element);
-      continue;
-    }
+    // A row may name several files, and a helper may live beside the element
+    // rather than in the file the row names; read all of them.
+    final List<String> sources = <String>[
+      for (final String part in path.split(',')) File('lib/src/${part.trim()}').path,
+    ].where((String p) => File(p).existsSync()).toList();
+    final String source = sources.isEmpty
+        ? _sourceDeclaring(row.element)
+        : sources.map((String p) => File(p).readAsStringSync()).join('\n');
     // The classes the element's file exports, as the tests and the surfaces
     // would name them.
     final List<String> classes = RegExp(r'^class (\w+)', multiLine: true)
-        .allMatches(file.readAsStringSync())
+        .allMatches(source)
         .map((RegExpMatch m) => m.group(1)!)
         .where((String name) => publicApi.contains(name))
         .toList();
@@ -135,6 +138,27 @@ void main() {
   stdout.writeln('wrote doc/element-audit.md: $checked elements, '
       '${noWidget.length} without a widget, ${noTest.length} without a test, '
       '${noSurface.length} without a surface');
+}
+
+/// Last resort: the file under `lib/src` that declares a class named after the
+/// element, so a stale path in the coverage table does not read as a missing
+/// widget.
+String _sourceDeclaring(String element) {
+  final String needle = element
+      .split('-')
+      .map((String part) =>
+          part.isEmpty ? part : part[0].toUpperCase() + part.substring(1))
+      .join();
+  for (final FileSystemEntity entity
+      in Directory('lib/src').listSync(recursive: true)) {
+    if (entity is! File || !entity.path.endsWith('.dart')) continue;
+    final String text = entity.readAsStringSync();
+    if (text.contains('class Assistant$needle') ||
+        text.contains('class Aui$needle')) {
+      return text;
+    }
+  }
+  return '';
 }
 
 String _readAll(Directory dir) {

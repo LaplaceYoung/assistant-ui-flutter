@@ -7,17 +7,15 @@ Mechanical pass over the ported elements: does the element map to a file that ex
 | | Count |
 |---|---|
 | ported or partial elements checked | 125 |
-| file missing or exports nothing public | 3 |
+| file missing or exports nothing public | 0 |
 | no test names the element's class | 3 |
-| not reachable from a surface | 50 |
+| not reachable from a surface | 46 |
 
 ## No widget
 
 The coverage table points at a file that is missing or exports no public class.
 
-- `mermaid-diagram`
-- `typing-indicator`
-- `web-preview`
+None.
 
 ## No test
 
@@ -40,24 +38,20 @@ Nothing in the gallery, the example or the landing renders the element, so a rea
 - `conversation-search`
 - `day-separator`
 - `document-reference`
-- `empty-state`
-- `error-state`
 - `feedback-dialog`
 - `file-tree`
 - `flow-expand`
-- `follow-up-suggestions`
 - `generative-ui`
 - `guardrail-notice`
 - `image-generation`
 - `inline-citation`
 - `launcher-bubble`
-- `loading-state`
 - `map-answer`
 - `markdown-text`
 - `math-block`
 - `mcp-config`
+- `mermaid-diagram`
 - `message-attachment`
-- `message-timing`
 - `mobile-composer`
 - `model-picker`
 - `onboarding`
@@ -75,10 +69,10 @@ Nothing in the gallery, the example or the landing renders the element, so a rea
 - `speaker-identity`
 - `syntax-highlighter`
 - `terminal-block`
-- `thinking-indicator`
 - `thread-search`
 - `threadlist-sidebar`
 - `tooltip-icon-button`
 - `voice-conversation`
+- `web-preview`
 - `web-search`
 
