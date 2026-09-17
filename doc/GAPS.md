@@ -54,6 +54,18 @@ the document reference's anchors, onboarding's next and skip, the memory chips
 and the job progress — and asserts the callback fires, so this class of miss
 cannot come back quietly.
 
+## Differences the live catalogue showed
+
+`doc/parity-live/README.md` records the first read of
+`assistant-ui.com/elements` against the port's own pages. Three are worth acting
+on:
+
+| Gap | What it needs |
+|---|---|
+| The effort picker lacks upstream's `Max` level | Add it to the default effort set in `model_selector.dart` and to the playground's levels |
+| Streaming text does not colour new tokens | The markdown renderer needs a per-token age, so the newest words land in blue and settle into ink |
+| The inventory walks 125 elements; the live catalogue says 144 | Refresh `tool/sync_element_coverage.dart`'s inventory from the live list, then close the difference |
+
 ## Verification not yet done
 
 - **No frame-by-frame diff of the playground.** `tool/landing_parity.sh` measures
