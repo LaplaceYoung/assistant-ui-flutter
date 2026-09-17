@@ -102,6 +102,10 @@ class _ExampleAppState extends State<ExampleApp> {
                         value: 'navigation',
                         child: Text('Search, diffs and files'),
                       ),
+                      PopupMenuItem<String>(
+                        value: 'rendering',
+                        child: Text('Rendering'),
+                      ),
                       PopupMenuItem<String>(value: 'tools', child: Text('Tools')),
                       PopupMenuItem<String>(value: 'agents', child: Text('Agents')),
                       PopupMenuItem<String>(
@@ -271,6 +275,8 @@ class _ThreadHost extends StatelessWidget {
         return const MessagesDemo();
       case 'navigation':
         return const NavigationDemo();
+      case 'rendering':
+        return const RenderingDemo();
       default:
         return const AssistantThread(
           turnAnchor: AuiTurnAnchor.top,
@@ -2775,6 +2781,230 @@ class NavigationDemo extends StatelessWidget {
                     onPressed: () {},
                   ),
                 ],
+              ),
+            ),
+            Text(
+              'Each piece is the shipped widget with the props a host would pass.',
+              style: theme.small(context).copyWith(color: theme.mutedForeground),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// What the thread draws when a part is rich: markdown with its fenced code
+/// highlighted, a Mermaid fence rendered in Dart, a syntax-highlighted snippet,
+/// an image being generated, a generated component, a web preview, search
+/// results, a map answer, a research report, a document reference, a voice
+/// session and an expanded diagram.
+class RenderingDemo extends StatelessWidget {
+  const RenderingDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: ListView(
+          key: const ValueKey<String>('rendering-page'),
+          padding: const EdgeInsets.all(24),
+          children: <Widget>[
+            _Section(
+              title: 'Markdown',
+              detail: 'headings, lists, emphasis, links, tables and fenced code',
+              child: AssistantMarkdown(
+                text: '# Streaming\n\n'
+                    'A run arrives in **parts**, cumulatively:\n\n'
+                    '- text, as it is written\n'
+                    '- reasoning, collapsed\n'
+                    '- tool calls, grouped\n\n'
+                    '| piece | who renders it |\n'
+                    '|---|---|\n'
+                    '| text | markdown |\n'
+                    '| tool | the toolkit |\n\n'
+                    '```dart\n'
+                    'yield ChatModelRunResult(content: parts);\n'
+                    '```\n',
+              ),
+            ),
+            _Section(
+              title: 'Mermaid',
+              detail: 'a flowchart fence parsed and painted in Dart',
+              child: const AssistantMermaidDiagram(
+                code: 'graph TD\n'
+                    '  A[user] --> B{thread}\n'
+                    '  B --> C[adapter]\n'
+                    '  C --> D[tools?]\n'
+                    '  D --> B\n',
+              ),
+            ),
+            _Section(
+              title: 'Syntax highlighter',
+              detail: 'the Dart tokenizer behind every fenced block',
+              child: const AssistantSyntaxHighlighter(
+                language: 'dart',
+                code: 'class LocalRuntime extends AssistantRuntime {\n'
+                    '  void setModel(String? id) {\n'
+                    '    _model = id;\n'
+                    '    _emit();\n'
+                    '  }\n'
+                    '}',
+              ),
+            ),
+            _Section(
+              title: 'Image generation',
+              detail: 'the pulsing field while generating, the frame when done',
+              child: const Column(
+                children: <Widget>[
+                  AssistantImageGeneration(
+                    prompt: 'A thread settling, drawn as a calm river',
+                  ),
+                  SizedBox(height: 12),
+                  AssistantImageGeneration(
+                    prompt: 'A thread settling, drawn as a calm river',
+                    generating: false,
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Generative UI',
+              detail: 'a component registry the model can draw into',
+              child: const AuiGenerativeUI(
+                component: 'Chart',
+                properties: <String, Object?>{'series': 'runs per day'},
+              ),
+            ),
+            _Section(
+              title: 'Web preview',
+              detail: "the frame's chrome; the host supplies the frame itself",
+              child: AssistantWebPreview(
+                origin: 'assistant-ui.com/docs',
+                child: const SizedBox(height: 180),
+                onReload: () {},
+                onOpenExternal: () {},
+              ),
+            ),
+            _Section(
+              title: 'Web search',
+              detail: 'the query pill and the results, with the read count',
+              child: const AssistantWebSearch(
+                query: 'assistant-ui runtime settle',
+                visibleResults: 3,
+                results: <WebSearchResult>[
+                  WebSearchResult(
+                    title: 'Runtimes',
+                    domain: 'assistant-ui.com',
+                  ),
+                  WebSearchResult(
+                    title: 'Tool continuation',
+                    domain: 'assistant-ui.com',
+                  ),
+                  WebSearchResult(
+                    title: 'A thread that settles',
+                    domain: 'github.com',
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Map answer',
+              detail: 'grid map, pins and the hand-dashed route',
+              child: const AssistantMapAnswer(
+                activeId: 'p2',
+                route: true,
+                pins: <MapPin>[
+                  MapPin(
+                    id: 'p1',
+                    label: 'Library',
+                    detail: '5 min walk',
+                    x: 0.2,
+                    y: 0.7,
+                  ),
+                  MapPin(
+                    id: 'p2',
+                    label: 'Cafe',
+                    detail: '2 min walk',
+                    x: 0.55,
+                    y: 0.4,
+                  ),
+                  MapPin(
+                    id: 'p3',
+                    label: 'Station',
+                    detail: '12 min walk',
+                    x: 0.85,
+                    y: 0.2,
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Research report',
+              detail: 'per-section state, source counts and previews',
+              child: const AssistantResearchReport(
+                title: 'How threads settle',
+                sourcesRead: 9,
+                sections: <ReportSection>[
+                  ReportSection(
+                    id: 'r1',
+                    heading: 'The run lifecycle',
+                    state: SectionState.done,
+                    sources: 3,
+                    preview: 'A run ends when its stream closes…',
+                  ),
+                  ReportSection(
+                    id: 'r2',
+                    heading: 'Tool continuations',
+                    state: SectionState.writing,
+                    sources: 1,
+                  ),
+                  ReportSection(
+                    id: 'r3',
+                    heading: 'Cancellation',
+                    state: SectionState.pending,
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Document reference',
+              detail: 'page anchors with the quote they point at',
+              child: AssistantDocumentReference(
+                title: 'local_runtime.dart',
+                pages: 96,
+                activePage: 40,
+                anchors: const <DocumentAnchor>[
+                  DocumentAnchor(page: 12, quote: 'final ChatModelAdapter _adapter;'),
+                  DocumentAnchor(page: 40, quote: 'Future<void> get settled => _chain;'),
+                ],
+                onJump: (_) {},
+              ),
+            ),
+            _Section(
+              title: 'Voice conversation',
+              detail: 'the orb scaled by input level, with the transcript',
+              child: const AssistantVoiceConversation(
+                mode: VoiceMode.listening,
+                amplitude: 0.6,
+                transcript: <VoiceTurn>[
+                  VoiceTurn(id: 'v1', role: 'user', text: 'Is the run done?'),
+                  VoiceTurn(
+                    id: 'v2',
+                    role: 'assistant',
+                    text: 'It settled a moment ago.',
+                  ),
+                ],
+              ),
+            ),
+            _Section(
+              title: 'Flow expand',
+              detail: 'the hover control and the full-screen view',
+              child: AssistantFlowExpand(
+                label: 'Expand the diagram',
+                child: const SizedBox(height: 120),
               ),
             ),
             Text(

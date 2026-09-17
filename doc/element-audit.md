@@ -9,7 +9,7 @@ Mechanical pass over the ported elements: does the element map to a file that ex
 | ported or partial elements checked | 125 |
 | file missing or exports nothing public | 0 |
 | no test names the element's class | 0 |
-| not reachable from a surface | 24 |
+| not reachable from a surface | 11 |
 
 ## No widget
 
@@ -29,26 +29,13 @@ Nothing in the gallery, the example or the landing renders the element, so a rea
 
 - `assistant-modal`
 - `chat-panel`
-- `document-reference`
 - `feedback-dialog`
-- `flow-expand`
-- `generative-ui`
-- `image-generation`
 - `launcher-bubble`
-- `map-answer`
-- `markdown-text`
 - `mcp-config`
-- `mermaid-diagram`
 - `onboarding`
 - `permission-grant`
 - `prompt-library`
-- `research-report`
 - `settings-panel`
 - `shared-conversation`
-- `shiki-highlighter`
-- `syntax-highlighter`
 - `threadlist-sidebar`
-- `voice-conversation`
-- `web-preview`
-- `web-search`
 

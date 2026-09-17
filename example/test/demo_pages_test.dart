@@ -104,4 +104,23 @@ void main() {
     expect(find.byType(AssistantThreadSearch), findsOneWidget);
     expect(find.text('Conversation search'), findsOneWidget);
   });
+
+  testWidgets('the rendering page opens on markdown and mermaid', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: const Scaffold(body: RenderingDemo()),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(AssistantMarkdown), findsOneWidget);
+    expect(find.byType(AssistantMermaidDiagram), findsOneWidget);
+    expect(find.text('Streaming'), findsOneWidget);
+  });
 }
