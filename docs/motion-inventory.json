@@ -1,0 +1,1109 @@
+[
+ [
+  "agent-handoff",
+  {
+   "duration-500": 3,
+   "transition-colors": 2,
+   "transition-opacity": 1
+  }
+ ],
+ [
+  "agent-plan",
+  {
+   "animate-none": 1,
+   "animate-spin": 1,
+   "duration-500": 1
+  }
+ ],
+ [
+  "agent-status.aui",
+  {
+   "duration-200": 1,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "agent-status",
+  {
+   "animate-in": 1,
+   "animate-none": 2,
+   "animate-pulse": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "approval-card",
+  {
+   "animate-in": 1,
+   "animate-spin": 1,
+   "duration-150": 2,
+   "duration-300": 1
+  }
+ ],
+ [
+  "artifact-card",
+  {
+   "animate-in": 1,
+   "animate-none": 2,
+   "animate-pulse": 1,
+   "duration-150": 1,
+   "duration-300": 1,
+   "transition-opacity": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "assistant-modal.aui.radix",
+  {
+   "animate-in": 2,
+   "animate-none": 2,
+   "animate-out": 1,
+   "duration-150": 1,
+   "duration-200": 3,
+   "duration-300": 2,
+   "ease-out": 1,
+   "fade-in-0": 2,
+   "fade-out-0": 1,
+   "transition-colors": 1,
+   "transition-none": 5,
+   "zoom-in-95": 1,
+   "zoom-out-95": 1
+  }
+ ],
+ [
+  "assistant-modal.aui",
+  {
+   "animate-in": 2,
+   "animate-none": 2,
+   "animate-out": 1,
+   "duration-150": 1,
+   "duration-200": 3,
+   "duration-300": 2,
+   "ease-out": 1,
+   "fade-in-0": 2,
+   "fade-out-0": 1,
+   "transition-colors": 1,
+   "transition-none": 5,
+   "zoom-in-95": 1,
+   "zoom-out-95": 1
+  }
+ ],
+ [
+  "attachment.aui.radix",
+  {
+   "animate-in": 3,
+   "animate-none": 3,
+   "animate-spin": 1,
+   "duration-200": 1,
+   "duration-300": 1,
+   "fade-in-0": 3,
+   "transition-colors": 1,
+   "transition-none": 4,
+   "transition-opacity": 1,
+   "transition-transform": 1,
+   "zoom-in-95": 1
+  }
+ ],
+ [
+  "attachment.aui",
+  {
+   "animate-in": 3,
+   "animate-none": 3,
+   "animate-spin": 1,
+   "duration-200": 1,
+   "duration-300": 1,
+   "fade-in-0": 3,
+   "transition-colors": 1,
+   "transition-none": 4,
+   "transition-opacity": 1,
+   "transition-transform": 1,
+   "zoom-in-95": 1
+  }
+ ],
+ [
+  "background-inbox",
+  {
+   "animate-none": 1,
+   "animate-spin": 1,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "canvas-split",
+  {
+   "animate-in": 2,
+   "animate-none": 1,
+   "animate-pulse": 1,
+   "duration-300": 3,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "chart",
+  {
+   "animate-in": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "chat-panel",
+  {
+   "animate-bounce": 1,
+   "animate-in": 2,
+   "animate-none": 1,
+   "duration-300": 2
+  }
+ ],
+ [
+  "checkpoint-history",
+  {
+   "duration-150": 1,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "code-diff",
+  {
+   "animate-in": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "code-runner",
+  {
+   "animate-in": 2,
+   "animate-none": 2,
+   "animate-pulse": 1,
+   "animate-spin": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "command-palette",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "comparison-card",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "composer-trigger-popover.aui",
+  {
+   "transition-colors": 3
+  }
+ ],
+ [
+  "composer",
+  {
+   "animate-in": 1,
+   "animate-none": 1,
+   "animate-pulse": 1,
+   "animate-spin": 1,
+   "duration-150": 1,
+   "duration-200": 3,
+   "duration-300": 1,
+   "duration-700": 2,
+   "transition-colors": 4,
+   "transition-none": 5,
+   "zoom-in-90": 1
+  }
+ ],
+ [
+  "computer-use",
+  {
+   "duration-300": 1,
+   "duration-500": 1,
+   "ease-out": 1,
+   "transition-none": 1,
+   "transition-opacity": 1
+  }
+ ],
+ [
+  "confidence-marker",
+  {
+   "animate-in": 1,
+   "duration-150": 1,
+   "transition-colors": 1,
+   "zoom-in-95": 1
+  }
+ ],
+ [
+  "connection-state",
+  {
+   "animate-in": 1,
+   "animate-none": 1,
+   "animate-spin": 1,
+   "duration-150": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "context-breakdown",
+  {
+   "duration-500": 1,
+   "ease-out": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "context-display.radix",
+  {
+   "duration-300": 3,
+   "transition-all": 1,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "context-display",
+  {
+   "duration-300": 3,
+   "transition-all": 1,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "conversation-map",
+  {
+   "duration-200": 2,
+   "transition-none": 2
+  }
+ ],
+ [
+  "conversation-search",
+  {
+   "animate-in": 1,
+   "duration-200": 2,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "cost-meter",
+  {
+   "duration-500": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "data-table",
+  {
+   "animate-in": 1,
+   "duration-300": 1,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "day-separator",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "diagram",
+  {
+   "duration-200": 1,
+   "ease-out": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "document-reference",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "draft-restore",
+  {
+   "animate-in": 1,
+   "duration-150": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "edit-message",
+  {
+   "duration-150": 1,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "elicitation-form",
+  {
+   "animate-in": 1,
+   "duration-150": 1,
+   "duration-200": 2,
+   "duration-300": 1,
+   "transition-colors": 2,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "empty-state",
+  {
+   "animate-in": 3,
+   "animate-none": 3,
+   "duration-500": 3,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "error-state",
+  {
+   "animate-in": 2,
+   "animate-none": 3,
+   "animate-spin": 1,
+   "duration-300": 2,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "feedback-dialog",
+  {
+   "animate-in": 1,
+   "duration-150": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "file-tree",
+  {
+   "animate-in": 1,
+   "duration-300": 1,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "file",
+  {
+   "transition-colors": 2
+  }
+ ],
+ [
+  "flow-graph",
+  {
+   "animate-in": 1,
+   "duration-300": 1,
+   "duration-500": 1,
+   "transition-none": 1,
+   "transition-opacity": 1,
+   "zoom-in-95": 1
+  }
+ ],
+ [
+  "follow-up-suggestions.aui",
+  {
+   "ease-in": 1,
+   "transition-colors": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "guardrail-notice",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "image-generation",
+  {
+   "animate-none": 1,
+   "animate-pulse": 1,
+   "duration-1000": 1,
+   "duration-500": 1,
+   "ease-out": 1,
+   "transition-none": 1,
+   "transition-opacity": 1
+  }
+ ],
+ [
+  "image",
+  {
+   "animate-in": 2,
+   "animate-pulse": 1,
+   "animate-spin": 2,
+   "duration-200": 2,
+   "zoom-in-95": 1
+  }
+ ],
+ [
+  "inline-citation",
+  {
+   "duration-200": 1,
+   "transition-colors": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "job-progress",
+  {
+   "animate-none": 1,
+   "animate-spin": 1,
+   "duration-500": 1,
+   "ease-out": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "launcher-bubble",
+  {
+   "animate-in": 1,
+   "duration-200": 3,
+   "transition-colors": 1,
+   "zoom-in-95": 1
+  }
+ ],
+ [
+  "loading-state",
+  {
+   "duration-300": 1,
+   "transition-none": 1,
+   "transition-opacity": 1
+  }
+ ],
+ [
+  "map-answer",
+  {
+   "duration-200": 1,
+   "transition-all": 1,
+   "transition-colors": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "markdown-text",
+  {
+   "animate-in": 2,
+   "duration-150": 1,
+   "duration-200": 1,
+   "ease-out": 1,
+   "zoom-in-50": 1,
+   "zoom-in-75": 1
+  }
+ ],
+ [
+  "math-block",
+  {
+   "animate-in": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "mcp-config.aui.radix",
+  {
+   "animate-spin": 1,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "mcp-config.aui",
+  {
+   "animate-spin": 1,
+   "transition-colors": 2
+  }
+ ],
+ [
+  "mcp-server-panel",
+  {
+   "animate-in": 1,
+   "animate-pulse": 1,
+   "duration-150": 1,
+   "duration-200": 2,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "memory-chips",
+  {
+   "animate-in": 1,
+   "duration-300": 1,
+   "zoom-in-95": 1
+  }
+ ],
+ [
+  "mermaid-diagram",
+  {
+   "animate-in": 1,
+   "animate-pulse": 1,
+   "duration-200": 1
+  }
+ ],
+ [
+  "message-actions",
+  {
+   "animate-none": 1,
+   "animate-spin": 1
+  }
+ ],
+ [
+  "message-attachment",
+  {
+   "animate-in": 2,
+   "duration-300": 3,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "message-branches",
+  {
+   "animate-in": 1,
+   "animate-none": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "message-pair",
+  {
+   "animate-in": 1,
+   "animate-none": 2,
+   "animate-pulse": 1,
+   "duration-500": 1,
+   "duration-700": 1,
+   "transition-colors": 1,
+   "transition-none": 2,
+   "transition-opacity": 1
+  }
+ ],
+ [
+  "message-queue",
+  {
+   "animate-in": 1,
+   "animate-ping": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "message-timing.aui.radix",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "message-timing.aui",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "message-timing",
+  {
+   "animate-in": 1,
+   "duration-500": 1
+  }
+ ],
+ [
+  "mobile-composer",
+  {
+   "animate-in": 1,
+   "duration-200": 1
+  }
+ ],
+ [
+  "model-picker",
+  {
+   "animate-in": 1,
+   "duration-200": 1,
+   "transition-colors": 1,
+   "zoom-in-90": 1
+  }
+ ],
+ [
+  "model-selector.radix",
+  {
+   "transition-colors": 2
+  }
+ ],
+ [
+  "model-selector",
+  {
+   "transition-colors": 2
+  }
+ ],
+ [
+  "number-ticker",
+  {
+   "duration-500": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "onboarding",
+  {
+   "animate-in": 1,
+   "duration-150": 1,
+   "duration-300": 2,
+   "transition-all": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "permission-grant",
+  {
+   "animate-in": 2,
+   "duration-150": 2,
+   "duration-300": 2
+  }
+ ],
+ [
+  "prompt-library",
+  {
+   "animate-in": 1,
+   "duration-200": 1,
+   "transition-colors": 1
+  }
+ ],
+ [
+  "quota-banner",
+  {
+   "duration-500": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "quote-reply",
+  {
+   "animate-in": 2,
+   "duration-150": 1,
+   "duration-200": 1,
+   "duration-300": 1,
+   "zoom-in-95": 1
+  }
+ ],
+ [
+  "quote.aui",
+  {
+   "transition-colors": 2
+  }
+ ],
+ [
+  "read-aloud",
+  {
+   "duration-200": 2,
+   "ease-linear": 1,
+   "transition-colors": 2,
+   "transition-none": 2
+  }
+ ],
+ [
+  "reasoning-effort",
+  {
+   "duration-150": 1,
+   "duration-500": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "reasoning-panel",
+  {
+   "animate-in": 1,
+   "animate-pulse": 1,
+   "duration-200": 1,
+   "duration-300": 2,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "reasoning",
+  {
+   "animate-collapsible-down": 1,
+   "animate-collapsible-up": 1,
+   "animate-in": 3,
+   "animate-none": 3,
+   "animate-out": 1,
+   "fade-in-0": 3,
+   "fade-out-0": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "recommendation-card",
+  {
+   "animate-in": 1,
+   "duration-150": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "regenerate-menu",
+  {
+   "animate-in": 1,
+   "duration-200": 1,
+   "transition-colors": 1,
+   "zoom-in-95": 1
+  }
+ ],
+ [
+  "research-report",
+  {
+   "animate-in": 1,
+   "animate-none": 1,
+   "animate-spin": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "retrieval-chunks",
+  {
+   "animate-in": 2,
+   "duration-300": 2,
+   "duration-500": 1
+  }
+ ],
+ [
+  "reviewable-diff",
+  {
+   "animate-in": 1,
+   "duration-150": 2,
+   "duration-300": 2,
+   "transition-opacity": 1
+  }
+ ],
+ [
+  "schedule-card",
+  {
+   "duration-200": 2,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "score-breakdown",
+  {
+   "animate-in": 1,
+   "duration-300": 1,
+   "duration-500": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "scroll-anchor",
+  {
+   "animate-in": 2,
+   "animate-none": 1,
+   "duration-200": 1,
+   "duration-300": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "settings-panel",
+  {
+   "duration-150": 1,
+   "duration-200": 2,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "sources.aui",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "sources",
+  {
+   "duration-200": 1,
+   "transition-none": 1,
+   "transition-transform": 2
+  }
+ ],
+ [
+  "spec-sheet",
+  {
+   "animate-in": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "stopped-run",
+  {
+   "duration-150": 2
+  }
+ ],
+ [
+  "streaming-text",
+  {
+   "animate-in": 1,
+   "animate-none": 1,
+   "animate-pulse": 1,
+   "duration-500": 1,
+   "duration-700": 1,
+   "transition-colors": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "subagent-list",
+  {
+   "animate-in": 2,
+   "animate-none": 3,
+   "animate-spin": 2,
+   "duration-200": 1,
+   "duration-300": 1,
+   "duration-700": 1,
+   "zoom-in-90": 1
+  }
+ ],
+ [
+  "suggestions",
+  {
+   "animate-in": 1,
+   "animate-none": 1,
+   "duration-300": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "surfaces",
+  {
+   "animate-none": 1,
+   "duration-150": 3,
+   "duration-200": 2,
+   "duration-300": 2,
+   "transition-colors": 1,
+   "transition-none": 7,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "task-card.aui",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "task-card",
+  {
+   "animate-none": 1,
+   "animate-spin": 1,
+   "duration-200": 1,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "terminal-block",
+  {
+   "animate-in": 1,
+   "animate-none": 2,
+   "animate-pulse": 1,
+   "animate-spin": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "thinking-indicator",
+  {
+   "animate-in": 1,
+   "animate-none": 1,
+   "animate-pulse": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "thread-list.aui",
+  {
+   "animate-in": 1,
+   "animate-out": 1,
+   "animate-spin": 1,
+   "fade-in-0": 1,
+   "fade-out-0": 1,
+   "transition-colors": 1,
+   "zoom-in-95": 1,
+   "zoom-out-95": 1
+  }
+ ],
+ [
+  "thread-list",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "thread-search",
+  {
+   "transition-colors": 1
+  }
+ ],
+ [
+  "thread.aui",
+  {
+   "animate-in": 11,
+   "animate-none": 7,
+   "animate-out": 1,
+   "animate-pulse": 3,
+   "duration-150": 4,
+   "duration-200": 5,
+   "ease-out": 2,
+   "fade-in-0": 1,
+   "fade-out-0": 1,
+   "transition-colors": 2,
+   "transition-none": 2,
+   "zoom-in-50": 2,
+   "zoom-in-75": 2,
+   "zoom-in-95": 1,
+   "zoom-out-95": 1
+  }
+ ],
+ [
+  "timeline",
+  {
+   "animate-in": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "todo-list",
+  {
+   "animate-in": 1,
+   "animate-none": 1,
+   "animate-spin": 1,
+   "duration-300": 1
+  }
+ ],
+ [
+  "tool-call",
+  {
+   "animate-in": 1,
+   "duration-200": 2,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1,
+   "zoom-in-90": 1
+  }
+ ],
+ [
+  "tool-error",
+  {
+   "animate-none": 1,
+   "animate-spin": 1,
+   "duration-150": 2
+  }
+ ],
+ [
+  "tool-fallback.aui",
+  {
+   "animate-collapsible-down": 1,
+   "animate-collapsible-up": 1,
+   "animate-in": 1,
+   "animate-none": 3,
+   "animate-out": 1,
+   "animate-spin": 1,
+   "fade-in-0": 1,
+   "fade-out-0": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "tool-group.aui",
+  {
+   "animate-collapsible-down": 1,
+   "animate-collapsible-up": 1,
+   "animate-in": 1,
+   "animate-none": 3,
+   "animate-spin": 1,
+   "fade-in-0": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "tool-group",
+  {
+   "animate-in": 1,
+   "animate-none": 2,
+   "animate-spin": 2,
+   "duration-200": 2,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "tool-timeline",
+  {
+   "animate-in": 1,
+   "duration-200": 1,
+   "duration-300": 1,
+   "transition-colors": 1,
+   "transition-none": 1,
+   "transition-transform": 1
+  }
+ ],
+ [
+  "trace-waterfall",
+  {
+   "animate-in": 1,
+   "animate-pulse": 1,
+   "duration-300": 1,
+   "duration-500": 1,
+   "ease-out": 1,
+   "transition-none": 1
+  }
+ ],
+ [
+  "typing-indicator",
+  {
+   "animate-bounce": 1,
+   "animate-none": 1
+  }
+ ],
+ [
+  "voice-conversation",
+  {
+   "animate-in": 1,
+   "animate-pulse": 2,
+   "duration-150": 3,
+   "duration-200": 1,
+   "duration-300": 1,
+   "ease-out": 3,
+   "transition-none": 4
+  }
+ ],
+ [
+  "voice.aui",
+  {
+   "animate-pulse": 1,
+   "duration-300": 1,
+   "transition-all": 1
+  }
+ ],
+ [
+  "web-preview",
+  {
+   "animate-none": 1,
+   "animate-spin": 1,
+   "duration-300": 1,
+   "transition-none": 1,
+   "transition-opacity": 1
+  }
+ ],
+ [
+  "web-search",
+  {
+   "animate-in": 2,
+   "duration-300": 2,
+   "transition-colors": 1
+  }
+ ]
+]
