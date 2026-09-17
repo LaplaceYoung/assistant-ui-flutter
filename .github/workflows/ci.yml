@@ -1,0 +1,76 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: package (analyze + test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test --reporter expanded
+      - name: Regenerate the coverage matrices
+        run: |
+          dart run tool/sync_element_coverage.dart
+          dart run tool/sync_package_coverage.dart
+      - name: Fail when a matrix drifted
+        run: git diff --exit-code docs/element-coverage.md docs/package-coverage.md
+
+  landing:
+    name: landing (analyze + test + build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - working-directory: landing
+        run: flutter pub get
+      - working-directory: landing
+        run: flutter analyze
+      - working-directory: landing
+        run: flutter test
+      - working-directory: landing
+        run: flutter build web --release --base-href /assistant-ui-flutter/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: landing-web
+          path: landing/build/web
+          retention-days: 5
+
+  deploy:
+    name: deploy the landing to Pages
+    needs: [package, landing]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: landing-web
+          path: landing-web
+      - name: Publish the build to the gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: landing-web
+          publish_branch: gh-pages
+          commit_message: 'deploy: landing from ${{ github.sha }}'
