@@ -14,10 +14,15 @@ class MathText extends MathNode {
     this.italic = false,
     this.size = 1,
     this.bold = false,
+    this.face = MathFace.inherit,
   });
 
   /// `\\mathbf{…}` renders upright and heavy.
   final bool bold;
+
+  /// Which face the run is set in: `\\mathsf` and `\\mathtt` change it,
+  /// `\\mathcal` borrows the serif italic, `\\mathfrak` keeps its own glyphs.
+  final MathFace face;
   final String text;
 
   /// Variables render italic, operators upright — TeX's own convention.
@@ -26,6 +31,9 @@ class MathText extends MathNode {
   /// A multiplier on the ambient size.
   final double size;
 }
+
+/// The faces a font command asks for.
+enum MathFace { inherit, serif, sans, mono }
 
 /// `\frac{over}{under}`.
 class MathFraction extends MathNode {
@@ -280,8 +288,25 @@ class _MathParser {
       case 'ddot':
         return _accented(command, atSize);
       case 'mathbf':
+      case 'boldsymbol':
         return MathText(_verbatimGroup(), bold: true, size: atSize);
+      case 'mathsf':
+        return MathText(_verbatimGroup(), face: MathFace.sans, size: atSize);
+      case 'mathtt':
+        return MathText(_verbatimGroup(), face: MathFace.mono, size: atSize);
       case 'mathcal':
+      case 'mathscr':
+        // No script face ships with the typewriter; the serif italic is the
+        // closest honest reading, and the letters are never dropped.
+        return MathText(
+          _verbatimGroup(),
+          face: MathFace.serif,
+          italic: true,
+          size: atSize,
+        );
+      case 'mathfrak':
+        // Blackletter has no stand-in either: the letters are kept upright.
+        return MathText(_verbatimGroup(), size: atSize);
       case 'mathbb':
         // The blackboard letters TeX carries; anything else keeps its own
         // glyphs, so the expression still reads.
@@ -565,7 +590,12 @@ class MathNodeView extends StatelessWidget {
             color: resolved,
             fontStyle: current.italic ? FontStyle.italic : FontStyle.normal,
             fontWeight: current.bold ? FontWeight.w700 : null,
-            fontFamily: current.italic ? 'serif' : null,
+            fontFamily: switch (current.face) {
+              MathFace.serif => 'serif',
+              MathFace.sans => 'sans-serif',
+              MathFace.mono => 'monospace',
+              MathFace.inherit => current.italic ? 'serif' : null,
+            },
             height: 1.2,
           ),
         );

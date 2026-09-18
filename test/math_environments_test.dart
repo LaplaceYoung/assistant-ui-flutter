@@ -93,4 +93,23 @@ void main() {
     expect(find.textContaining('\u2003'), findsWidgets);
     expect(find.textContaining('\u22ef'), findsOneWidget);
   });
+
+  testWidgets('the font commands set the face the reader expects', (
+    WidgetTester tester,
+  ) async {
+    Future<TextStyle> styleOf(String tex) async {
+      await pump(tester, tex);
+      final Text text = tester.widget<Text>(find.byType(Text).first);
+      return text.style!;
+    }
+
+    expect((await styleOf(r'\mathsf{A}')).fontFamily, 'sans-serif');
+    expect((await styleOf(r'\mathtt{x}')).fontFamily, 'monospace');
+    // No script face ships: the serif italic is the honest stand-in.
+    expect((await styleOf(r'\mathcal{L}')).fontFamily, 'serif');
+    expect((await styleOf(r'\mathcal{L}')).fontStyle, FontStyle.italic);
+    expect((await styleOf(r'\boldsymbol{v}')).fontWeight, FontWeight.w700);
+    // The letters survive whatever the face does.
+    expect(find.textContaining('v'), findsWidgets);
+  });
 }
