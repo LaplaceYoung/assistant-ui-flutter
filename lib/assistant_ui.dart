@@ -181,6 +181,10 @@ export 'src/components/mermaid_extra.dart'
         MermaidPieSegment,
         MermaidSequence,
         MermaidSequenceMessage,
+        AssistantMermaidGantt,
+        MermaidGantt,
+        MermaidGanttSection,
+        MermaidGanttTask,
         MermaidStateDiagram,
         parseStateDiagram;
 export 'src/components/research_report.dart'

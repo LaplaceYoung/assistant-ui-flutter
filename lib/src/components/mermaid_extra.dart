@@ -672,3 +672,296 @@ class MermaidStateDiagram {
 
   final MermaidFlowchart chart;
 }
+
+/// A parsed `gantt` chart: sections, their tasks, and the span they cover.
+class MermaidGantt {
+  const MermaidGantt({required this.sections, this.title});
+
+  final String? title;
+  final List<MermaidGanttSection> sections;
+
+  bool get isEmpty => sections.isEmpty;
+
+  DateTime get start => sections
+      .expand((MermaidGanttSection s) => s.tasks)
+      .map((MermaidGanttTask t) => t.start)
+      .reduce((DateTime a, DateTime b) => a.isBefore(b) ? a : b);
+
+  DateTime get end => sections
+      .expand((MermaidGanttSection s) => s.tasks)
+      .map((MermaidGanttTask t) => t.end)
+      .reduce((DateTime a, DateTime b) => a.isAfter(b) ? a : b);
+
+  /// Parses `gantt`, with `title`, `section` headers and `Task :id, start,
+  /// duration` rows. A start is `YYYY-MM-DD` or missing (the chart's own start);
+  /// a duration is `5d`, `2w` or plain days. `done`, `milestone` and `crit` tags
+  /// are read off the line rather than drawn.
+  static MermaidGantt? parse(String source) {
+    final List<String> lines = source
+        .split('\n')
+        .map((String line) => line.trim())
+        .where((String line) => line.isNotEmpty)
+        .toList();
+    if (lines.isEmpty) return null;
+    if (!lines.first.toLowerCase().startsWith('gantt')) return null;
+
+    String? title;
+    final List<MermaidGanttSection> sections = <MermaidGanttSection>[];
+    MermaidGanttSection open = const MermaidGanttSection(name: '', tasks: <MermaidGanttTask>[]);
+    DateTime? cursor;
+    DateTime? chartStart;
+
+    bool sawTask = false;
+    for (final String line in lines.skip(1)) {
+      final String lower = line.toLowerCase();
+      if (lower.startsWith('title ')) {
+        title = line.substring(6).trim();
+        continue;
+      }
+      if (lower.startsWith('dateformat') ||
+          lower.startsWith('axisformat') ||
+          lower.startsWith('excludes') ||
+          lower.startsWith('tickinterval') ||
+          lower.startsWith('todaymarker')) {
+        continue;
+      }
+      if (lower.startsWith('section ')) {
+        open = MermaidGanttSection(
+          name: line.substring(8).trim(),
+          tasks: <MermaidGanttTask>[],
+        );
+        sections.add(open);
+        continue;
+      }
+      final int colon = line.indexOf(':');
+      if (colon < 0) return null;
+      final String name = line.substring(0, colon).trim();
+      final List<String> spec = line
+          .substring(colon + 1)
+          .split(',')
+          .map((String part) => part.trim())
+          .where((String part) => part.isNotEmpty)
+          .toList();
+      if (name.isEmpty || spec.isEmpty) return null;
+
+      // The first part is an id unless it reads as a date or a duration.
+      int index = 0;
+      if (!_isDate(spec[0]) && _parseDuration(spec[0]) == null) index = 1;
+      String? startText;
+      String? durationText;
+      for (; index < spec.length; index++) {
+        final String part = spec[index];
+        if (_isDate(part)) {
+          startText = part;
+        } else if (_parseDuration(part) != null) {
+          durationText = part;
+        }
+      }
+      final DateTime start = startText == null
+          ? (cursor ?? chartStart ?? DateTime(2026, 1, 1))
+          : DateTime.parse(startText);
+      chartStart ??= start;
+      final Duration length = _parseDuration(durationText ?? '1d')!;
+      final MermaidGanttTask task =
+          MermaidGanttTask(name: name, start: start, end: start.add(length));
+      cursor = task.end;
+      if (sections.isEmpty) sections.add(open);
+      sections.last.tasks.add(task);
+      sawTask = true;
+    }
+    if (!sawTask) return null;
+    return MermaidGantt(
+      title: title,
+      sections: <MermaidGanttSection>[
+        for (final MermaidGanttSection section in sections)
+          if (section.tasks.isNotEmpty) section,
+      ],
+    );
+  }
+
+  static bool _isDate(String value) =>
+      RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(value);
+
+  static Duration? _parseDuration(String value) {
+    final RegExpMatch? match = RegExp(r'^(\d+)\s*([dwmh])?$').firstMatch(value);
+    if (match == null) return null;
+    final int amount = int.parse(match.group(1)!);
+    return switch (match.group(2)) {
+      'w' => Duration(days: amount * 7),
+      'h' => Duration(hours: amount),
+      'm' => Duration(minutes: amount),
+      _ => Duration(days: amount),
+    };
+  }
+}
+
+/// One band of a gantt chart.
+class MermaidGanttSection {
+  const MermaidGanttSection({required this.name, required this.tasks});
+
+  final String name;
+  final List<MermaidGanttTask> tasks;
+}
+
+/// One bar: a name and the span it covers.
+class MermaidGanttTask {
+  const MermaidGanttTask({
+    required this.name,
+    required this.start,
+    required this.end,
+  });
+
+  final String name;
+  final DateTime start;
+  final DateTime end;
+
+  int get days => end.difference(start).inHours <= 24
+      ? 1
+      : end.difference(start).inDays;
+}
+
+/// Draws a parsed gantt: the labels on the left, the bars on a day scale.
+class AssistantMermaidGantt extends StatelessWidget {
+  const AssistantMermaidGantt({
+    super.key,
+    required this.gantt,
+    this.labelWidth = 150,
+    this.rowHeight = 26,
+    this.dayWidth = 14,
+  });
+
+  final MermaidGantt gantt;
+  final double labelWidth;
+  final double rowHeight;
+  final double dayWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    if (gantt.isEmpty) return const SizedBox.shrink();
+    final int span = gantt.end.difference(gantt.start).inDays + 1;
+    final double width = labelWidth + span * dayWidth + 24;
+    final double height =
+        24 + gantt.sections.fold<int>(0, (int sum, MermaidGanttSection s) => sum + s.tasks.length) * rowHeight + gantt.sections.length * 22;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        if (gantt.title != null) ...<Widget>[
+          Text(
+            gantt.title!,
+            style: theme.body(context).copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 10),
+        ],
+        SizedBox(
+          width: width,
+          height: height,
+          child: CustomPaint(
+            painter: _GanttPainter(
+              gantt: gantt,
+              labelWidth: labelWidth,
+              rowHeight: rowHeight,
+              dayWidth: dayWidth,
+              theme: theme,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _GanttPainter extends CustomPainter {
+  _GanttPainter({
+    required this.gantt,
+    required this.labelWidth,
+    required this.rowHeight,
+    required this.dayWidth,
+    required this.theme,
+  });
+
+  final MermaidGantt gantt;
+  final double labelWidth;
+  final double rowHeight;
+  final double dayWidth;
+  final AssistantTheme theme;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint grid = Paint()
+      ..color = theme.border.withValues(alpha: 0.6)
+      ..strokeWidth = 1;
+    final Paint bar = Paint()..color = theme.primary;
+    final Paint barTop = Paint()..color = theme.foreground;
+    final Paint sectionRule = Paint()
+      ..color = theme.border
+      ..strokeWidth = 1;
+
+    final int span = gantt.end.difference(gantt.start).inDays + 1;
+    // A week grid, so the bars can be read against time.
+    for (int day = 0; day <= span; day += 7) {
+      final double x = labelWidth + day * dayWidth;
+      canvas.drawLine(Offset(x, 18), Offset(x, size.height), grid);
+    }
+    _text(canvas, gantt.start.toIso8601String().substring(0, 10),
+        Offset(labelWidth + 2, 2), theme.mutedForeground);
+    _text(
+      canvas,
+      '${span - 1} days',
+      Offset(labelWidth + span * dayWidth - 44, 2),
+      theme.mutedForeground,
+    );
+
+    double y = 22;
+    for (final MermaidGanttSection section in gantt.sections) {
+      if (section.name.isNotEmpty) {
+        _text(canvas, section.name, Offset(0, y), theme.mutedForeground);
+        canvas.drawLine(
+          Offset(0, y + 16),
+          Offset(size.width, y + 16),
+          sectionRule,
+        );
+        y += 20;
+      }
+      for (final MermaidGanttTask task in section.tasks) {
+        _text(canvas, task.name, Offset(8, y + 4), theme.foreground);
+        final int offset = task.start.difference(gantt.start).inDays;
+        final double left = labelWidth + offset * dayWidth;
+        final double barWidth = task.days * dayWidth;
+        final Rect rect = Rect.fromLTWH(left, y + 2, barWidth, rowHeight - 10);
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(rect, const Radius.circular(3)),
+          bar,
+        );
+        // The leading edge is drawn heavier, as Mermaid marks the start.
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(rect.left, rect.top, 3, rect.height),
+            const Radius.circular(2),
+          ),
+          barTop,
+        );
+        y += rowHeight;
+      }
+    }
+  }
+
+  void _text(Canvas canvas, String text, Offset at, Color color) {
+    (TextPainter(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(fontSize: 12, height: 1.2, color: color),
+      ),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+      ellipsis: '…',
+    )..layout(maxWidth: labelWidth - 8))
+        .paint(canvas, at);
+  }
+
+  @override
+  bool shouldRepaint(_GanttPainter old) =>
+      old.gantt != gantt || old.theme != theme;
+}
+
