@@ -180,7 +180,9 @@ export 'src/components/mermaid_extra.dart'
         MermaidPie,
         MermaidPieSegment,
         MermaidSequence,
-        MermaidSequenceMessage;
+        MermaidSequenceMessage,
+        MermaidStateDiagram,
+        parseStateDiagram;
 export 'src/components/research_report.dart'
     show AssistantResearchReport, ReportSection, SectionState;
 export 'src/components/retrieval_chunks.dart'

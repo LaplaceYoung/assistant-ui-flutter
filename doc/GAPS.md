@@ -31,7 +31,7 @@ or a constructor argument, and the generated snippet prints exactly that.
 ## Elements
 
 Four are partial, with the reason recorded in `doc/element-coverage.md`:
-`markdown-text` (Mermaid's class/state/gantt types, LaTeX accents and font
+`markdown-text` (Mermaid's class and gantt types, LaTeX's remaining font
 commands), `web-preview` (the frame itself on non-web — the chrome and a self-explanatory default body ship), `attachment` (a backend that stores
 beyond memory — the port now ships an in-memory one), `file` (opening the payload
 in a real app — the port now ships a saver that writes it).

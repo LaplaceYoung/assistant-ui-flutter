@@ -42,8 +42,15 @@ class AssistantMermaidDiagram extends StatelessWidget {
       // The built-in renderers: a sequence, then a pie, then the flowchart
       // subset. Each returns null for source it cannot read, so an unknown
       // diagram falls through to the source view.
-      final MermaidSequence? sequence = MermaidSequence.parse(code);
-      if (sequence != null) {
+      final MermaidStateDiagram? states = parseStateDiagram(code);
+      final MermaidSequence? sequence =
+          states == null ? MermaidSequence.parse(code) : null;
+      if (states != null) {
+        body = Padding(
+          padding: const EdgeInsets.all(12),
+          child: AssistantMermaidFlowchart(chart: states.chart),
+        );
+      } else if (sequence != null) {
         body = Padding(
           padding: const EdgeInsets.all(12),
           child: AssistantMermaidSequence(sequence: sequence),

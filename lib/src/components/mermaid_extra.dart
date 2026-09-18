@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'mermaid_renderer.dart';
 import 'theme.dart';
 
 /// A parsed `pie` diagram: a title and the labelled slices under it.
@@ -593,4 +594,81 @@ class _SequencePainter extends CustomPainter {
   @override
   bool shouldRepaint(_SequencePainter old) =>
       old.sequence != sequence || old.theme != theme;
+}
+
+/// Parses `stateDiagram-v2` into the flowchart the built-in painter already
+/// knows how to lay out: states become rounded nodes, `[*]` becomes a start or
+/// end marker, and the labelled transitions become edges.
+///
+/// Composite states (`state X { … }`) are read past, so the transitions inside
+/// them still draw; the grouping itself is not painted.
+MermaidStateDiagram? parseStateDiagram(String source) {
+  final List<String> lines = source
+      .split('\n')
+      .map((String line) => line.trim())
+      .where((String line) => line.isNotEmpty)
+      .toList();
+  if (lines.isEmpty) return null;
+  final String head = lines.first.toLowerCase();
+  if (!head.startsWith('statediagram')) return null;
+
+  const String start = '__start';
+  const String end = '__end';
+  final Map<String, MermaidNode> nodes = <String, MermaidNode>{};
+  final List<MermaidEdge> edges = <MermaidEdge>[];
+
+  void see(String id, {MermaidShape? shape}) {
+    nodes.putIfAbsent(
+      id,
+      () => MermaidNode(
+        id: id,
+        label: id == start || id == end ? '' : id,
+        shape: shape ?? MermaidShape.rounded,
+      ),
+    );
+  }
+
+  final RegExp transition =
+      RegExp(r'^(\[\*\]|\w+)\s*-->\s*(\[\*\]|\w+)\s*(?::\s*(.+))?$');
+  for (final String line in lines.skip(1)) {
+    final String lower = line.toLowerCase();
+    if (lower.startsWith('state ') ||
+        lower == '}' ||
+        lower.startsWith('direction ') ||
+        lower.startsWith('note ')) {
+      // Composite headers, their closing brace, and notes: read past.
+      continue;
+    }
+    final RegExpMatch? match = transition.firstMatch(line);
+    if (match == null) return null;
+    final String rawFrom = match.group(1)!;
+    final String rawTo = match.group(2)!;
+    final String from = rawFrom == '[*]' ? start : rawFrom;
+    final String to = rawTo == '[*]' ? end : rawTo;
+    see(from, shape: from == start ? MermaidShape.stadium : null);
+    see(to, shape: to == end ? MermaidShape.stadium : null);
+    final String? label = match.group(3)?.trim();
+    edges.add(
+      MermaidEdge(
+        from: from,
+        to: to,
+        label: label == null || label.isEmpty ? null : label,
+      ),
+    );
+  }
+  if (nodes.isEmpty || edges.isEmpty) return null;
+  return MermaidStateDiagram(
+    MermaidFlowchart(
+      direction: MermaidDirection.leftRight,
+      nodes: nodes.values.toList(),
+      edges: edges,
+    ),
+  );
+}
+
+/// A parsed state diagram, held as the flowchart that draws it.
+class MermaidStateDiagram {
+  const MermaidStateDiagram(this.chart);
+
+  final MermaidFlowchart chart;
 }

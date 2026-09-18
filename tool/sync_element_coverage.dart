@@ -397,9 +397,10 @@ const Map<String, Entry> _entries = <String, Entry>{
       note: 'frame (skeleton, code fallback, shared zoom surface) plus built-in '
           'renderers: graph/flowchart in TD/TB/BT/LR with node shapes, chains and '
           'labelled edges; pie with the palette and a legend; sequence with '
-          'lifelines, arrows, self-messages and notes. All parsed and painted in '
-          'Dart, so a fence renders with no host engine; class, state and gantt '
-          'still fall back to the source, and a host drawing overrides the '
+          'lifelines, arrows, self-messages and notes; state diagrams, mapped onto '
+          'the flowchart painter with the start and end markers. All parsed and '
+          'painted in Dart, so a fence renders with no host engine; class and '
+          'gantt still fall back to the source, and a host drawing overrides the '
           'built-in one'),
   'math-block': Entry('ported',
       dart: 'components/math_block.dart',

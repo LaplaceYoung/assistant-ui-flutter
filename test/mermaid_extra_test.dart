@@ -92,4 +92,60 @@ sequenceDiagram
     expect(find.byType(AssistantMermaidSequence), findsOneWidget);
     expect(find.text('diagram could not be rendered'), findsNothing);
   });
+
+  test('a state diagram becomes the flowchart that draws it', () {
+    final MermaidStateDiagram? states = parseStateDiagram(
+      'stateDiagram-v2\n'
+      '    [*] --> Idle\n'
+      '    Idle --> Running : start\n'
+      '    Running --> Idle : stop\n'
+      '    Running --> [*]\n'
+      '    state Running {\n'
+      '        [*] --> Thinking\n'
+      '    }\n',
+    );
+    expect(states, isNotNull);
+    final MermaidFlowchart chart = states!.chart;
+    // The start and end markers, the two real states, and the nested one.
+    expect(
+      chart.nodes.map((MermaidNode n) => n.id).toSet(),
+      containsAll(<String>['__start', 'Idle', 'Running', 'Thinking', '__end']),
+    );
+    expect(
+      chart.edges.map((MermaidEdge e) => e.label).whereType<String>(),
+      containsAll(<String>['start', 'stop']),
+    );
+    // States are rounded; the markers are stadiums.
+    expect(
+      chart.nodes.firstWhere((MermaidNode n) => n.id == 'Idle').shape,
+      MermaidShape.rounded,
+    );
+    expect(
+      chart.nodes.firstWhere((MermaidNode n) => n.id == '__start').shape,
+      MermaidShape.stadium,
+    );
+  });
+
+  test('a state diagram with unreadable lines falls back', () {
+    expect(parseStateDiagram('graph TD\n  A --> B'), isNull);
+    expect(parseStateDiagram('stateDiagram-v2\n  not a transition'), isNull);
+  });
+
+  testWidgets('the diagram draws a state diagram end to end', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: AssistantMermaidDiagram(
+            zoomable: false,
+            code: 'stateDiagram-v2\n  [*] --> Idle\n  Idle --> Done : work',
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(AssistantMermaidFlowchart), findsOneWidget);
+    expect(find.text('diagram could not be rendered'), findsNothing);
+  });
 }
