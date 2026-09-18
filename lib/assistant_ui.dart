@@ -479,6 +479,7 @@ export 'src/protocol/data_stream_adapter.dart'
 export 'src/runtime/attachment_files.dart' show FileAttachmentAdapter;
 export 'src/runtime/attachment_http.dart' show HttpAttachmentAdapter;
 export 'src/runtime/defaults.dart' show InMemoryAttachmentAdapter, TempFileSaver;
+export 'src/runtime/file_opener.dart' show SystemFileOpener;
 export 'src/runtime/local_runtime.dart'
     show LocalRuntime, LocalRuntimeOptions;
 

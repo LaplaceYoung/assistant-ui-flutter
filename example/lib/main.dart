@@ -284,11 +284,15 @@ class _ThreadHost extends StatelessWidget {
       case 'surfaces':
         return const SurfacesDemo();
       default:
-        return const AssistantThread(
+        return AssistantThread(
           turnAnchor: AuiTurnAnchor.top,
           composerPlaceholder: 'Ask about the weather, or anything else…',
-          emptyState: _EmptyState(),
+          emptyState: const _EmptyState(),
           groupToolCalls: true,
+          // The defaults the port ships: the payload is written under the
+          // temporary directory and handed to the desktop's own opener.
+          onDownloadFile: (FilePart part) =>
+              const SystemFileOpener().saveAndOpen(part),
         );
     }
   }

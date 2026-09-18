@@ -150,4 +150,35 @@ void main() {
     expect(status.status, AttachmentAddStatus.incomplete);
     expect(adapter.attachments, isEmpty);
   });
+
+  test('the system opener says no for a path that is not there', () async {
+    // A real launch would take over the machine the test runs on, so this pins
+    // the decision the opener makes before it shells out.
+    const SystemFileOpener opener = SystemFileOpener();
+    expect(await opener.open('/definitely/not/here.txt'), isFalse);
+  });
+
+  test('saveAndOpen writes the payload and reports what it managed', () async {
+    final Directory dir = Directory.systemTemp.createTempSync('aui_open');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final SystemFileOpener opener = SystemFileOpener();
+    final TempFileSaver saver = TempFileSaver(directory: dir.path);
+
+    // The file is written; whether the OS then opens it is the platform's
+    // business (it does on a desktop session, it does not in CI).
+    final FilePart part = FilePart(
+      data: 'data:text/plain;base64,aGk=',
+      mimeType: 'text/plain',
+      filename: 'note.txt',
+    );
+    await opener.saveAndOpen(part, saver: saver);
+    expect(File('${dir.path}/note.txt').readAsStringSync(), 'hi');
+
+    // Nothing to save: no file, and no claim that something opened.
+    expect(
+      await opener.saveAndOpen(const FilePart(mimeType: 'text/plain'),
+          saver: saver),
+      isFalse,
+    );
+  });
 }

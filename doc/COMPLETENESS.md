@@ -56,7 +56,7 @@ comparison of the playground).
 | `markdown-text` | Nothing the port can add on its own: every mermaid type and the typesetter's grammar are in, and what remains outside the grammar falls back to the styled source rather than guessing | The flowchart painter and the typesetter are Dart implementations, so the *element* works without a host engine; the remainder are separate engines upstream (Mermaid is JS, KaTeX has no Dart port) |
 | `web-preview` | The frame on non-web platforms | The chrome is ported in full and enforces no isolation, exactly as upstream documents; on web the frame is a sandboxed iframe registered as a platform view, and elsewhere the default body names the origin and how to pass one — only the host knows whether that is a webview package or a screenshot |
 | `attachment` | A backend with auth or resumable uploads (the port ships in-memory, file-backed and HTTP ones) | Upstream leaves uploads to the app through `AttachmentAdapter`; the port ships the same contract, progress, preview and remove |
-| `file` | Opening the payload in a real app (the default saver only writes it) | The chip renders the mime icon set, the type label and the payload size; opening the payload needs an app dependency (`url_launcher` or a save dialog), which belongs to the host |
+| `file` | Opening the payload on mobile, where the host owns the intent (desktop opens it through the system, web has no file system) | The chip renders the mime icon set, the type label and the payload size; opening the payload needs an app dependency (`url_launcher` or a save dialog), which belongs to the host |
 
 ## The one partial package
 
