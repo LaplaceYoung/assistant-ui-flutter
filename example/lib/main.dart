@@ -2862,13 +2862,36 @@ class RenderingDemo extends StatelessWidget {
             ),
             _Section(
               title: 'Mermaid',
-              detail: 'a flowchart fence parsed and painted in Dart',
-              child: const AssistantMermaidDiagram(
-                code: 'graph TD\n'
-                    '  A[user] --> B{thread}\n'
-                    '  B --> C[adapter]\n'
-                    '  C --> D[tools?]\n'
-                    '  D --> B\n',
+              detail: 'flowchart, sequence and pie fences, parsed and painted in Dart',
+              child: const Column(
+                children: <Widget>[
+                  AssistantMermaidDiagram(
+                    zoomable: false,
+                    code: 'graph TD\n'
+                        '  A[user] --> B{thread}\n'
+                        '  B --> C[adapter]\n'
+                        '  C --> D[tools?]\n'
+                        '  D --> B\n',
+                  ),
+                  SizedBox(height: 16),
+                  AssistantMermaidDiagram(
+                    zoomable: false,
+                    code: 'sequenceDiagram\n'
+                        '  participant U as User\n'
+                        '  participant R as Runtime\n'
+                        '  U->>R: ask\n'
+                        '  R-->>U: stream parts\n'
+                        '  Note over U,R: the run settles here\n',
+                  ),
+                  SizedBox(height: 16),
+                  AssistantMermaidDiagram(
+                    zoomable: false,
+                    code: 'pie showData title Where the time goes\n'
+                        '  "Thinking" : 42\n'
+                        '  "Tools" : 33\n'
+                        '  "Writing" : 25\n',
+                  ),
+                ],
               ),
             ),
             _Section(

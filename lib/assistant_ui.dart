@@ -173,6 +173,14 @@ export 'src/components/onboarding.dart'
     show AssistantOnboarding, OnboardingStep;
 export 'src/components/mermaid_diagram.dart'
     show AssistantMermaidDiagram, AssistantMermaidSkeleton;
+export 'src/components/mermaid_extra.dart'
+    show
+        AssistantMermaidPie,
+        AssistantMermaidSequence,
+        MermaidPie,
+        MermaidPieSegment,
+        MermaidSequence,
+        MermaidSequenceMessage;
 export 'src/components/research_report.dart'
     show AssistantResearchReport, ReportSection, SectionState;
 export 'src/components/retrieval_chunks.dart'

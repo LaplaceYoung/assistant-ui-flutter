@@ -53,7 +53,7 @@ comparison of the playground).
 
 | Element | What is missing | Why it stays partial |
 |---|---|---|
-| `markdown-text` | Mermaid diagram types outside the flowchart subset (sequence, class, state, gantt, pie) and LaTeX outside the typesetter's grammar | The flowchart painter and the typesetter are Dart implementations, so the *element* works without a host engine; the remainder are separate engines upstream (Mermaid is JS, KaTeX has no Dart port) |
+| `markdown-text` | Mermaid's class, state and gantt types, and LaTeX outside the typesetter's grammar | The flowchart painter and the typesetter are Dart implementations, so the *element* works without a host engine; the remainder are separate engines upstream (Mermaid is JS, KaTeX has no Dart port) |
 | `web-preview` | The frame on non-web platforms | The element's chrome is ported in full and enforces no isolation, exactly as upstream documents; on web the frame is a sandboxed iframe registered as a platform view, elsewhere the host supplies one |
 | `attachment` | A concrete storage backend | Upstream leaves uploads to the app through `AttachmentAdapter`; the port ships the same contract, progress, preview and remove |
 | `file` | A host-provided download action | The chip renders the mime icon set, the type label and the payload size; opening the payload needs an app dependency (`url_launcher` or a save dialog), which belongs to the host |

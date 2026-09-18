@@ -125,7 +125,12 @@ void main() {
     await tester.pump();
 
     expect(find.byType(AssistantMarkdown), findsOneWidget);
-    expect(find.byType(AssistantMermaidDiagram), findsOneWidget);
+    expect(find.byType(AssistantMermaidDiagram), findsNWidgets(3));
+    // Flowchart, sequence and pie all draw, none falls back to the source.
+    expect(find.byType(AssistantMermaidFlowchart), findsOneWidget);
+    expect(find.byType(AssistantMermaidSequence), findsOneWidget);
+    expect(find.byType(AssistantMermaidPie), findsOneWidget);
+    expect(find.text('diagram could not be rendered'), findsNothing);
     expect(find.text('Streaming'), findsOneWidget);
   });
 

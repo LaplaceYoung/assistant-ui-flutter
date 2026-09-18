@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'flow_expand.dart';
+import 'mermaid_extra.dart';
 import 'mermaid_renderer.dart';
 import 'theme.dart';
 
@@ -38,12 +39,31 @@ class AssistantMermaidDiagram extends StatelessWidget {
     if (streaming) return const AssistantMermaidSkeleton();
     Widget? body = diagram;
     if (body == null) {
-      final MermaidFlowchart? chart = MermaidFlowchart.parse(code);
-      if (chart != null) {
+      // The built-in renderers: a sequence, then a pie, then the flowchart
+      // subset. Each returns null for source it cannot read, so an unknown
+      // diagram falls through to the source view.
+      final MermaidSequence? sequence = MermaidSequence.parse(code);
+      if (sequence != null) {
         body = Padding(
           padding: const EdgeInsets.all(12),
-          child: AssistantMermaidFlowchart(chart: chart),
+          child: AssistantMermaidSequence(sequence: sequence),
         );
+      } else {
+        final MermaidPie? pie = MermaidPie.parse(code);
+        if (pie != null) {
+          body = Padding(
+            padding: const EdgeInsets.all(12),
+            child: AssistantMermaidPie(pie: pie),
+          );
+        } else {
+          final MermaidFlowchart? chart = MermaidFlowchart.parse(code);
+          if (chart != null) {
+            body = Padding(
+              padding: const EdgeInsets.all(12),
+              child: AssistantMermaidFlowchart(chart: chart),
+            );
+          }
+        }
       }
     }
     if (body == null) return _Fallback(code: code);

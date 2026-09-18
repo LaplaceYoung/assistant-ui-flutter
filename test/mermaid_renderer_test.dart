@@ -98,19 +98,23 @@ graph TD
       expect(find.text('diagram could not be rendered'), findsNothing);
     });
 
-    testWidgets('an unsupported diagram falls back to the source', (
+    testWidgets('a type the renderer does not read falls back to the source', (
       WidgetTester tester,
     ) async {
+      // Sequence and pie are drawn now; class diagrams are the kind still
+      // outside the built-in renderer.
       await tester.pumpWidget(const MaterialApp(
         home: Scaffold(
-          body: AssistantMermaidDiagram(code: 'sequenceDiagram\n  A->>B: hi'),
+          body: AssistantMermaidDiagram(code: 'classDiagram\n  A <|-- B'),
         ),
       ));
       await tester.pump();
 
       expect(find.byType(AssistantMermaidFlowchart), findsNothing);
+      expect(find.byType(AssistantMermaidSequence), findsNothing);
+      expect(find.byType(AssistantMermaidPie), findsNothing);
       expect(find.text('diagram could not be rendered'), findsOneWidget);
-      expect(find.text('sequenceDiagram\n  A->>B: hi'), findsOneWidget);
+      expect(find.text('classDiagram\n  A <|-- B'), findsOneWidget);
     });
 
     testWidgets('a host drawing still wins over the built-in one', (
