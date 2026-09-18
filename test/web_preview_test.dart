@@ -58,7 +58,9 @@ void main() {
       home: Scaffold(body: AssistantWebPreview(origin: 'https://example.com')),
     ));
     await tester.pump();
-    expect(find.text('No frame supplied for this platform'), findsOneWidget);
+    // The default body says what the frame is and how to supply one.
+    expect(find.text('https://example.com'), findsNWidgets(2));
+    expect(find.textContaining('pass one as'), findsOneWidget);
   });
 
   test('the frame surface reports its platform', () {

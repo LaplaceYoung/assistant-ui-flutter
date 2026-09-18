@@ -92,7 +92,7 @@ class AssistantWebPreview extends StatelessWidget {
             height: height,
             child: loading
                 ? _Loading(theme: theme)
-                : (child ?? _Empty(theme: theme)),
+                : (child ?? _Empty(theme: theme, origin: origin)),
           ),
         ],
       ),
@@ -141,19 +141,43 @@ class _LoadingState extends State<_Loading>
       );
 }
 
+/// The default body: what the frame is, and what to pass to give it one.
+///
+/// The element draws the chrome and enforces no isolation, exactly as upstream
+/// documents; the frame itself is the host's because only the host knows whether
+/// that is an `HtmlElementView`, a webview package or a screenshot.
 class _Empty extends StatelessWidget {
-  const _Empty({required this.theme});
+  const _Empty({required this.theme, required this.origin});
 
   final AssistantTheme theme;
+  final String origin;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
         color: theme.muted.withValues(alpha: 0.4),
         child: Center(
-          child: Text(
-            // Outside the web there is no iframe surface; the host passes one.
-            'No frame supplied for this platform',
-            style: theme.small(context).copyWith(color: theme.mutedForeground),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  origin,
+                  textAlign: TextAlign.center,
+                  style: theme.body(context).copyWith(color: theme.foreground),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'No frame on this platform: pass one as `child` — an '
+                  'HtmlElementView on the web, a webview elsewhere.',
+                  textAlign: TextAlign.center,
+                  style: theme.small(context).copyWith(
+                    color: theme.mutedForeground,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
