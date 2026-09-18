@@ -88,7 +88,8 @@ class MermaidFlowchart {
       MermaidShape shape = MermaidShape.box;
       if (raw != null && raw.isNotEmpty) {
         final String inner = raw
-            .replaceAll(RegExp(r'^[\(\[\{]\+'), '')
+            // One or more opening markers: `[`, `(`, `{`, `([`, `((`, `[[`.
+            .replaceAll(RegExp(r'^[\(\{\[]+'), '')
             .replaceAll(RegExp(r'[\)\]\}]+$'), '');
         label = inner.isNotEmpty ? inner : id;
         if (raw.startsWith('{')) {

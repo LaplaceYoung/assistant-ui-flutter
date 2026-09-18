@@ -194,6 +194,19 @@ and shoots frames (`doc/parity-live/deep/*.png`), which reaches the end:
 
 With that, all fourteen sections of the catalogue have been read against the port.
 
+## The renderers against the live cards
+
+The live renderer cards (`deep/01.png`) show what the port's rendering layer is
+read against: markdown with a table and a blockquote, a `tsx` block through the
+syntax palette, a Shiki-tokenised `typescript` block, and a Mermaid flowchart.
+
+Two things came out of that read:
+
+| Found | What it was | Now |
+|---|---|---|
+| Node labels carried their shape markers | The parser stripped a literal `+` instead of the opening `[`/`(`/`{` run, so a reader saw `[adapter]` and `{tools?}` where Mermaid shows `adapter` and `tools?` | Fixed, with `test/mermaid_labels_test.dart` pinning the six shapes' labels and the edge-label pipes |
+| The flowchart's ranks are looser than Mermaid's | The port spaces ranks by 46 rather than Mermaid's tighter default | Not changed: a preference, not a defect, and the layout is stable across the six types |
+
 ## Method
 
 Headless Chrome writes one full-page PNG per URL, so a reference is one command
