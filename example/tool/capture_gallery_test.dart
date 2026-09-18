@@ -20,7 +20,8 @@ const Map<String, (Widget, double)> _pages = <String, (Widget, double)>{
   'pieces': (PiecesDemo(), 1800),
   'messages': (MessagesDemo(), 1000),
   'navigation': (NavigationDemo(), 1800),
-  'rendering': (RenderingDemo(), 1800),
+  // The rendering page carries six diagrams; it needs the room.
+  'rendering': (RenderingDemo(), 3400),
   'surfaces': (SurfacesDemo(), 1800),
 };
 

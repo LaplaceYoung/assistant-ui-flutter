@@ -351,9 +351,12 @@ class AssistantMermaidSequence extends StatelessWidget {
   const AssistantMermaidSequence({
     super.key,
     required this.sequence,
+    this.fontFamily,
     this.laneWidth = 150,
     this.rowHeight = 46,
   });
+
+  final String? fontFamily;
 
   final MermaidSequence sequence;
   final double laneWidth;
@@ -372,6 +375,7 @@ class AssistantMermaidSequence extends StatelessWidget {
           height: height,
           child: CustomPaint(
             painter: _SequencePainter(
+              fontFamily: DefaultTextStyle.of(context).style.fontFamily,
               sequence: sequence,
               laneWidth: laneWidth,
               rowHeight: rowHeight,
@@ -386,11 +390,14 @@ class AssistantMermaidSequence extends StatelessWidget {
 
 class _SequencePainter extends CustomPainter {
   _SequencePainter({
+    required this.fontFamily,
     required this.sequence,
     required this.laneWidth,
     required this.rowHeight,
     required this.theme,
   });
+
+  final String? fontFamily;
 
   final MermaidSequence sequence;
   final double laneWidth;
@@ -576,7 +583,12 @@ class _SequencePainter extends CustomPainter {
     final TextPainter painter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(fontSize: 12, height: 1.2, color: color),
+        style: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: 12,
+          height: 1.2,
+          color: color,
+        ),
       ),
       textDirection: TextDirection.ltr,
       maxLines: 2,
@@ -825,10 +837,13 @@ class AssistantMermaidGantt extends StatelessWidget {
   const AssistantMermaidGantt({
     super.key,
     required this.gantt,
+    this.fontFamily,
     this.labelWidth = 150,
     this.rowHeight = 26,
     this.dayWidth = 14,
   });
+
+  final String? fontFamily;
 
   final MermaidGantt gantt;
   final double labelWidth;
@@ -859,6 +874,7 @@ class AssistantMermaidGantt extends StatelessWidget {
           height: height,
           child: CustomPaint(
             painter: _GanttPainter(
+              fontFamily: DefaultTextStyle.of(context).style.fontFamily,
               gantt: gantt,
               labelWidth: labelWidth,
               rowHeight: rowHeight,
@@ -874,12 +890,15 @@ class AssistantMermaidGantt extends StatelessWidget {
 
 class _GanttPainter extends CustomPainter {
   _GanttPainter({
+    required this.fontFamily,
     required this.gantt,
     required this.labelWidth,
     required this.rowHeight,
     required this.dayWidth,
     required this.theme,
   });
+
+  final String? fontFamily;
 
   final MermaidGantt gantt;
   final double labelWidth;
@@ -951,7 +970,12 @@ class _GanttPainter extends CustomPainter {
     (TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(fontSize: 12, height: 1.2, color: color),
+        style: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: 12,
+          height: 1.2,
+          color: color,
+        ),
       ),
       textDirection: TextDirection.ltr,
       maxLines: 1,
@@ -1108,10 +1132,13 @@ class AssistantMermaidClassDiagram extends StatelessWidget {
   const AssistantMermaidClassDiagram({
     super.key,
     required this.diagram,
+    this.fontFamily,
     this.boxWidth = 190,
     this.gapX = 60,
     this.gapY = 40,
   });
+
+  final String? fontFamily;
 
   final MermaidClassDiagram diagram;
   final double boxWidth;
@@ -1133,6 +1160,7 @@ class AssistantMermaidClassDiagram extends StatelessWidget {
       height: rows * (tallest + gapY) + 40,
       child: CustomPaint(
         painter: _ClassPainter(
+          fontFamily: DefaultTextStyle.of(context).style.fontFamily,
           diagram: diagram,
           columns: columns,
           boxWidth: boxWidth,
@@ -1151,6 +1179,7 @@ class AssistantMermaidClassDiagram extends StatelessWidget {
 
 class _ClassPainter extends CustomPainter {
   _ClassPainter({
+    required this.fontFamily,
     required this.diagram,
     required this.columns,
     required this.boxWidth,
@@ -1159,6 +1188,8 @@ class _ClassPainter extends CustomPainter {
     required this.rowHeight,
     required this.theme,
   });
+
+  final String? fontFamily;
 
   final MermaidClassDiagram diagram;
   final int columns;
@@ -1275,7 +1306,12 @@ class _ClassPainter extends CustomPainter {
     (TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(fontSize: 12, height: 1.2, color: color),
+        style: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: 12,
+          height: 1.2,
+          color: color,
+        ),
       ),
       textDirection: TextDirection.ltr,
       maxLines: 1,

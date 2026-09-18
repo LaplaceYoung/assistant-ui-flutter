@@ -205,7 +205,11 @@ class AssistantMermaidFlowchart extends StatelessWidget {
     this.nodeWidth = 150,
     this.nodeHeight = 40,
     this.gap = 46,
+    this.fontFamily,
   });
+
+  /// The family the labels are drawn in; null lets the platform decide.
+  final String? fontFamily;
 
   final MermaidFlowchart chart;
   final double nodeWidth;
