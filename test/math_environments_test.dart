@@ -70,4 +70,27 @@ void main() {
     expect(find.textContaining('chem'), findsOneWidget);
     expect(find.textContaining('H2O'), findsOneWidget);
   });
+
+  testWidgets('an accent rides on the last glyph', (WidgetTester tester) async {
+    await pump(tester, r'\hat{x} + \vec{v}');
+    // The combining marks are there, over the letters they belong to.
+    expect(find.textContaining('\u0302'), findsOneWidget);
+    expect(find.textContaining('\u20D7'), findsOneWidget);
+  });
+
+  testWidgets('the alphabets render, and other letters are left alone', (
+    WidgetTester tester,
+  ) async {
+    await pump(tester, r'\mathbb{R}^n');
+    expect(find.textContaining('\u211D'), findsOneWidget);
+
+    await pump(tester, r'\mathbf{F} = m\mathbf{a}');
+    expect(find.textContaining('F'), findsWidgets);
+  });
+
+  testWidgets('the spacing and dots commands exist', (WidgetTester tester) async {
+    await pump(tester, r'a \quad b \cdots c');
+    expect(find.textContaining('\u2003'), findsWidgets);
+    expect(find.textContaining('\u22ef'), findsOneWidget);
+  });
 }

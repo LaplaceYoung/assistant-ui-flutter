@@ -9,7 +9,15 @@ sealed class MathNode {
 
 /// A plain run of characters.
 class MathText extends MathNode {
-  const MathText(this.text, {this.italic = false, this.size = 1});
+  const MathText(
+    this.text, {
+    this.italic = false,
+    this.size = 1,
+    this.bold = false,
+  });
+
+  /// `\\mathbf{…}` renders upright and heavy.
+  final bool bold;
   final String text;
 
   /// Variables render italic, operators upright — TeX's own convention.
@@ -35,6 +43,14 @@ class MathRadical extends MathNode {
 }
 
 /// A base with an optional superscript and subscript: `x^2`, `\sum_{i=0}^{n}`.
+/// A row kept together, used where an accent's argument cannot carry the mark.
+class MathGroup extends MathNode {
+  const MathGroup(this.nodes, {this.size = 1});
+
+  final List<MathNode> nodes;
+  final double size;
+}
+
 class MathScript extends MathNode {
   const MathScript({
     required this.base,
@@ -82,8 +98,10 @@ const Map<String, String> _symbols = <String, String>{
   'le': '≤', 'leq': '≤', 'ge': '≥', 'geq': '≥', 'ne': '≠', 'neq': '≠',
   'approx': '≈', 'equiv': '≡', 'to': '→', 'rightarrow': '→',
   'leftarrow': '←', 'Rightarrow': '⇒', 'in': '∈', 'notin': '∉',
+  'ldots': '…', 'cdots': '⋯', 'dots': '…', 'vdots': '⋮',
+  'ddots': '⋱', 'quad': ' ', 'qquad': '  ',
   'subset': '⊂', 'cup': '∪', 'cap': '∩', 'forall': '∀', 'exists': '∃',
-  'ldots': '…', 'dots': '…', 'angle': '∠', 'deg': '°', 'prime': '′',
+  'angle': '∠', 'deg': '°', 'prime': '′',
 };
 
 /// Multi-letter names that render upright.
@@ -252,6 +270,22 @@ class _MathParser {
         );
       case 'sqrt':
         return MathRadical(_argument(atSize), size: atSize);
+      case 'hat':
+      case 'widehat':
+      case 'bar':
+      case 'overline':
+      case 'vec':
+      case 'tilde':
+      case 'dot':
+      case 'ddot':
+        return _accented(command, atSize);
+      case 'mathbf':
+        return MathText(_verbatimGroup(), bold: true, size: atSize);
+      case 'mathcal':
+      case 'mathbb':
+        // The blackboard letters TeX carries; anything else keeps its own
+        // glyphs, so the expression still reads.
+        return MathText(_blackboard(_verbatimGroup()), size: atSize);
       case 'text':
       case 'mathrm':
         // Verbatim: spaces inside \text{} are part of the words.
@@ -375,6 +409,54 @@ class _MathParser {
     return source.substring(start);
   }
 
+  /// Applies the accent that follows: a combining mark over the argument's own
+  /// glyphs, which is how a host-free typewriter draws `\hat{x}` and `\vec{x}`.
+  MathNode _accented(String command, double atSize) {
+    final List<MathNode> argument = _argument(atSize);
+    final String mark = switch (command) {
+      'hat' || 'widehat' => '\u0302',
+      'bar' || 'overline' => '\u0304',
+      'vec' => '\u20D7',
+      'tilde' => '\u0303',
+      'dot' => '\u0307',
+      'ddot' => '\u0308',
+      _ => '',
+    };
+    final StringBuffer text = StringBuffer();
+    for (final MathNode node in argument) {
+      if (node is! MathText) {
+        // A fraction or a script cannot carry a combining mark: keep the
+        // argument as it is rather than dropping it.
+        return MathGroup(argument, size: atSize);
+      }
+      text.write(node.text);
+    }
+    final String body = text.toString();
+    if (body.isEmpty) return MathGroup(argument, size: atSize);
+    // The mark rides on the last glyph.
+    return MathText(
+      body.substring(0, body.length - 1) + body[body.length - 1] + mark,
+      size: atSize,
+    );
+  }
+
+  /// `\mathbb{R}` and friends: the blackboard letters when one is the whole
+  /// argument, otherwise the argument unchanged.
+  static String _blackboard(String body) {
+    const Map<String, String> letters = <String, String>{
+      'R': '\u211D',
+      'N': '\u2115',
+      'Z': '\u2124',
+      'Q': '\u211A',
+      'C': '\u2102',
+      'P': '\u2119',
+    };
+    final String trimmed = body.trim();
+    return trimmed.length == 1 && letters.containsKey(trimmed)
+        ? letters[trimmed]!
+        : body;
+  }
+
   /// Reads a `{…}` group as written, whitespace included.
   String _verbatimGroup() {
     while (!done && source[index] == ' ') {
@@ -482,6 +564,7 @@ class MathNodeView extends StatelessWidget {
             fontSize: size * current.size,
             color: resolved,
             fontStyle: current.italic ? FontStyle.italic : FontStyle.normal,
+            fontWeight: current.bold ? FontWeight.w700 : null,
             fontFamily: current.italic ? 'serif' : null,
             height: 1.2,
           ),
@@ -520,6 +603,12 @@ class MathNodeView extends StatelessWidget {
               child: MathRow(nodes: current.body, size: size * 0.95, color: resolved),
             ),
           ],
+        );
+      case MathGroup():
+        return MathRow(
+          nodes: current.nodes,
+          size: size * current.size,
+          color: resolved,
         );
       case MathEnvironment():
         return _EnvironmentView(environment: current, size: size, color: resolved);

@@ -43,7 +43,7 @@ const Map<String, Entry> _entries = <String, Entry>{
   'message-timing': Entry('ported', dart: 'components/message_timing.dart'),
   'markdown-text': Entry('partial',
       dart: 'components/markdown.dart',
-      note: 'fenced code runs through the syntax-highlighter tokenizer and the coldark palettes; ```mermaid fences render through the built-in painters (flowchart, pie, sequence), and inline/display math is typeset by components/math_renderer.dart (fractions, radicals, scripts, environments, the symbol table) with a host renderer overriding it. Constructs outside those subsets still fall back to the styled source'),
+      note: 'fenced code runs through the syntax-highlighter tokenizer and the coldark palettes; ```mermaid fences render through the built-in painters (flowchart, pie, sequence), and inline/display math is typeset by components/math_renderer.dart (fractions, radicals, scripts, environments, accents, the blackboard letters, the symbol table) with a host renderer overriding it. Constructs outside those subsets still fall back to the styled source'),
   'syntax-highlighter': Entry('ported',
       dart: 'components/syntax_highlighter.dart',
       note: 'Dart tokenizer instead of Prism; the coldark-cold / coldark-dark palettes are taken verbatim from prism-themes, and the markdown fenced blocks color through the same tokens'),
