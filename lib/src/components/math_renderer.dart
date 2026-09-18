@@ -49,6 +49,25 @@ class MathScript extends MathNode {
   final double size;
 }
 
+/// `\begin{matrix}` and friends: a grid of cells, one row per `\\`, one cell
+/// per `&`. The environments TeX spells out are the ones a chat answer uses.
+class MathEnvironment extends MathNode {
+  const MathEnvironment({
+    required this.kind,
+    required this.rows,
+    this.size = 1,
+  });
+
+  final MathEnvironmentKind kind;
+
+  /// Rows of cells; each cell is a parsed row of nodes.
+  final List<List<List<MathNode>>> rows;
+  final double size;
+}
+
+/// Which delimiters an environment draws, if any.
+enum MathEnvironmentKind { matrix, pmatrix, bmatrix, cases, aligned }
+
 /// How the parser and the renderer talk.
 const Map<String, String> _symbols = <String, String>{
   'alpha': 'α', 'beta': 'β', 'gamma': 'γ', 'delta': 'δ', 'epsilon': 'ε',
@@ -114,6 +133,17 @@ class _MathParser {
       if (char == '\\') {
         index++;
         final String command = _readCommand();
+        if (command == 'begin') {
+          flush();
+          final MathNode? environment = _environment(size);
+          if (environment != null) nodes.add(environment);
+          continue;
+        }
+        if (command == 'end') {
+          // A stray \end without its \begin: skip its name.
+          _verbatimGroup();
+          continue;
+        }
         final MathNode? symbol = _commandNode(command, size);
         flush();
         if (symbol != null) nodes.add(symbol);
@@ -240,6 +270,109 @@ class _MathParser {
       default:
         return MathText('\\$command', size: atSize);
     }
+  }
+
+  /// Reads `{env}` and everything up to its `\end{env}`, splitting rows on
+  /// `\\` and cells on `&`. Returns null for an environment this renderer does
+  /// not draw, leaving the source to be shown instead.
+  MathNode? _environment(double atSize) {
+    final String name = _verbatimGroup().trim();
+    final MathEnvironmentKind? kind = switch (name) {
+      'matrix' => MathEnvironmentKind.matrix,
+      'pmatrix' => MathEnvironmentKind.pmatrix,
+      'bmatrix' => MathEnvironmentKind.bmatrix,
+      'cases' => MathEnvironmentKind.cases,
+      'aligned' || 'align' || 'align*' => MathEnvironmentKind.aligned,
+      _ => null,
+    };
+    if (kind == null) {
+      // Not an environment this renderer draws: keep the source verbatim, so
+      // the reader sees what was written rather than a silently dropped block.
+      final String body = _skipEnvironment(name);
+      return MathText('\\begin{$name}$body\\end{$name}', size: atSize);
+    }
+
+    final List<List<List<MathNode>>> rows = <List<List<MathNode>>>[];
+    List<List<MathNode>> cells = <List<MathNode>>[];
+    int depth = 1;
+    final StringBuffer buffer = StringBuffer();
+
+    void endCell() {
+      cells.add(_MathParser(buffer.toString(), atSize).parseRow());
+      buffer.clear();
+    }
+
+    void endRow() {
+      endCell();
+      rows.add(cells);
+      cells = <List<MathNode>>[];
+    }
+
+    while (!done) {
+      final String char = source[index];
+      if (char == '\\') {
+        final int mark = index;
+        index++;
+        final String command = _readCommand();
+        if (command == 'begin') {
+          depth++;
+          buffer.write('\\begin');
+          continue;
+        }
+        if (command == 'end') {
+          depth--;
+          if (depth == 0) {
+            _verbatimGroup();
+            break;
+          }
+          buffer.write('\\end');
+          continue;
+        }
+        if (depth == 1 && command.isEmpty) {
+          // `\\` — the row ends here.
+          endRow();
+          continue;
+        }
+        buffer.write(source.substring(mark, index));
+        continue;
+      }
+      if (char == '&' && depth == 1) {
+        endCell();
+        index++;
+        continue;
+      }
+      buffer.write(char);
+      index++;
+    }
+    if (buffer.isNotEmpty || cells.isNotEmpty) endRow();
+    if (rows.isEmpty) return null;
+    return MathEnvironment(kind: kind, rows: rows, size: atSize);
+  }
+
+  /// Consumes an environment's body and returns it as written.
+  String _skipEnvironment(String name) {
+    final int start = index;
+    int depth = 1;
+    while (!done) {
+      if (source[index] == '\\') {
+        final int mark = index;
+        index++;
+        final String command = _readCommand();
+        if (command == 'begin') {
+          depth++;
+        } else if (command == 'end') {
+          depth--;
+          if (depth == 0) {
+            final String body = source.substring(start, mark);
+            _verbatimGroup();
+            return body;
+          }
+        }
+        continue;
+      }
+      index++;
+    }
+    return source.substring(start);
   }
 
   /// Reads a `{…}` group as written, whitespace included.
@@ -388,6 +521,8 @@ class MathNodeView extends StatelessWidget {
             ),
           ],
         );
+      case MathEnvironment():
+        return _EnvironmentView(environment: current, size: size, color: resolved);
       case MathScript():
         return Row(
           mainAxisSize: MainAxisSize.min,
@@ -456,3 +591,79 @@ MathStep typesetStep(String expression, {String? note}) => MathStep(
       expression: AssistantMath(expression, display: true),
       note: note,
     );
+
+/// Draws an environment: cells in a grid, with the delimiters its kind asks for.
+class _EnvironmentView extends StatelessWidget {
+  const _EnvironmentView({
+    required this.environment,
+    required this.size,
+    required this.color,
+  });
+
+  final MathEnvironment environment;
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final double gutter = size * 0.35;
+    final Widget grid = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        for (final (int rowIndex, List<List<MathNode>> cells)
+            in environment.rows.indexed) ...<Widget>[
+          if (rowIndex > 0) SizedBox(height: size * 0.42),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              for (final (int cellIndex, List<MathNode> cell)
+                  in cells.indexed) ...<Widget>[
+                if (cellIndex > 0) SizedBox(width: gutter * 2),
+                MathRow(nodes: cell, size: size * 0.92, color: color),
+              ],
+            ],
+          ),
+        ],
+      ],
+    );
+
+    final String? left = switch (environment.kind) {
+      MathEnvironmentKind.pmatrix => '(',
+      MathEnvironmentKind.bmatrix => '[',
+      MathEnvironmentKind.cases => '{',
+      _ => null,
+    };
+    final String? right = switch (environment.kind) {
+      MathEnvironmentKind.pmatrix => ')',
+      MathEnvironmentKind.bmatrix => ']',
+      _ => null,
+    };
+    if (left == null && right == null) return grid;
+
+    // The delimiters stretch with the grid, which is what makes `cases` read.
+    return IntrinsicHeight(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          if (left != null)
+            Text(
+              left,
+              style: TextStyle(fontSize: size * 2.2, height: 0.9, color: color),
+            ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: size * 0.18),
+            child: grid,
+          ),
+          if (right != null)
+            Text(
+              right,
+              style: TextStyle(fontSize: size * 2.2, height: 0.9, color: color),
+            ),
+        ],
+      ),
+    );
+  }
+}
