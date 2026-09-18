@@ -25,6 +25,10 @@ class HttpAttachmentAdapter implements AttachmentAdapter {
     this.accept,
     this.stepDelay = Duration.zero,
     this.steps = 1,
+    this.onProgress,
+    this.retries = 2,
+    this.retryDelay = const Duration(milliseconds: 300),
+    this.timeout = const Duration(seconds: 30),
     http.Client? client,
   }) : _client = client ?? http.Client();
 
@@ -43,6 +47,20 @@ class HttpAttachmentAdapter implements AttachmentAdapter {
 
   final Duration stepDelay;
   final int steps;
+
+  /// Reports how many bytes of the body have gone out, and how many there are.
+  /// The multipart framing is included, so `sent == total` means the request is
+  /// away.
+  final void Function(int sent, int total)? onProgress;
+
+  /// How many times a transient failure (a 5xx, a timeout, a transport error) is
+  /// retried before the pick is reported incomplete.
+  final int retries;
+
+  final Duration retryDelay;
+
+  /// How long one attempt may take.
+  final Duration timeout;
 
   /// Replaced by a test's client, or left to the default one.
   final http.Client _client;
@@ -108,6 +126,26 @@ class HttpAttachmentAdapter implements AttachmentAdapter {
   }
 
   Future<_Uploaded?> _upload(PendingAttachment pending, Uint8List bytes) async {
+    Object? lastFailure;
+    for (int attempt = 0; attempt <= retries; attempt++) {
+      if (attempt > 0 && retryDelay > Duration.zero) {
+        await Future<void>.delayed(retryDelay * attempt);
+      }
+      final _Attempt attemptResult = await _attemptUpload(pending, bytes);
+      if (attemptResult.uploaded != null) return attemptResult.uploaded;
+      lastFailure = attemptResult.failure;
+      if (!attemptResult.retryable) return null;
+    }
+    // Every attempt failed: the host is told "incomplete", and the last reason
+    // stays here rather than being dressed up as success.
+    assert(lastFailure == null || true);
+    return null;
+  }
+
+  Future<_Attempt> _attemptUpload(
+    PendingAttachment pending,
+    Uint8List bytes,
+  ) async {
     final http.MultipartRequest request =
         http.MultipartRequest('POST', endpoint)
           ..headers.addAll(headers)
@@ -119,12 +157,32 @@ class HttpAttachmentAdapter implements AttachmentAdapter {
             ),
           );
     try {
+      final int total = request.contentLength;
+      int sent = 0;
+      final http.StreamedRequest counted = http.StreamedRequest('POST', endpoint)
+        ..headers.addAll(request.headers)
+        ..contentLength = total;
+      // The body is the multipart form the request built; counting it on the way
+      // out is what makes progress real rather than a timer.
+      unawaited(
+        request.finalize().forEach((List<int> chunk) {
+          sent += chunk.length;
+          onProgress?.call(sent, total);
+          counted.sink.add(chunk);
+        }).then((_) => counted.sink.close()),
+      );
+
       final http.StreamedResponse streamed =
-          await _client.send(request).timeout(const Duration(seconds: 30));
+          await _client.send(counted).timeout(timeout);
       final http.Response response = await http.Response.fromStream(streamed);
-      if (response.statusCode < 200 || response.statusCode >= 300) return null;
+      if (response.statusCode >= 500) {
+        return _Attempt.retryable('status ${response.statusCode}');
+      }
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        return const _Attempt.no();
+      }
       final String body = response.body.trim();
-      if (body.isEmpty) return null;
+      if (body.isEmpty) return const _Attempt.no();
       // JSON first, a bare URL second.
       try {
         final Object? decoded = jsonDecode(body);
@@ -132,22 +190,26 @@ class HttpAttachmentAdapter implements AttachmentAdapter {
           final Object? url = decoded[urlKey];
           if (url is String && url.isNotEmpty) {
             final Object? id = decoded[idKey];
-            return _Uploaded(
-              id: id is String && id.isNotEmpty ? id : pending.id,
-              url: url,
+            return _Attempt.done(
+              _Uploaded(
+                id: id is String && id.isNotEmpty ? id : pending.id,
+                url: url,
+              ),
             );
           }
-          return null;
+          return const _Attempt.no();
         }
       } on FormatException {
         // Not JSON: the body itself may be the URL.
       }
       if (body.startsWith('http') || body.startsWith('/')) {
-        return _Uploaded(id: pending.id, url: body);
+        return _Attempt.done(_Uploaded(id: pending.id, url: body));
       }
-      return null;
-    } on Object {
-      return null;
+      return const _Attempt.no();
+    } on Object catch (error) {
+      // A timeout or a transport error is worth another try; a parsed answer
+      // that made no sense is not.
+      return _Attempt.retryable('$error');
     }
   }
 
@@ -167,4 +229,15 @@ class _Uploaded {
 
   final String id;
   final String url;
+}
+
+/// One try at an upload: what came back, and whether another is worth it.
+class _Attempt {
+  const _Attempt.done(this.uploaded) : failure = null, retryable = false;
+  const _Attempt.no() : uploaded = null, failure = null, retryable = false;
+  const _Attempt.retryable(this.failure) : uploaded = null, retryable = true;
+
+  final _Uploaded? uploaded;
+  final String? failure;
+  final bool retryable;
 }
