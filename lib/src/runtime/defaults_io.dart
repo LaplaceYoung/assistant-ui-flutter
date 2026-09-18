@@ -15,3 +15,8 @@ Future<String?> writeFileBytes(
   await file.writeAsBytes(bytes, flush: true);
   return file.path;
 }
+/// Removes a file this adapter wrote.
+Future<void> deleteFile(String path) async {
+  final File file = File(path);
+  if (file.existsSync()) await file.delete();
+}

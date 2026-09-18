@@ -101,4 +101,53 @@ void main() {
       isNull,
     );
   });
+
+  test('the file-backed adapter writes the bytes and hands back a path', () async {
+    final Directory dir = Directory.systemTemp.createTempSync('aui_files');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final FileAttachmentAdapter adapter = FileAttachmentAdapter(
+      directory: dir.path,
+      stepDelay: Duration.zero,
+      steps: 1,
+    );
+
+    final AttachmentAddResult status = await adapter
+        .add(
+          PendingAttachment(
+            id: 'f1',
+            filename: 'notes.txt',
+            mimeType: 'text/plain',
+            data: Uint8List.fromList(<int>[104, 105]),
+          ),
+        )
+        .last;
+
+    expect(status.status, AttachmentAddStatus.complete);
+    final String? path = adapter.pathOf('f1');
+    expect(path, isNotNull);
+    expect(File(path!).readAsStringSync(), 'hi');
+    // The attachment carries a file: URL, so a host can read it later.
+    expect((status.attachment! as DocumentAttachment).data,
+        startsWith('file://'));
+    expect(adapter.attachments, hasLength(1));
+
+    // Removing it takes the file with it.
+    await adapter.remove(status.attachment!);
+    expect(File(path).existsSync(), isFalse);
+    expect(adapter.attachments, isEmpty);
+  });
+
+  test('a pick with no bytes is refused rather than stored empty', () async {
+    final FileAttachmentAdapter adapter = FileAttachmentAdapter(
+      stepDelay: Duration.zero,
+      steps: 1,
+    );
+    final AttachmentAddResult status = await adapter
+        .add(
+          PendingAttachment(id: 'e', filename: 'empty.bin', mimeType: 'application/octet-stream'),
+        )
+        .last;
+    expect(status.status, AttachmentAddStatus.incomplete);
+    expect(adapter.attachments, isEmpty);
+  });
 }

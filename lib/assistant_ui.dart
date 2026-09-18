@@ -476,6 +476,7 @@ export 'src/primitives/thread.dart'
 export 'src/protocol/data_stream.dart' show DataStreamChunkType, DataStreamParser;
 export 'src/protocol/data_stream_adapter.dart'
     show DataStreamChatModelAdapter;
+export 'src/runtime/attachment_files.dart' show FileAttachmentAdapter;
 export 'src/runtime/defaults.dart' show InMemoryAttachmentAdapter, TempFileSaver;
 export 'src/runtime/local_runtime.dart'
     show LocalRuntime, LocalRuntimeOptions;

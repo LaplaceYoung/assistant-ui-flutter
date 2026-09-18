@@ -7,3 +7,5 @@ Future<String?> writeFileBytes(
   String? directory,
 }) async =>
     null;
+/// No file system on the web.
+Future<void> deleteFile(String path) async {}
