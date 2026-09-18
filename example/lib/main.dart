@@ -2891,6 +2891,35 @@ class RenderingDemo extends StatelessWidget {
                         '  "Tools" : 33\n'
                         '  "Writing" : 25\n',
                   ),
+                  SizedBox(height: 16),
+                  AssistantMermaidDiagram(
+                    zoomable: false,
+                    code: 'stateDiagram-v2\n'
+                        '  [*] --> Idle\n'
+                        '  Idle --> Running : start\n'
+                        '  Running --> Idle : stop\n',
+                  ),
+                  SizedBox(height: 16),
+                  AssistantMermaidDiagram(
+                    zoomable: false,
+                    code: 'gantt\n'
+                        '  title Shipping plan\n'
+                        '  section Design\n'
+                        '  Spec :2026-01-01, 5d\n'
+                        '  Review :2026-01-06, 3d\n'
+                        '  section Build\n'
+                        '  Port :2026-01-12, 2w\n',
+                  ),
+                  SizedBox(height: 16),
+                  AssistantMermaidDiagram(
+                    zoomable: false,
+                    code: 'classDiagram\n'
+                        '  class Runtime {\n'
+                        '    +String model\n'
+                        '    +send() void\n'
+                        '  }\n'
+                        '  Runtime <|-- LocalRuntime\n',
+                  ),
                 ],
               ),
             ),
