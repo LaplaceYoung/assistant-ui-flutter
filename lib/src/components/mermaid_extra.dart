@@ -965,3 +965,327 @@ class _GanttPainter extends CustomPainter {
       old.gantt != gantt || old.theme != theme;
 }
 
+/// A parsed `classDiagram`: the classes with their members, and the relations
+/// between them.
+class MermaidClassDiagram {
+  const MermaidClassDiagram({required this.classes, required this.relations});
+
+  final List<MermaidClass> classes;
+  final List<MermaidRelation> relations;
+
+  bool get isEmpty => classes.isEmpty;
+
+  /// Parses `classDiagram`, `class Name { … }` blocks and the relation arrows
+  /// (`<|--`, `*--`, `o--`, `-->`, `..>`, `--`) with their optional labels.
+  static MermaidClassDiagram? parse(String source) {
+    final List<String> lines = source
+        .split('\n')
+        .map((String line) => line.trim())
+        .where((String line) => line.isNotEmpty)
+        .toList();
+    if (lines.isEmpty) return null;
+    if (!lines.first.toLowerCase().startsWith('classdiagram')) return null;
+
+    final Map<String, List<String>> members = <String, List<String>>{};
+    final List<MermaidRelation> relations = <MermaidRelation>[];
+    void see(String name) => members.putIfAbsent(name, () => <String>[]);
+
+    final RegExp relation = RegExp(
+      r'^(\w+)\s*(\"[^\"]*\"\s*)?(<\|--|\*--|o--|\.\.>|-->|-->|--|\.\.)\s*(\"[^\"]*\"\s*)?(\w+)\s*(?::\s*(.+))?$',
+    );
+    final RegExp classHead = RegExp(r'^class\s+(\w+)\s*(\{)?\s*$');
+
+    String? open;
+    for (final String line in lines.skip(1)) {
+      if (line == '}') {
+        open = null;
+        continue;
+      }
+      if (open != null) {
+        // A member line: `+field: Type`, `-secret`, `+method() int`.
+        members[open]!.add(line);
+        continue;
+      }
+      final RegExpMatch? head = classHead.firstMatch(line);
+      if (head != null) {
+        final String name = head.group(1)!;
+        see(name);
+        if (head.group(2) != null) open = name;
+        continue;
+      }
+      final RegExpMatch? edge = relation.firstMatch(line);
+      if (edge == null) {
+        if (line.toLowerCase().startsWith('direction ') ||
+            line.toLowerCase().startsWith('note ')) {
+          continue;
+        }
+        return null;
+      }
+      final String from = edge.group(1)!;
+      final String to = edge.group(5)!;
+      see(from);
+      see(to);
+      relations.add(
+        MermaidRelation(
+          from: from,
+          to: to,
+          kind: MermaidRelationKind.fromSymbol(edge.group(3)!),
+          label: edge.group(6)?.trim(),
+          fromCardinality: edge.group(2)?.replaceAll('"', '').trim(),
+          toCardinality: edge.group(4)?.replaceAll('"', '').trim(),
+        ),
+      );
+    }
+    if (members.isEmpty) return null;
+    return MermaidClassDiagram(
+      classes: <MermaidClass>[
+        for (final MapEntry<String, List<String>> entry in members.entries)
+          MermaidClass(name: entry.key, members: entry.value),
+      ],
+      relations: relations,
+    );
+  }
+}
+
+/// One class box: its name and the members written under it.
+class MermaidClass {
+  const MermaidClass({required this.name, this.members = const <String>[]});
+
+  final String name;
+  final List<String> members;
+}
+
+/// How two classes are related, which is what the line's ends say.
+enum MermaidRelationKind {
+  inheritance,
+  composition,
+  aggregation,
+  association,
+  dependency,
+  link;
+
+  static MermaidRelationKind fromSymbol(String symbol) => switch (symbol) {
+        '<|--' => MermaidRelationKind.inheritance,
+        '*--' => MermaidRelationKind.composition,
+        'o--' => MermaidRelationKind.aggregation,
+        '-->' => MermaidRelationKind.association,
+        '..>' => MermaidRelationKind.dependency,
+        _ => MermaidRelationKind.link,
+      };
+
+  /// The mark drawn at the `from` end.
+  String get mark => switch (this) {
+        MermaidRelationKind.inheritance => '◁',
+        MermaidRelationKind.composition => '◆',
+        MermaidRelationKind.aggregation => '◇',
+        MermaidRelationKind.association => '▶',
+        MermaidRelationKind.dependency => '▷',
+        MermaidRelationKind.link => '',
+      };
+}
+
+/// One relation between two classes.
+class MermaidRelation {
+  const MermaidRelation({
+    required this.from,
+    required this.to,
+    required this.kind,
+    this.label,
+    this.fromCardinality,
+    this.toCardinality,
+  });
+
+  final String from;
+  final String to;
+  final MermaidRelationKind kind;
+  final String? label;
+  final String? fromCardinality;
+  final String? toCardinality;
+}
+
+/// Draws a parsed class diagram: the boxes in a grid, the relations between them.
+class AssistantMermaidClassDiagram extends StatelessWidget {
+  const AssistantMermaidClassDiagram({
+    super.key,
+    required this.diagram,
+    this.boxWidth = 190,
+    this.gapX = 60,
+    this.gapY = 40,
+  });
+
+  final MermaidClassDiagram diagram;
+  final double boxWidth;
+  final double gapX;
+  final double gapY;
+
+  @override
+  Widget build(BuildContext context) {
+    final AssistantTheme theme = AssistantTheme.of(context);
+    if (diagram.isEmpty) return const SizedBox.shrink();
+    final int columns = diagram.classes.length <= 2 ? diagram.classes.length : 3;
+    final int rows = (diagram.classes.length / columns).ceil();
+    double tallest = 0;
+    for (final MermaidClass klass in diagram.classes) {
+      tallest = math.max(tallest, _height(klass));
+    }
+    return SizedBox(
+      width: columns * boxWidth + (columns - 1) * gapX + 80,
+      height: rows * (tallest + gapY) + 40,
+      child: CustomPaint(
+        painter: _ClassPainter(
+          diagram: diagram,
+          columns: columns,
+          boxWidth: boxWidth,
+          gapX: gapX,
+          gapY: gapY,
+          rowHeight: tallest,
+          theme: theme,
+        ),
+      ),
+    );
+  }
+
+  static double _height(MermaidClass klass) =>
+      34 + klass.members.length * 18 + (klass.members.isEmpty ? 8 : 12);
+}
+
+class _ClassPainter extends CustomPainter {
+  _ClassPainter({
+    required this.diagram,
+    required this.columns,
+    required this.boxWidth,
+    required this.gapX,
+    required this.gapY,
+    required this.rowHeight,
+    required this.theme,
+  });
+
+  final MermaidClassDiagram diagram;
+  final int columns;
+  final double boxWidth;
+  final double gapX;
+  final double gapY;
+  final double rowHeight;
+  final AssistantTheme theme;
+
+  Rect _box(int index) {
+    final int column = index % columns;
+    final int row = index ~/ columns;
+    return Rect.fromLTWH(
+      40 + column * (boxWidth + gapX),
+      20 + row * (rowHeight + gapY),
+      boxWidth,
+      AssistantMermaidClassDiagram._height(diagram.classes[index]),
+    );
+  }
+
+  Rect? _boxOf(String name) {
+    final int index =
+        diagram.classes.indexWhere((MermaidClass k) => k.name == name);
+    return index < 0 ? null : _box(index);
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint fill = Paint()..color = theme.muted;
+    final Paint edge = Paint()
+      ..color = theme.border
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    final Paint rule = Paint()
+      ..color = theme.border
+      ..strokeWidth = 1;
+
+    for (final (int index, MermaidClass klass) in diagram.classes.indexed) {
+      final Rect rect = _box(index);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, const Radius.circular(4)),
+        fill,
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, const Radius.circular(4)),
+        edge,
+      );
+      _text(canvas, klass.name, Offset(rect.left + 10, rect.top + 8),
+          theme.foreground, maxWidth: rect.width - 20);
+      if (klass.members.isNotEmpty) {
+        canvas.drawLine(
+          Offset(rect.left, rect.top + 30),
+          Offset(rect.right, rect.top + 30),
+          rule,
+        );
+        for (final (int row, String member) in klass.members.indexed) {
+          _text(
+            canvas,
+            member,
+            Offset(rect.left + 10, rect.top + 36 + row * 18),
+            theme.mutedForeground,
+            maxWidth: rect.width - 20,
+          );
+        }
+      }
+    }
+
+    for (final MermaidRelation relation in diagram.relations) {
+      final Rect? from = _boxOf(relation.from);
+      final Rect? to = _boxOf(relation.to);
+      if (from == null || to == null) continue;
+      _relation(canvas, from, to, relation);
+    }
+  }
+
+  void _relation(Canvas canvas, Rect from, Rect to, MermaidRelation relation) {
+    final Paint stroke = Paint()
+      ..color = theme.mutedForeground
+      ..strokeWidth = 1.4
+      ..style = PaintingStyle.stroke;
+    final Offset start = Offset(from.center.dx, from.center.dy);
+    final Offset end = Offset(to.center.dx, to.center.dy);
+    // Straight segments with a small elbow, so two boxes side by side read as
+    // connected without an arrow crossing a third.
+    final Path path = Path()..moveTo(start.dx, start.dy);
+    if ((start.dx - end.dx).abs() < 1) {
+      path.lineTo(start.dx, end.dy);
+    } else {
+      final double midY = (start.dy + end.dy) / 2;
+      path
+        ..lineTo(start.dx, midY)
+        ..lineTo(end.dx, midY)
+        ..lineTo(end.dx, end.dy);
+    }
+    canvas.drawPath(path, stroke);
+
+    // The relation's mark at the far end, and its label at the elbow.
+    final String mark = relation.kind.mark;
+    if (mark.isNotEmpty) {
+      _text(canvas, mark, Offset(end.dx - 6, end.dy - 16), theme.foreground);
+    }
+    final String? label = relation.label ?? relation.toCardinality;
+    if (label != null && label.isNotEmpty) {
+      _text(
+        canvas,
+        label,
+        Offset((start.dx + end.dx) / 2 + 4, (start.dy + end.dy) / 2 - 14),
+        theme.mutedForeground,
+      );
+    }
+  }
+
+  void _text(Canvas canvas, String text, Offset at, Color color, {double? maxWidth}) {
+    (TextPainter(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(fontSize: 12, height: 1.2, color: color),
+      ),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+      ellipsis: '…',
+    )..layout(maxWidth: maxWidth ?? 400))
+        .paint(canvas, at);
+  }
+
+  @override
+  bool shouldRepaint(_ClassPainter old) =>
+      old.diagram != diagram || old.theme != theme;
+}
+

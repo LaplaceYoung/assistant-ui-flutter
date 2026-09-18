@@ -399,9 +399,10 @@ const Map<String, Entry> _entries = <String, Entry>{
           'labelled edges; pie with the palette and a legend; sequence with '
           'lifelines, arrows, self-messages and notes; state diagrams, mapped onto '
           'the flowchart painter with the start and end markers; gantt charts with '
-          'sections, dated and undated tasks and their bars. All parsed and painted '
-          'in Dart, so a fence renders with no host engine; class diagrams still '
-          'fall back to the source, and a host drawing overrides the built-in one'),
+          'sections, dated and undated tasks and their bars; class diagrams with member '
+          'lists and the six relation kinds. Every type the catalogue lists is '
+          'parsed and painted in Dart, so a fence renders with no host engine, and '
+          'a host drawing overrides the built-in one'),
   'math-block': Entry('ported',
       dart: 'components/math_block.dart',
       note: 'revealed derivation steps plus Frac / Sup / Sub helpers, and display math in markdown falls back to the styled TeX source when the host has no typesetter'),
