@@ -31,8 +31,8 @@ or a constructor argument, and the generated snippet prints exactly that.
 ## Elements
 
 Four are partial, with the reason recorded in `doc/element-coverage.md`:
-`markdown-text` (Mermaid's class diagrams, LaTeX's remaining font commands), `web-preview` (the frame itself on non-web — the chrome and a self-explanatory default body ship), `attachment` (a remote backend — the port ships
-in-memory and file-backed ones), `file` (opening the payload
+`markdown-text` (Mermaid's class diagrams, LaTeX's remaining font commands), `web-preview` (the frame itself on non-web — the chrome and a self-explanatory default body ship), `attachment` (a backend with auth or resumable uploads — the port ships
+in-memory, file-backed and HTTP ones), `file` (opening the payload
 in a real app — the port now ships a saver that writes it).
 
 ## Interactions that were inert, and are not now
