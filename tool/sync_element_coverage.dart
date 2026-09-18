@@ -43,7 +43,7 @@ const Map<String, Entry> _entries = <String, Entry>{
   'message-timing': Entry('ported', dart: 'components/message_timing.dart'),
   'markdown-text': Entry('partial',
       dart: 'components/markdown.dart',
-      note: 'fenced code runs through the syntax-highlighter tokenizer and the coldark palettes; ```mermaid fences render through the built-in flowchart painter, and inline/display math is typeset by components/math_renderer.dart (fractions, radicals, scripts, the symbol table) with a host renderer overriding it. Constructs outside those subsets still fall back to the styled source'),
+      note: 'fenced code runs through the syntax-highlighter tokenizer and the coldark palettes; ```mermaid fences render through the built-in painters (flowchart, pie, sequence), and inline/display math is typeset by components/math_renderer.dart (fractions, radicals, scripts, environments, the symbol table) with a host renderer overriding it. Constructs outside those subsets still fall back to the styled source'),
   'syntax-highlighter': Entry('ported',
       dart: 'components/syntax_highlighter.dart',
       note: 'Dart tokenizer instead of Prism; the coldark-cold / coldark-dark palettes are taken verbatim from prism-themes, and the markdown fenced blocks color through the same tokens'),
@@ -392,12 +392,15 @@ const Map<String, Entry> _entries = <String, Entry>{
           'tokenizes with Dart regexes and paints the same coldark palettes'),
 
   'mermaid-diagram': Entry('ported',
-      dart: 'components/mermaid_diagram.dart, components/mermaid_renderer.dart',
-      note: 'frame (skeleton, code fallback, shared zoom surface) plus a built-in '
-          'flowchart renderer: graph/flowchart in TD/TB/BT/LR, node shapes, chains '
-          'and labelled edges are parsed and painted in Dart, so a fence renders '
-          'with no host engine; other diagram types (sequence, class, state, gantt) '
-          'still fall back to the source, and a host drawing overrides the built-in one'),
+      dart: 'components/mermaid_diagram.dart, components/mermaid_renderer.dart, '
+          'components/mermaid_extra.dart',
+      note: 'frame (skeleton, code fallback, shared zoom surface) plus built-in '
+          'renderers: graph/flowchart in TD/TB/BT/LR with node shapes, chains and '
+          'labelled edges; pie with the palette and a legend; sequence with '
+          'lifelines, arrows, self-messages and notes. All parsed and painted in '
+          'Dart, so a fence renders with no host engine; class, state and gantt '
+          'still fall back to the source, and a host drawing overrides the '
+          'built-in one'),
   'math-block': Entry('ported',
       dart: 'components/math_block.dart',
       note: 'revealed derivation steps plus Frac / Sup / Sub helpers, and display math in markdown falls back to the styled TeX source when the host has no typesetter'),
